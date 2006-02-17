@@ -52,8 +52,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private DefaultMutableTreeNode top;
     
     //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom3/dump.log";
-    private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom1/OC4J~cms~default_island~1";
-    //private static String dumpFile;
+    //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom1/OC4J~cms~default_island~1";
+    private static String dumpFile;
     
     public TDA() {
         super(new GridLayout(1,0));
@@ -72,10 +72,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         Dimension minimumSize = new Dimension(200, 50);
         htmlView.setMinimumSize(minimumSize);
-        splitPane.setDividerLocation(100); //XXX: ignored in some releases
-        //of Swing. bug 4101306
-        //workaround for bug 4101306:
-        //treeView.setPreferredSize(new Dimension(100, 100));
+        splitPane.setDividerLocation(100);
         
         splitPane.setPreferredSize(new Dimension(800, 600));
           
@@ -89,6 +86,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         threadDumps = new HashMap();
         createNodes(top, dumpFile);
         
+        createTree();
+    }
+
+    private void createTree() {
         //Create a tree that allows one selection at a time.
         tree = new JTree(top);
         tree.getSelectionModel().setSelectionMode
@@ -108,7 +109,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         tree.addTreeSelectionListener(this);
                 
         createPopupMenu();
+
     }
+    
     
     /** Required by TreeSelectionListener interface. */
     public void valueChanged(TreeSelectionEvent e) {
@@ -133,7 +136,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void displayContent(String text) {
         if (text != null) {
             htmlPane.setText(text);
-        } else { //null url
+        } else {
             htmlPane.setText("No Information available");
         }
     }
@@ -278,8 +281,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             } else {
                 System.out.println(mergeDump + " // " + tree.getSelectionPath());
                 JDK14Parser.mergeDumps(top, threadDumps, mergeDump, tree.getSelectionPath());
+                createTree();
                 this.getRootPane().revalidate();
-                tree.repaint();
             }
         }
     }
@@ -293,6 +296,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             File file = fc.getSelectedFile();
             dumpFile = file.getAbsolutePath();
             tree = null;
+            top = null;
             if(dumpFile != null) {
                 init();
                 this.getRootPane().revalidate();
