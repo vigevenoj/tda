@@ -44,7 +44,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JEditorPane htmlPane;
     private JTree tree;
     private JFileChooser fc;
-    private URL helpURL;
     private JSplitPane splitPane;
     private static boolean DEBUG = false;
     private TreePath mergeDump;
@@ -61,23 +60,37 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         tree = new JTree();
         
         //Create the HTML viewing pane.
-        htmlPane = new JEditorPane();
+        htmlPane = new JEditorPane("text/html", getInfoText());
         htmlPane.setEditable(false);
-        //initHelp();
+        
+        JEditorPane emptyPane = new JEditorPane("text/html", "<i>empty</i>");
+        emptyPane.setEditable(false);
+        
         JScrollPane htmlView = new JScrollPane(htmlPane);
+        JScrollPane emptyView = new JScrollPane(emptyPane);
         
         //Add the scroll panes to a split pane.
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setBottomComponent(htmlView);
+        splitPane.setTopComponent(emptyView);
         
         Dimension minimumSize = new Dimension(200, 50);
         htmlView.setMinimumSize(minimumSize);
+        emptyView.setMinimumSize(minimumSize);
         splitPane.setDividerLocation(100);
         
         splitPane.setPreferredSize(new Dimension(800, 600));
           
         //Add the split pane to this panel.
         add(splitPane);
+    }
+    
+    private String getInfoText() {
+        StringBuffer info = new StringBuffer("<html><body><b>TDA - Thread Dump Analyzer</b><p>");
+        info.append("(C)opyright 2006 - TDA Team<br>");
+        info.append("Version: <b>0.1-prerelease</b><p>");
+        info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></body></html>");
+        return(info.toString());
     }
 
     public void init() {
@@ -118,7 +131,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
         tree.getLastSelectedPathComponent();
         
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         
         Object nodeInfo = node.getUserObject();
         if (nodeInfo instanceof ThreadDumpInfo) {
