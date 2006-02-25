@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.2 2006-02-20 09:47:43 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.3 2006-02-25 08:15:22 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -44,6 +44,8 @@ import javax.swing.tree.TreePath;
  * @author irockel
  */
 public class JDK14Parser implements DumpParser {
+    private static int MARK_SIZE = 8192;
+    
     String dumpFile = null;
     MutableTreeNode nextDump = null;
     BufferedReader bis = null;
@@ -113,6 +115,7 @@ public class JDK14Parser implements DumpParser {
             int waiting = 0;
             int locking = 0;
             int sleeping = 0;
+            int deadlocks = 0;
             boolean locked = true;
             boolean finished = false;
             MonitorMap mmap = new MonitorMap();
@@ -211,6 +214,11 @@ public class JDK14Parser implements DumpParser {
                     // last thread reached?
                     if(line.startsWith("\"Suspend Checker Thread\"")) {
                         finished = true;
+                        bis.mark(MARK_SIZE);
+                        if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
+                            // no deadlocks found, set back original position.
+                            bis.reset();
+                        }
                     }
                 }
             }
@@ -222,6 +230,8 @@ public class JDK14Parser implements DumpParser {
             statData.append(locking);
             statData.append("\n\nNumber of threads sleeping on a monitor is ");
             statData.append(sleeping);
+            statData.append("\n\nNumber of deadlocks is ");
+            statData.append(deadlocks);
             overallTDI.content = statData.toString();
             
             // last thread
@@ -258,6 +268,50 @@ public class JDK14Parser implements DumpParser {
         }
         
         return(null);
+    }
+    
+    private int checkForDeadlocks(DefaultMutableTreeNode threadDump) throws IOException {
+        boolean finished = false;
+        boolean found = false;
+        int deadlocks = 0;
+        StringBuffer dContent = new StringBuffer();
+        DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode("Deadlocks");
+        
+        while(bis.ready() && !finished) {
+            String line = bis.readLine();
+            if(!found && !line.trim().equals("")) {
+                if (line.startsWith("Found one Java-level deadlock")) {
+                    found = true;
+                    dContent.append(line);
+                    dContent.append("\n\n");
+                } else {
+                    finished = true;
+                }
+            } else if(found) {
+                if(line.startsWith("Found one Java-level deadlock")) {
+                    if(dContent.length() > 0) {
+                        deadlocks++;
+                        createNode(catDeadlocks, "Deadlock No. " + (deadlocks), dContent);
+                    }
+                    dContent = new StringBuffer();
+                } else if(line.startsWith("Found") && line.trim().endsWith("deadlock.")) {
+                    finished = true;
+                } else {
+                    dContent.append(line);
+                    dContent.append("\n");
+                }
+            }
+        }
+        if(dContent.length() > 0) {
+            deadlocks++;
+            createNode(catDeadlocks, "Deadlock No. " + (deadlocks), dContent);
+        }
+        
+        if(deadlocks > 0) {
+            threadDump.add(catDeadlocks);
+        }
+        
+        return(deadlocks);
     }
     
     private void dumpMonitors(DefaultMutableTreeNode catMonitors, MonitorMap mmap) {
@@ -310,17 +364,17 @@ public class JDK14Parser implements DumpParser {
         }
     }
     
-    private static void createNode(DefaultMutableTreeNode category, String title, StringBuffer content) {
+    private void createNode(DefaultMutableTreeNode category, String title, StringBuffer content) {
         createNode(category, title, content.toString());
     }
     
-    private static void createNode(DefaultMutableTreeNode category, String title, String content) {
+    private void createNode(DefaultMutableTreeNode category, String title, String content) {
         DefaultMutableTreeNode threadInfo = null;
         threadInfo = new DefaultMutableTreeNode(new ThreadDumpInfo(title, content));
         category.add(threadInfo);
     }
     
-    private static String getDumpStringFromTreePath(TreePath path) {
+    private String getDumpStringFromTreePath(TreePath path) {
         String[] elems = path.toString().split(",");
         if(elems.length > 1) {
             return(elems[1].substring(0, elems[1].lastIndexOf(']')).trim());
@@ -329,7 +383,7 @@ public class JDK14Parser implements DumpParser {
         }
     }
     
-    public static void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump) {
+    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump) {
         String firstDumpKey = getDumpStringFromTreePath(firstDump);
         String secondDumpKey = getDumpStringFromTreePath(secondDump);
         

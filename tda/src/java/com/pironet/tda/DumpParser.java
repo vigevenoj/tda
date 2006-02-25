@@ -17,14 +17,16 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParser.java,v 1.2 2006-02-20 09:47:42 irockel Exp $
+ * $Id: DumpParser.java,v 1.3 2006-02-25 08:15:21 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import java.io.IOException;
 import java.util.Map;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  * Dump Parser Interface, defines base methods for all dump parsers.
@@ -37,4 +39,6 @@ public interface DumpParser {
     public MutableTreeNode parseNext();
     
     public void close() throws IOException;
+    
+    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump);
 }
