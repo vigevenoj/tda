@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactory.java,v 1.2 2006-02-20 09:47:42 irockel Exp $
+ * $Id: DumpParserFactory.java,v 1.3 2006-02-25 08:15:21 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -31,6 +31,8 @@ import java.util.Map;
  */
 public class DumpParserFactory {
     private static DumpParserFactory instance = null;
+    
+    private DumpParser currentDumpParser = null;
     
     /** singleton private constructor */
     private DumpParserFactory() {
@@ -46,7 +48,11 @@ public class DumpParserFactory {
     
     public DumpParser getDumpParserForVersion(String javaVersion, String dumpFile, Map threadStore) {
         // currently only one parser supported.
-        return(new JDK14Parser(dumpFile, threadStore));
+        currentDumpParser = new JDK14Parser(dumpFile, threadStore); 
+        return(currentDumpParser);
     }
     
+    public DumpParser getCurrentDumpParser() {
+        return(currentDumpParser);
+    }
 }
