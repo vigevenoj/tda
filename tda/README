@@ -1,0 +1,13 @@
+TDA - Thread Dump Analyzer -- Version 0.1
+
+To run the application call "java -jar dist/tda.jar" and open the log file to parse.
+The analyzer will automatically parse and display all found dumps in the log file. 
+As it reads all data into memory, Xmx might need to be set accordingly if big log
+files are read. 
+
+Note: This is a prerelease of the software, there is no real documentation on reading
+the thread dumps available currently.
+
+Important Known Bug: The tool currently has a memory leak which crashes the tool if
+too many log files are opened as it doesn't release data of old dumps properly.
+
