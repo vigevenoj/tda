@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.5 2006-03-01 19:19:37 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.6 2006-03-01 20:19:43 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -147,25 +147,26 @@ public class JDK14Parser implements DumpParser {
                     if(line.startsWith("\"")) {
                         if(title != null) {
                             threads.put(title, content.toString());
+                            content.append("</pre></pre>");
                             createNode(catThreads, title, content);
                             threadCount++;
                         }
                         if(wContent != null) {
-                            wContent.append("\n\n" + "-----------------------------------\n\n");
+                            wContent.append("</b><hr>");
                             wContent.append(content);
                             createNode(catWaiting, title, wContent);
                             wContent = null;
                             waiting++;
                         }
                         if(sContent != null) {
-                            sContent.append("\n\n" + "-----------------------------------\n\n");
+                            sContent.append("</b><hr>");
                             sContent.append(content);
                             createNode(catSleeping, title, sContent);
                             sContent = null;
                             sleeping++;
                         }
                         if(lContent != null) {
-                            lContent.append("\n\n" + "-----------------------------------\n\n");
+                            lContent.append("</b><hr>");
                             lContent.append(content);
                             createNode(catLocking, title, lContent);
                             lContent = null;
@@ -176,38 +177,39 @@ public class JDK14Parser implements DumpParser {
                         }
                         
                         title = line;
-                        content = new StringBuffer(line);
+                        content = new StringBuffer("<pre>");
+                        content.append(line);
                         content.append("\n");
                     } else if (line.trim().startsWith("at ")) {
                         content.append(line);
                         content.append("\n");
                     } else if (line.trim().startsWith("- waiting on")) {
-                        content.append(line);
+                        String newLine = line.replaceAll("<", "&lt;");
+                        content.append(newLine);
                         if(sContent == null) {
-                            sContent = new StringBuffer(line);
-                        } else {
-                            sContent.append(line);
+                            sContent = new StringBuffer("<b>");
                         }
+                        sContent.append(newLine.trim());
                         monitorStack.push(line);
                         sContent.append("\n");
                         content.append("\n");
                     } else if (line.trim().startsWith("- waiting to")) {
-                        content.append(line);
+                        String newLine = line.replaceAll("<", "&lt;");
+                        content.append(newLine);
                         if(wContent == null) {
-                            wContent = new StringBuffer(line);
-                        } else {
-                            wContent.append(line);
+                            wContent = new StringBuffer("<b>");
                         }
+                        wContent.append(newLine.trim());
                         monitorStack.push(line);
                         wContent.append("\n");
                         content.append("\n");
                     } else if (line.trim().startsWith("- locked")) {
-                        content.append(line);
+                        String newLine = line.replaceAll("<", "&lt;");
+                        content.append(newLine);
                         if(lContent == null) {
-                            lContent = new StringBuffer(line);
-                        } else {
-                            lContent.append(line);
+                            lContent = new StringBuffer("<b>");
                         }
+                        lContent.append(newLine.trim());
                         monitorStack.push(line);
                         lContent.append("\n");
                         content.append("\n");
@@ -229,16 +231,17 @@ public class JDK14Parser implements DumpParser {
                     }
                 }
             }
-            StringBuffer statData = new StringBuffer("Overall Thread Count is ");
+            StringBuffer statData = new StringBuffer("<table border=0><tr><td>Overall Thread Count</td><td><b>");
             statData.append(threadCount);
-            statData.append("\n\nNumber of threads waiting for a monitor is ");
+            statData.append("</b></td></tr>\n\n<tr><td>Number of threads waiting for a monitor</td><td><b>");
             statData.append(waiting);
-            statData.append("\n\nNumber of threads locking a monitor is ");
+            statData.append("</b></td></tr>\n\n<tr><td>Number of threads locking a monitor</td><td><b>");
             statData.append(locking);
-            statData.append("\n\nNumber of threads sleeping on a monitor is ");
+            statData.append("</b></td></tr>\n\n<tr><td>Number of threads sleeping on a monitor</td><td><b>");
             statData.append(sleeping);
-            statData.append("\n\nNumber of deadlocks is ");
+            statData.append("</b></td></tr>\n\n<tr><td>Number of deadlocks</td><td><b>");
             statData.append(deadlocks);
+            statData.append("</b></td></tr></table>");
             overallTDI.content = statData.toString();
             
             // last thread
@@ -396,15 +399,15 @@ public class JDK14Parser implements DumpParser {
                 createNode(monitorNode, "waiting " + thread[0], thread[1]);
                 waits++;
             }
-            StringBuffer statData = new StringBuffer ("Threads locking monitor: ");
+            StringBuffer statData = new StringBuffer ("<table border=0><tr><td>Threads locking monitor</td><td><b>");
             statData.append(locks);
-            statData.append("\n\n");
-            statData.append("Threads sleeping on monitor: ");
+            statData.append("</b></td></tr>\n\n<tr><td>");
+            statData.append("Threads sleeping on monitor</td><td><b>");
             statData.append(sleeps);
-            statData.append("\n\n");
-            statData.append("Threads waiting to lock monitor: ");
+            statData.append("</b></td></tr>\n\n<tr><td>");
+            statData.append("Threads waiting to lock monitor</td><td><b>");
             statData.append(waits);
-            statData.append("\n\n");
+            statData.append("</b></td></tr></table>\n\n");
             mi.content = statData.toString();
             
             catMonitors.add(monitorNode);
