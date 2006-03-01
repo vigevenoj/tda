@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.9 2006-03-01 20:19:43 irockel Exp $
+ * $Id: TDA.java,v 1.10 2006-03-01 20:42:23 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -211,7 +211,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void displayContent(String text) {
-        splitPane.setBottomComponent(htmlView);
+        if(splitPane.getBottomComponent() != htmlView) {
+            splitPane.setBottomComponent(htmlView);
+        }
         htmlPane.setContentType("text/html");
         if (text != null) {
             htmlPane.setText(text);
