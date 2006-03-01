@@ -17,12 +17,14 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.7 2006-03-01 11:32:43 irockel Exp $
+ * $Id: TDA.java,v 1.8 2006-03-01 19:19:37 irockel Exp $
  */
 package com.pironet.tda;
 
+import com.pironet.tda.utils.HistogramTableModel;
 import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.SwingWorker;
+import com.pironet.tda.utils.TableSorter;
 import java.io.FileNotFoundException;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -60,6 +62,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.tree.TreePath;
@@ -70,20 +73,24 @@ import javax.swing.tree.TreePath;
  * @author irockel
  */
 public class TDA extends JPanel implements TreeSelectionListener, ActionListener {
-    private JEditorPane htmlPane;
-    private JTree tree;
     private static JFileChooser fc;
-    private JSplitPane splitPane;
     private static boolean DEBUG = false;
-    private TreePath mergeDump;
-    private Map threadDumps;
-    private DefaultMutableTreeNode top;
-    private InputStream dumpFileStream = null;
-    private static JFrame frame = null;
-    
+    private static JFrame frame;
+
     //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom3/dump.log";
     //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom1/OC4J~cms~default_island~1";
     private static String dumpFile;
+
+    private JEditorPane htmlPane;
+    private JTree tree;
+    private JSplitPane splitPane;
+    private TreePath mergeDump;
+    private Map threadDumps;
+    private DefaultMutableTreeNode top;
+    private InputStream dumpFileStream;
+    private JScrollPane htmlView;
+    private JScrollPane tableView;
+    
     
     public TDA() {
         super(new GridLayout(1,0));
@@ -96,7 +103,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         JEditorPane emptyPane = new JEditorPane("text/html", "<i>empty</i>");
         emptyPane.setEditable(false);
         
-        JScrollPane htmlView = new JScrollPane(htmlPane);
+        htmlView = new JScrollPane(htmlPane);
         JScrollPane emptyView = new JScrollPane(emptyPane);
         
         //Add the scroll panes to a split pane.
@@ -108,9 +115,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         htmlView.setMinimumSize(minimumSize);
         emptyView.setMinimumSize(minimumSize);
         splitPane.setDividerLocation(100);
-        
-        //splitPane.setPreferredSize(PrefManager.get().getPreferredSize());
-        
+                
         //Add the split pane to this panel.
         add(splitPane);
     }
@@ -134,6 +139,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         
         //Create the nodes.
+        if(top != null) {
+            top.removeAllChildren();
+            top.removeFromParent();
+            top = null;
+        }
         top = new DefaultMutableTreeNode("Thread Dumps of " + dumpFile);
         threadDumps = new HashMap();
         
@@ -182,12 +192,18 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         
         Object nodeInfo = node.getUserObject();
-        if (nodeInfo instanceof ThreadDumpInfo) {
-            ThreadDumpInfo tdi = (ThreadDumpInfo)nodeInfo;
-            displayContent(tdi.content);
+        if (nodeInfo instanceof ThreadInfo) {
+            ThreadInfo ti = (ThreadInfo)nodeInfo;
+            displayContent(ti.content);
             if (DEBUG) {
-                System.out.print(tdi.content + ":  \n    ");
+                System.out.print(ti.content + ":  \n    ");
             }
+        } else if (nodeInfo instanceof HistogramInfo) {
+            HistogramInfo tdi = (HistogramInfo)nodeInfo;
+            System.out.println("Content" + tdi.content);
+            displayTable((HistogramTableModel) tdi.content);
+        } else {
+            displayContent(null);
         }
         if (DEBUG) {
             System.out.println(nodeInfo.toString());
@@ -195,13 +211,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void displayContent(String text) {
+        splitPane.setBottomComponent(htmlView);
+        htmlPane.setContentType("text/plain");
         if (text != null) {
-            htmlPane.setContentType("text/plain");
             htmlPane.setText(text);
         } else {
-            htmlPane.setContentType("text/plain");
-            htmlPane.setText("No Information available");
+            htmlPane.setText("");
         }
+    }
+    
+    private void displayTable(HistogramTableModel htm) {
+        TableSorter ts = new TableSorter(htm);
+        JTable histogramTable = new JTable(ts);
+        ts.setTableHeader(histogramTable.getTableHeader());
+        tableView = new JScrollPane(histogramTable);
+        splitPane.setBottomComponent(tableView);
     }
     
     private void createNodes(DefaultMutableTreeNode top, InputStream dumpFileStream) {
@@ -227,13 +251,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Create the popup menu.
         JPopupMenu popup = new JPopupMenu();
-        menuItem = new JMenuItem("Expand All below node");
+        /*menuItem = new JMenuItem("Expand All below node");
         menuItem.addActionListener(this);
         popup.add(menuItem);
         menuItem = new JMenuItem("Collapse All below node");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        popup.addSeparator();
+        popup.addSeparator();*/
         menuItem = new JMenuItem("Search below node...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
