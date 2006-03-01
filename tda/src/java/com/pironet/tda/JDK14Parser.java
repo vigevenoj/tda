@@ -3,36 +3,36 @@
  *
  * This file is part of TDA - Thread Dump Analysis Tool.
  *
- * Foobar is free software; you can redistribute it and/or modify
+ * TDA is free software; you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or
  * (at your option) any later version.
  *
- * Foobar is distributed in the hope that it will be useful,
+ * TDA is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
  *
  * You should have received a copy of the Lesser GNU General Public License
- * along with Foobar; if not, write to the Free Software
+ * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.3 2006-02-25 08:15:22 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.4 2006-03-01 11:32:43 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -46,7 +46,7 @@ import javax.swing.tree.TreePath;
 public class JDK14Parser implements DumpParser {
     private static int MARK_SIZE = 8192;
     
-    String dumpFile = null;
+    InputStream dumpFileStream = null;
     MutableTreeNode nextDump = null;
     BufferedReader bis = null;
     Map threadStore = null;
@@ -56,8 +56,8 @@ public class JDK14Parser implements DumpParser {
     int lineCounter = 0;
     
     /** Creates a new instance of JDK14Parser */
-    public JDK14Parser(String dumpFile, Map threadStore) {
-        this.dumpFile = dumpFile;
+    public JDK14Parser(InputStream dumpFileStream, Map threadStore) {
+        this.dumpFileStream = dumpFileStream;
         this.threadStore = threadStore;
     }
     
@@ -85,7 +85,7 @@ public class JDK14Parser implements DumpParser {
         try {
             Map threads = new HashMap();
             if(bis == null) {
-                bis = new BufferedReader(new FileReader(dumpFile));
+                bis = new BufferedReader(new InputStreamReader(dumpFileStream));
             }
             overallTDI = new ThreadDumpInfo("Full Thread Dump No. " + counter++, "");
             threadDump = new DefaultMutableTreeNode(overallTDI);
