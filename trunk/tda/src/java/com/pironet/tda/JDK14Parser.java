@@ -17,11 +17,12 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.4 2006-03-01 11:32:43 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.5 2006-03-01 19:19:37 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.HistogramTableModel;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,7 +45,8 @@ import javax.swing.tree.TreePath;
  * @author irockel
  */
 public class JDK14Parser implements DumpParser {
-    private static int MARK_SIZE = 8192;
+    private static int MARK_SIZE = 16384;
+    private static int MAX_CHECK_LINES = 10;
     
     InputStream dumpFileStream = null;
     MutableTreeNode nextDump = null;
@@ -74,7 +76,7 @@ public class JDK14Parser implements DumpParser {
         }
         
         DefaultMutableTreeNode threadDump = null;
-        ThreadDumpInfo overallTDI = null;
+        ThreadInfo overallTDI = null;
         DefaultMutableTreeNode catMonitors = null;
         DefaultMutableTreeNode catThreads = null;
         DefaultMutableTreeNode catLocking = null;
@@ -87,7 +89,7 @@ public class JDK14Parser implements DumpParser {
             if(bis == null) {
                 bis = new BufferedReader(new InputStreamReader(dumpFileStream));
             }
-            overallTDI = new ThreadDumpInfo("Full Thread Dump No. " + counter++, "");
+            overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, "");
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
             catThreads = new DefaultMutableTreeNode("Threads");
@@ -219,6 +221,11 @@ public class JDK14Parser implements DumpParser {
                             // no deadlocks found, set back original position.
                             bis.reset();
                         }
+                        
+                        bis.mark(MARK_SIZE);
+                        if(!checkForClassHistogram(threadDump)) {
+                            bis.reset();
+                        }
                     }
                 }
             }
@@ -254,7 +261,7 @@ public class JDK14Parser implements DumpParser {
             
             // add thread dump to passed dump store.
             if((threadCount > 0) && (dumpKey != null)) {
-                System.out.println("adding dump " + dumpKey);
+                //System.out.println("adding dump " + dumpKey);
                 threadStore.put(dumpKey.trim(), threads);
             }
             return(threadCount > 0? threadDump : null);
@@ -270,10 +277,48 @@ public class JDK14Parser implements DumpParser {
         return(null);
     }
     
+    private boolean checkForClassHistogram(DefaultMutableTreeNode threadDump) throws IOException {
+        boolean finished = false;
+        boolean found = false;
+        HistogramTableModel classHistogram = new HistogramTableModel();
+        int lineCounter = 0;
+        DefaultMutableTreeNode catHistogram;
+        
+        while(bis.ready() && !finished) {
+            String line = bis.readLine();
+            if(!found && !line.trim().equals("")) {
+                if (line.startsWith("num   #instances    #bytes  class name")) {
+                    found = true;
+                } else if(lineCounter >= MAX_CHECK_LINES) {
+                    finished = true;
+                } else {
+                    lineCounter++;
+                }
+            } else if(found) {
+                if(line.startsWith("Total ")) {
+                    finished = true;
+                } else if(!line.startsWith("-------")) {
+                    String newLine = line.trim().replaceAll("(\\s)+", ";");
+                    String[] elems = newLine.split(";");
+                    classHistogram.addEntry(elems[3].trim(),Integer.parseInt(elems[2].trim()),
+                            Integer.parseInt(elems[1].trim()));
+                }
+            }
+        }
+        if(classHistogram.getRowCount() > 0) {
+            HistogramInfo hi = new HistogramInfo("Class Histogram of Dump", classHistogram);
+            catHistogram = new DefaultMutableTreeNode(hi);
+            threadDump.add(catHistogram);
+        }
+        
+        return(classHistogram.getRowCount() > 0);
+    }
+    
     private int checkForDeadlocks(DefaultMutableTreeNode threadDump) throws IOException {
         boolean finished = false;
         boolean found = false;
         int deadlocks = 0;
+        int lineCounter = 0;
         StringBuffer dContent = new StringBuffer();
         DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode("Deadlocks");
         
@@ -284,8 +329,10 @@ public class JDK14Parser implements DumpParser {
                     found = true;
                     dContent.append(line);
                     dContent.append("\n\n");
-                } else {
+                } else if(lineCounter < MAX_CHECK_LINES) {
                     finished = true;
+                } else {
+                    lineCounter++;
                 }
             } else if(found) {
                 if(line.startsWith("Found one Java-level deadlock")) {
@@ -319,7 +366,7 @@ public class JDK14Parser implements DumpParser {
         while(iter.hasNext()) {
             String monitor = (String) iter.next();
             Set[] threads = mmap.getFromMonitorMap(monitor);
-            ThreadDumpInfo mi = new ThreadDumpInfo(monitor, "");
+            ThreadInfo mi = new ThreadInfo(monitor, "");
             
             DefaultMutableTreeNode monitorNode = new DefaultMutableTreeNode(mi);
             
@@ -370,7 +417,7 @@ public class JDK14Parser implements DumpParser {
     
     private void createNode(DefaultMutableTreeNode category, String title, String content) {
         DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadDumpInfo(title, content));
+        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, content));
         category.add(threadInfo);
     }
     
@@ -402,7 +449,6 @@ public class JDK14Parser implements DumpParser {
                     StringBuffer content = new StringBuffer((String) firstThreads.get(threadKey));
                     content.append("\n\n---------------------------------\n\n");
                     content.append((String) secondThreads.get(threadKey));
-                    System.out.println("found: " + threadKey);
                     createNode(catMerge, threadKey, content);
                 }
             }
@@ -413,6 +459,10 @@ public class JDK14Parser implements DumpParser {
     public void close() throws IOException {
         if(bis != null) {
             bis.close();
+        }
+        
+        if(dumpFileStream != null) {
+            dumpFileStream.close();
         }
     }
 }

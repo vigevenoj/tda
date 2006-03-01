@@ -17,11 +17,12 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParser.java,v 1.3 2006-02-25 08:15:21 irockel Exp $
+ * $Id: DumpParser.java,v 1.4 2006-03-01 19:19:37 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.HistogramTableModel;
 import java.io.IOException;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
