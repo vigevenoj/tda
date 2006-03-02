@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.6 2006-03-01 20:19:43 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.7 2006-03-02 12:24:50 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -48,24 +48,39 @@ public class JDK14Parser implements DumpParser {
     private static int MARK_SIZE = 16384;
     private static int MAX_CHECK_LINES = 10;
     
-    InputStream dumpFileStream = null;
-    MutableTreeNode nextDump = null;
-    BufferedReader bis = null;
-    Map threadStore = null;
+    private InputStream dumpFileStream = null;
+    private MutableTreeNode nextDump = null;
+    private BufferedReader bis = null;
+    private Map threadStore = null;
     
-    int counter = 1;
+    private int counter = 1;
     
-    int lineCounter = 0;
+    private int lineCounter = 0;
     
-    /** Creates a new instance of JDK14Parser */
+    private boolean foundClassHistograms = false;
+    
+    /** 
+     * Creates a new instance of JDK14Parser 
+     */
     public JDK14Parser(InputStream dumpFileStream, Map threadStore) {
         this.dumpFileStream = dumpFileStream;
         this.threadStore = threadStore;
     }
     
+    /**
+     * returns true if at least one more dump available, already loads it
+     * (this will be returned on next call of parseNext)
+     */
     public boolean hasMoreDumps() {
         nextDump = parseNext();
         return(nextDump != null);
+    }
+    
+    /**
+     * returns true, if a class histogram was found and added during parsing.
+     */
+    public boolean isFoundClassHistograms() {
+        return(foundClassHistograms);
     }
     
     public MutableTreeNode parseNext() {
@@ -225,7 +240,7 @@ public class JDK14Parser implements DumpParser {
                         }
                         
                         bis.mark(MARK_SIZE);
-                        if(!checkForClassHistogram(threadDump)) {
+                        if(!(foundClassHistograms = checkForClassHistogram(threadDump))) {
                             bis.reset();
                         }
                     }
@@ -431,6 +446,10 @@ public class JDK14Parser implements DumpParser {
         } else {
             return null;
         }
+    }
+    
+    public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root, Map dumpStore) {
+        
     }
     
     public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump) {

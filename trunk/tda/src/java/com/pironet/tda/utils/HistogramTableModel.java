@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.1 2006-03-01 19:19:38 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.2 2006-03-02 12:24:50 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -85,19 +85,38 @@ public class HistogramTableModel extends AbstractTableModel {
         private int bytes;
         
         public Entry(String className, int instanceCount, int bytes) {
-            if(className.trim().equals("[I")) {
-                this.className = "int[]";
-            } else if (className.trim().equals("[B")) {
-                this.className = "byte[]";
-            } else if (className.trim().equals("[C")) {
-                this.className = "char[]";
-            } else if (className.trim().equals("[L")) {
-                this.className = "long[]";
-            } else {
-                this.className = className;
-            }
+            this.className = parseClassName(className);
+            
             this.instanceCount = instanceCount;
             this.bytes = bytes;
+        }
+        
+        /**
+         * resolve classname to something more human readable.
+         */
+        private String parseClassName(String className) {
+            String result = className;
+            if(className.trim().endsWith("[I")) {
+                result = "<html><body><b>int[]</b></body></html>";
+            } else if (className.trim().endsWith("[B")) {
+                result = "<html><body><b>byte[]</b></body></html>";
+            } else if (className.trim().endsWith("[C")) {
+                result = "<html><body><b>char[]</b></body></html>";
+            } else if (className.trim().endsWith("[L")) {
+                result = "<html><body><b>long[]</b></body></html>";
+            } else if (className.trim().startsWith("<")) {
+                className = className.replaceAll("<", "&lt;");
+                className = className.replaceAll(">", "&gt;");
+                result = "<html><body><i><b>" + className + "</i></b> [internal HotSpot]</i></body></html>";
+            } else if (className.lastIndexOf('.') > 0) {
+                result = "<html><body>" + className.substring(0, className.lastIndexOf('.')+1) + "<b>" + 
+                         className.substring(className.lastIndexOf('.')+1) + "</b></body></html>";
+            }
+            if(className.trim().startsWith("[[")) {
+                result = result.replaceAll("\\[\\]", "[][]");
+            }
+            
+            return(result);
         }
     }
 }
