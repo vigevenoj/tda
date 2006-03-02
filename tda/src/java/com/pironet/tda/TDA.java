@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.10 2006-03-01 20:42:23 irockel Exp $
+ * $Id: TDA.java,v 1.11 2006-03-02 12:24:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Component;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -80,6 +81,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom3/dump.log";
     //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom1/OC4J~cms~default_island~1";
     private static String dumpFile;
+    
+    private static String loggcFile;
 
     private JEditorPane htmlPane;
     private JTree tree;
@@ -90,6 +93,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private InputStream dumpFileStream;
     private JScrollPane htmlView;
     private JScrollPane tableView;
+    private JMenuItem loggcMenuItem;
     
     
     public TDA() {
@@ -214,9 +218,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         if(splitPane.getBottomComponent() != htmlView) {
             splitPane.setBottomComponent(htmlView);
         }
-        htmlPane.setContentType("text/html");
         if (text != null) {
             htmlPane.setText(text);
+            htmlPane.setCaretPosition(0);
         } else {
             htmlPane.setText("");
         }
@@ -226,6 +230,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         TableSorter ts = new TableSorter(htm);
         JTable histogramTable = new JTable(ts);
         ts.setTableHeader(histogramTable.getTableHeader());
+        histogramTable.getColumnModel().getColumn(0).setPreferredWidth(700);
         tableView = new JScrollPane(histogramTable);
         splitPane.setBottomComponent(tableView);
     }
@@ -237,6 +242,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
+            loggcMenuItem.setEnabled(!dp.isFoundClassHistograms());
         } finally {
             if(dp != null) {
                 try {
@@ -253,13 +259,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Create the popup menu.
         JPopupMenu popup = new JPopupMenu();
-        /*menuItem = new JMenuItem("Expand All below node");
-        menuItem.addActionListener(this);
-        popup.add(menuItem);
-        menuItem = new JMenuItem("Collapse All below node");
-        menuItem.addActionListener(this);
-        popup.add(menuItem);
-        popup.addSeparator();*/
         menuItem = new JMenuItem("Search below node...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
@@ -320,9 +319,25 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "Open Log File with dumps");
         menuItem.addActionListener(this);
         menu.add(menuItem);
+        loggcMenuItem = new JMenuItem("Open loggc file...",
+                KeyEvent.VK_O);
+        loggcMenuItem.getAccessibleContext().setAccessibleDescription(
+                "Open GC Log files with heap dumps");
+        loggcMenuItem.addActionListener(this);
+        loggcMenuItem.setEnabled(false);
+        menu.add(loggcMenuItem);
         
         menu.addSeparator();
+
+        menuItem = new JMenuItem("Preferences",
+                KeyEvent.VK_P);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Set Preferences");
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
         
+        menu.addSeparator();
+
         menuItem = new JMenuItem("Exit TDA",
                 KeyEvent.VK_O);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
@@ -341,8 +356,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         menuItem = new JMenuItem("About TDA",
                 KeyEvent.VK_A);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_A, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "About Thread Dump Analyzer");
         menuItem.addActionListener(this);
@@ -357,6 +370,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         System.out.println(source.getText());
         if("Open...".equals(source.getText())) {
             openFile();
+        } else if("Open loggc file...".equals(source.getText())) {
+            openLoggcFile();
         } else if("Exit TDA".equals(source.getText())) {
             saveState();
             frame.dispose();
@@ -406,6 +421,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             top = null;
             if(dumpFile != null) {
                 init();
+                this.getRootPane().revalidate();
+            }
+        }
+    }
+    
+    private void openLoggcFile() {
+        int returnVal = fc.showOpenDialog(this.getRootPane());
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            loggcFile = file.getAbsolutePath();
+            //tree = null;
+            //top = null;
+            if(loggcFile != null) {
+                //init();
                 this.getRootPane().revalidate();
             }
         }

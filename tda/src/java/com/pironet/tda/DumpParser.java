@@ -17,13 +17,14 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParser.java,v 1.4 2006-03-01 19:19:37 irockel Exp $
+ * $Id: DumpParser.java,v 1.5 2006-03-02 12:24:50 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.HistogramTableModel;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
@@ -42,4 +43,8 @@ public interface DumpParser {
     public void close() throws IOException;
     
     public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump);
+
+    public boolean isFoundClassHistograms();
+    
+    public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root, Map dumpStore);
 }
