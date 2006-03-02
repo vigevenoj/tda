@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.1 2006-03-01 11:32:44 irockel Exp $
+ * $Id: PrefManager.java,v 1.2 2006-03-02 18:36:17 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -89,6 +89,30 @@ public class PrefManager {
     public void setWindowPos(int x, int y) {
         toolPrefs.putInt("windowPosX", x);
         toolPrefs.putInt("windowPosY", y);
+    }
+    
+    public int getMaxRows() {
+        return(toolPrefs.getInt("maxRowsForChecking", 10));
+    }
+    
+    public void setMaxRows(int rows) {
+        toolPrefs.putInt("maxRowsForChecking", rows);
+    }
+    
+    public int getStreamResetBuffer() {
+        return(toolPrefs.getInt("streamResetBuffer", 16384));
+    }
+    
+    public void setStreamResetBuffer(int buffer) {
+        toolPrefs.putInt("streamResetBuffer", buffer);
+    }
+    
+    public boolean getForceLoggcLoading() {
+        return(toolPrefs.getBoolean("forceLoggcLoading", false));
+    }
+    
+    public void setForceLoggcLoading(boolean force) {
+        toolPrefs.putBoolean("forceLoggcLoading", force);
     }
     
     public void flush() {
