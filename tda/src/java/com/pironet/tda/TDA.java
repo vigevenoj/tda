@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.11 2006-03-02 12:24:50 irockel Exp $
+ * $Id: TDA.java,v 1.12 2006-03-02 18:36:17 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Component;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -57,6 +56,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -94,7 +94,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JScrollPane htmlView;
     private JScrollPane tableView;
     private JMenuItem loggcMenuItem;
-    
+    private PreferencesDialog prefsDialog;
     
     public TDA() {
         super(new GridLayout(1,0));
@@ -242,7 +242,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
-            loggcMenuItem.setEnabled(!dp.isFoundClassHistograms());
+            loggcMenuItem.setEnabled(!dp.isFoundClassHistograms() || PrefManager.get().getForceLoggcLoading());
         } finally {
             if(dp != null) {
                 try {
@@ -372,6 +372,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             openFile();
         } else if("Open loggc file...".equals(source.getText())) {
             openLoggcFile();
+        } else if("Preferences".equals(source.getText())) {
+            showPreferencesDialog();
         } else if("Exit TDA".equals(source.getText())) {
             saveState();
             frame.dispose();
@@ -410,6 +412,18 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
 
     }
     
+    private void showPreferencesDialog() {
+        //Create and set up the window.
+        if(prefsDialog == null) {
+            prefsDialog = new PreferencesDialog(frame);
+            prefsDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        }
+        
+        //Display the window.
+        prefsDialog.reset();
+        prefsDialog.pack();
+        prefsDialog.setVisible(true);
+    }
     
     private void openFile() {
         int returnVal = fc.showOpenDialog(this.getRootPane());

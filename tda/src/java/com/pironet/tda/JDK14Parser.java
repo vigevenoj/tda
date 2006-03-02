@@ -17,12 +17,13 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.7 2006-03-02 12:24:50 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.8 2006-03-02 18:36:16 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.HistogramTableModel;
+import com.pironet.tda.utils.PrefManager;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,8 +46,8 @@ import javax.swing.tree.TreePath;
  * @author irockel
  */
 public class JDK14Parser implements DumpParser {
-    private static int MARK_SIZE = 16384;
-    private static int MAX_CHECK_LINES = 10;
+    private int markSize = 16384;
+    private int maxCheckLines = 10;
     
     private InputStream dumpFileStream = null;
     private MutableTreeNode nextDump = null;
@@ -65,6 +66,8 @@ public class JDK14Parser implements DumpParser {
     public JDK14Parser(InputStream dumpFileStream, Map threadStore) {
         this.dumpFileStream = dumpFileStream;
         this.threadStore = threadStore;
+        maxCheckLines = PrefManager.get().getMaxRows();
+        markSize = PrefManager.get().getStreamResetBuffer();
     }
     
     /**
@@ -233,13 +236,13 @@ public class JDK14Parser implements DumpParser {
                     // last thread reached?
                     if(line.startsWith("\"Suspend Checker Thread\"")) {
                         finished = true;
-                        bis.mark(MARK_SIZE);
+                        bis.mark(markSize);
                         if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
                             // no deadlocks found, set back original position.
                             bis.reset();
                         }
                         
-                        bis.mark(MARK_SIZE);
+                        bis.mark(markSize);
                         if(!(foundClassHistograms = checkForClassHistogram(threadDump))) {
                             bis.reset();
                         }
@@ -307,7 +310,7 @@ public class JDK14Parser implements DumpParser {
             if(!found && !line.trim().equals("")) {
                 if (line.startsWith("num   #instances    #bytes  class name")) {
                     found = true;
-                } else if(lineCounter >= MAX_CHECK_LINES) {
+                } else if(lineCounter >= maxCheckLines) {
                     finished = true;
                 } else {
                     lineCounter++;
@@ -347,7 +350,7 @@ public class JDK14Parser implements DumpParser {
                     found = true;
                     dContent.append(line);
                     dContent.append("\n\n");
-                } else if(lineCounter < MAX_CHECK_LINES) {
+                } else if(lineCounter < maxCheckLines) {
                     finished = true;
                 } else {
                     lineCounter++;
