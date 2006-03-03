@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.8 2006-03-02 18:36:16 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.9 2006-03-03 09:56:11 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -317,6 +317,10 @@ public class JDK14Parser implements DumpParser {
                 }
             } else if(found) {
                 if(line.startsWith("Total ")) {
+                    String newLine = line.trim().replaceAll("(\\s)+", ";");
+                    String[] elems = newLine.split(";");
+                    classHistogram.setBytes(Long.parseLong(elems[2]));
+                    classHistogram.setInstances(Long.parseLong(elems[1]));
                     finished = true;
                 } else if(!line.startsWith("-------")) {
                     String newLine = line.trim().replaceAll("(\\s)+", ";");

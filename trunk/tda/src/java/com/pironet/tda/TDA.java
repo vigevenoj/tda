@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.12 2006-03-02 18:36:17 irockel Exp $
+ * $Id: TDA.java,v 1.13 2006-03-03 09:56:11 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -25,6 +25,7 @@ import com.pironet.tda.utils.HistogramTableModel;
 import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
+import java.awt.BorderLayout;
 import java.io.FileNotFoundException;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -43,6 +44,10 @@ import java.io.IOException;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -56,14 +61,15 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.tree.TreePath;
@@ -232,7 +238,38 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         ts.setTableHeader(histogramTable.getTableHeader());
         histogramTable.getColumnModel().getColumn(0).setPreferredWidth(700);
         tableView = new JScrollPane(histogramTable);
-        splitPane.setBottomComponent(tableView);
+
+        JPanel histogramView = new JPanel(new BorderLayout());
+        JPanel histoStatView = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        Font font = new Font("SansSerif", Font.PLAIN, 10);
+        JLabel infoLabel = new JLabel(htm.getRowCount() + " classes and base types");
+        infoLabel.setFont(font);
+        histoStatView.add(infoLabel);
+        infoLabel = new JLabel(htm.getBytes() + " bytes");
+        infoLabel.setFont(font);
+        histoStatView.add(infoLabel);
+        infoLabel = new JLabel(htm.getInstances() + " live objects");
+        infoLabel.setFont(font);
+        histoStatView.add(infoLabel);
+        if(htm.isOOM()) {
+            infoLabel = new JLabel("<html><b>OutOfMemory happened</b>");
+            infoLabel.setFont(font);
+            histoStatView.add(infoLabel);
+        }
+        JPanel filterPanel = new JPanel(new FlowLayout());
+        infoLabel = new JLabel("Filter-Expression ");
+        infoLabel.setFont(font);
+        filterPanel.add(infoLabel);
+        
+        JTextField filter = new JTextField(30);        
+        filter.setFont(font);
+        filterPanel.add(infoLabel);
+        filterPanel.add(filter);
+        histoStatView.add(filterPanel);
+        histogramView.add(histoStatView, BorderLayout.NORTH);
+        histogramView.add(tableView, BorderLayout.CENTER);
+        
+        splitPane.setBottomComponent(histogramView);
     }
     
     private void createNodes(DefaultMutableTreeNode top, InputStream dumpFileStream) {
@@ -354,6 +391,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "Help Menu");
         menuBar.add(menu);
         
+        menuItem = new JMenuItem("Tutorial",
+                KeyEvent.VK_A);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "About Thread Dump Analyzer");
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+        menu.addSeparator();
         menuItem = new JMenuItem("About TDA",
                 KeyEvent.VK_A);
         menuItem.getAccessibleContext().setAccessibleDescription(
@@ -475,6 +519,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Create and set up the window.
         frame = new JFrame("TDA - Thread Dump Analyzer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        Image image = Toolkit.getDefaultToolkit().getImage( "TDA.gif" );
+        frame.setIconImage( image );
         
         // init filechooser
         fc = new JFileChooser();

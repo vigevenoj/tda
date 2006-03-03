@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.2 2006-03-02 12:24:50 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.3 2006-03-03 09:56:11 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -39,6 +39,12 @@ public class HistogramTableModel extends AbstractTableModel {
     private String[] columnNames = {"class name",
                                     "instance count",
                                     "#bytes"};
+    
+    private boolean oom;
+    
+    private long bytes;
+    
+    private long instances;
     
     /** Creates a new instance of HistogramTableModel */
     public HistogramTableModel() {
@@ -79,6 +85,30 @@ public class HistogramTableModel extends AbstractTableModel {
         return getValueAt(0, c).getClass();
     }
     
+    private void setOOM(boolean value) {
+        oom = value;
+    }
+    
+    public boolean isOOM() {
+        return (oom);
+    }
+    
+    public void setBytes(long value) {
+        bytes = value;
+    }
+    
+    public long getBytes() {
+        return(bytes);
+    }
+    
+    public void setInstances(long value) {
+        instances = value;
+    }
+    
+    public long getInstances() {
+        return(instances);
+    }
+
     public class Entry {
         private String className;
         private int instanceCount;
@@ -109,6 +139,9 @@ public class HistogramTableModel extends AbstractTableModel {
                 className = className.replaceAll(">", "&gt;");
                 result = "<html><body><i><b>" + className + "</i></b> [internal HotSpot]</i></body></html>";
             } else if (className.lastIndexOf('.') > 0) {
+                if(className.contains("OutOfMemory")) {
+                    setOOM(true);
+                }
                 result = "<html><body>" + className.substring(0, className.lastIndexOf('.')+1) + "<b>" + 
                          className.substring(className.lastIndexOf('.')+1) + "</b></body></html>";
             }
