@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.13 2006-03-03 09:56:11 irockel Exp $
+ * $Id: TDA.java,v 1.14 2006-03-03 14:44:38 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -26,6 +26,7 @@ import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import java.awt.BorderLayout;
+import java.awt.event.InputMethodEvent;
 import java.io.FileNotFoundException;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -72,6 +73,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.tree.TreePath;
 
 /**
@@ -100,7 +103,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JScrollPane htmlView;
     private JScrollPane tableView;
     private JMenuItem loggcMenuItem;
+    private JTextField filter;
     private PreferencesDialog prefsDialog;
+    private JTable histogramTable;
     
     public TDA() {
         super(new GridLayout(1,0));
@@ -233,8 +238,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void displayTable(HistogramTableModel htm) {
+        htm.setFilter("");
         TableSorter ts = new TableSorter(htm);
-        JTable histogramTable = new JTable(ts);
+        histogramTable = new JTable(ts);
         ts.setTableHeader(histogramTable.getTableHeader());
         histogramTable.getColumnModel().getColumn(0).setPreferredWidth(700);
         tableView = new JScrollPane(histogramTable);
@@ -261,15 +267,44 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         infoLabel.setFont(font);
         filterPanel.add(infoLabel);
         
-        JTextField filter = new JTextField(30);        
+        filter = new JTextField(30);
         filter.setFont(font);
+        filter.addCaretListener(new FilterListener(htm));
         filterPanel.add(infoLabel);
         filterPanel.add(filter);
         histoStatView.add(filterPanel);
-        histogramView.add(histoStatView, BorderLayout.NORTH);
+        histogramView.add(histoStatView, BorderLayout.SOUTH);
         histogramView.add(tableView, BorderLayout.CENTER);
         
         splitPane.setBottomComponent(histogramView);
+    }
+    
+    private class FilterListener implements CaretListener {
+        HistogramTableModel htm;
+        String currentText = "";
+        FilterListener(HistogramTableModel htm) {
+            this.htm = htm;
+        }        
+
+        public void caretUpdate(CaretEvent event) {
+            System.out.println("caretChanged");
+            if(!filter.getText().equals(currentText)) {
+                htm.setFilter(filter.getText());
+                histogramTable.revalidate();
+            }
+        }
+        
+        
+        public void inputMethodTextChanged(InputMethodEvent event) {
+            System.out.println("inputMethodTextChanged");
+            htm.setFilter(filter.getText());
+            histogramTable.revalidate();
+        }
+
+        public void caretPositionChanged(InputMethodEvent event) {
+            System.out.println("caretPositionChanged");
+            // ignore
+        }
     }
     
     private void createNodes(DefaultMutableTreeNode top, InputStream dumpFileStream) {
@@ -385,6 +420,23 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menu.add(menuItem);
         
         //Build second menu in the menu bar.
+        menu = new JMenu("Tools");
+        menu.setMnemonic(KeyEvent.VK_T);
+        menu.getAccessibleContext().setAccessibleDescription(
+                "Tools Menu");
+        menuBar.add(menu);
+        
+        menuItem = new JMenuItem("Find long running threads...",
+                KeyEvent.VK_L);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_L, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Exit TDA");
+        menuItem.addActionListener(this);
+        menuItem.setEnabled(false);
+        menu.add(menuItem);        
+
+        //Build second menu in the menu bar.
         menu = new JMenu("Help");
         menu.setMnemonic(KeyEvent.VK_H);
         menu.getAccessibleContext().setAccessibleDescription(
@@ -421,6 +473,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else if("Exit TDA".equals(source.getText())) {
             saveState();
             frame.dispose();
+        } else if("Tutorial".equals(source.getText())) {
+            showTutorial();
         } else if("About TDA".equals(source.getText())) {
             showInfo();
         } else if("Search below node...".equals(source.getText())) {
@@ -453,6 +507,16 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "along with TDA; if not, write to the Free Software\n" +
                 "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA\n\n",
                 "Copyright Notice", JOptionPane.INFORMATION_MESSAGE);
+
+    }
+    
+    private void showTutorial() {
+        TutorialDialog tutDialog = new TutorialDialog(frame);
+        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        
+        //Display the window.
+        tutDialog.pack();
+        tutDialog.setVisible(true);
 
     }
     
