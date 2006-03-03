@@ -10,6 +10,7 @@
 package com.pironet.tda;
 
 import com.pironet.tda.utils.PrefManager;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -40,8 +41,8 @@ public class PreferencesDialog extends JDialog {
      */
     public PreferencesDialog(JFrame owner) {
         super(owner, "Preferences");
+        getContentPane().setLayout(new BorderLayout());
         initPanel();
-        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         setLocationRelativeTo(owner);
     }
     
@@ -49,13 +50,13 @@ public class PreferencesDialog extends JDialog {
         prefsPane = new JTabbedPane();
         generalPanel = new GeneralPanel();
         prefsPane.addTab("General", generalPanel);        
-        getContentPane().add(prefsPane);
+        getContentPane().add(prefsPane,BorderLayout.CENTER);
         okButton = new JButton("Ok");
         cancelButton = new JButton("Cancel");
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
-        getContentPane().add(buttonPanel);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         
         okButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -80,12 +81,14 @@ public class PreferencesDialog extends JDialog {
         generalPanel.forceLoggcLoading.setSelected(PrefManager.get().getForceLoggcLoading());
         generalPanel.maxLinesField.setText(String.valueOf(PrefManager.get().getMaxRows()));
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
+        generalPanel.dateParsingRegex.setText(PrefManager.get().getDateParsingRegex());
     }
     
     private void saveSettings() {
         PrefManager.get().setForceLoggcLoading(generalPanel.forceLoggcLoading.isSelected());
         PrefManager.get().setMaxRows(Integer.parseInt(generalPanel.maxLinesField.getText()));
         PrefManager.get().setStreamResetBuffer(Integer.parseInt(generalPanel.bufferField.getText()));
+        PrefManager.get().setDateParsingRegex(generalPanel.dateParsingRegex.getText());
         dispose();
     }
     
@@ -93,11 +96,12 @@ public class PreferencesDialog extends JDialog {
         JTextField maxLinesField;
         JTextField bufferField;
         JCheckBox forceLoggcLoading;
+        JTextField dateParsingRegex;
         
         public GeneralPanel() {
             //super(new GridLayout(3,2, 10, 10));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(650, 100));
+            setPreferredSize(new Dimension(650, 140));
             
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));            
             layoutPanel.add(new JLabel("Maximum amount of lines to check for\n class histogram or possible deadlock informations"));
@@ -115,6 +119,12 @@ public class PreferencesDialog extends JDialog {
             layoutPanel.add(new JLabel("Force Open Loggc Option even if class histograms were found in general logfile"));
             forceLoggcLoading = new JCheckBox();
             layoutPanel.add(forceLoggcLoading);
+            add(layoutPanel);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+            layoutPanel.add(new JLabel("Regular Expression for parsing timestamps in logs files"));
+            dateParsingRegex = new JTextField(25);
+            layoutPanel.add(dateParsingRegex);
             add(layoutPanel);
         }
     }
