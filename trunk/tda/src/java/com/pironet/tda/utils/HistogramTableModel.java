@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.3 2006-03-03 09:56:11 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.4 2006-03-03 14:44:38 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -35,6 +35,8 @@ public class HistogramTableModel extends AbstractTableModel {
     private static int DEFINED_ROWS = 3;
     
     private Vector elements = new Vector();
+    
+    private Vector filteredElements = null;
 
     private String[] columnNames = {"class name",
                                     "instance count",
@@ -46,7 +48,11 @@ public class HistogramTableModel extends AbstractTableModel {
     
     private long instances;
     
-    /** Creates a new instance of HistogramTableModel */
+    private String filter;
+    
+    /**
+     * Creates a new instance of HistogramTableModel 
+     */
     public HistogramTableModel() {
     }
     
@@ -55,6 +61,14 @@ public class HistogramTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
+        if(filteredElements != null) {
+            return(getValueAt(filteredElements, rowIndex, columnIndex));
+        } else {
+            return(getValueAt(elements, rowIndex, columnIndex));
+        }
+    }
+    
+    private Object getValueAt(Vector elements, int rowIndex, int columnIndex) {
         switch(columnIndex) {
             case 0 : {
                 return ((Entry) elements.elementAt(rowIndex)).className;
@@ -74,7 +88,11 @@ public class HistogramTableModel extends AbstractTableModel {
     }
 
     public int getRowCount() {
-        return elements.size();
+        if(filteredElements != null) {
+            return filteredElements.size();
+        } else {
+            return elements.size();
+        }
     }
 
     public int getColumnCount() {
@@ -107,6 +125,24 @@ public class HistogramTableModel extends AbstractTableModel {
     
     public long getInstances() {
         return(instances);
+    }
+    
+    public void setFilter(String value) {        
+        filter = value;
+        if(filter == null || filter.equals("")) {
+            filteredElements = null;
+        } else {
+            filteredElements = new Vector();
+            for(int i = 0; i < elements.size(); i++) {
+                if(((Entry)elements.get(i)).className.contains(filter)) {
+                    filteredElements.add(elements.get(i));
+                }
+            }
+        }
+    }
+    
+    public String getFilter() {
+        return(filter);
     }
 
     public class Entry {
