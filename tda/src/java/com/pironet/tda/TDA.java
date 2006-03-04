@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.14 2006-03-03 14:44:38 irockel Exp $
+ * $Id: TDA.java,v 1.15 2006-03-04 09:31:20 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -215,7 +215,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
         } else if (nodeInfo instanceof HistogramInfo) {
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
-            System.out.println("Content" + tdi.content);
             displayTable((HistogramTableModel) tdi.content);
         } else {
             displayContent(null);
@@ -398,6 +397,22 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         loggcMenuItem.addActionListener(this);
         loggcMenuItem.setEnabled(false);
         menu.add(loggcMenuItem);
+        
+        menu.addSeparator();
+        menuItem = new JMenuItem("Save Session...",
+                KeyEvent.VK_S);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Save the current session of loaded log files");
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+        menuItem.setEnabled(false);
+        menuItem = new JMenuItem("Open stored Session...",
+                KeyEvent.VK_P);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Open a stored session of logfiles");
+        menuItem.addActionListener(this);
+        menuItem.setEnabled(false);
+        menu.add(menuItem);
         
         menu.addSeparator();
 

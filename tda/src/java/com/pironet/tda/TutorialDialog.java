@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TutorialDialog.java,v 1.1 2006-03-03 14:44:38 irockel Exp $
+ * $Id: TutorialDialog.java,v 1.2 2006-03-04 09:31:20 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -30,6 +30,8 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -73,13 +75,19 @@ public class TutorialDialog extends JDialog {
     private void initPanel() {
         try {
             readContent();
+            URL tutURL;
+            tutURL = new URL("file://" + System.getProperty("user.dir", "") + "/doc/tutorial.html");
+            //htmlView = new JEditorPane("text/html", content);
+            htmlView = new JEditorPane(tutURL);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        htmlView = new JEditorPane("text/html", content);
         JScrollPane scrollPane = new JScrollPane(htmlView);
         htmlView.setEditable(false);
-        htmlView.setPreferredSize(new Dimension(400, 500));
+        htmlView.setPreferredSize(new Dimension(500, 600));
+        htmlView.setCaretPosition(0);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
         closeButton = new JButton("Close");
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
