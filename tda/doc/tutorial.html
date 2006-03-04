@@ -1,8 +1,23 @@
 <html>
 <title>TDA - Thread Dump Analyzer Tutorial</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="Style">
 <body>
 <h2>TDA - Thread Dump Analyzer Tutorial</h2>
 <h3>Introduction</h3>
-This is a short tutorial on how to use the TDA Thread Dump Analyzer.
+<p>This is a short tutorial on how to use the TDA Thread Dump Analyzer. TDA parses your log files and displays all found thread dumps and class histograms reported from a Sun JVM &gt;= 1.4.x. Class Histograms are not included into the thread dumps by default but need a special JVM-Flag to be dumped with the thread dump. Note: There is a bug in 1.5 preventing the class histogram to be printed if any other then the concurrent mark sweep gc is used.
+</p><p>
+For having the class histograms included you need to provide the -XX:+PrintClassHistogram option.
+</p>
+<h3>Sample Parsing Session</h3>
+<p>Open the log file you want to analyse, TDA will search for all thread dumps in this log file and displays them in a tree. As the Sun JVM thread dump lacks any date information when the dump was requested, you can provide a regular expression in the <b>Preferences</b> which is then used for parsing the lines before the thread dump to get a time stamp.</p>
+<p>For each thread dump TDA sums up all found threads and all monitors found in the threads, it also groups threads waiting on, for and locking threads.</p> 
+<p><img src="threaddumps.png" border=0></p>
+<p>If you want to focus on lock found in a thread you can just mark it, expand the <b>Monitor</b> node of the thread dump and right-click on it and select the tree-search. Paste the marked monitor into the search dialog to get to the information about this monitor. You will get all waiting and all locking threads. Starting here you can easily see if a thread is hanging and holding lock which a lot of other threads are waiting for. 
+</p>
+<h3>References</h3>
+<ul>
+<li><a href="http://www.tagtraum.com/gcviewer/">GC-Viewer</a>
+<li><a href="http://glassbox-inspector.dev.java.net/">Glassbox Inspector</a>
+</ul>
 </body>
 </html>
