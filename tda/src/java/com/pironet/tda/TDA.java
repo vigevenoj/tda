@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.16 2006-03-05 09:36:45 irockel Exp $
+ * $Id: TDA.java,v 1.17 2006-03-05 13:15:25 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -60,6 +60,7 @@ import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFileChooser;
@@ -247,13 +248,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         JPanel histogramView = new JPanel(new BorderLayout());
         JPanel histoStatView = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         Font font = new Font("SansSerif", Font.PLAIN, 10);
-        JLabel infoLabel = new JLabel(htm.getRowCount() + " classes and base types");
+        JLabel infoLabel = new JLabel(NumberFormat.getInstance().format(htm.getRowCount()) + " classes and base types");
         infoLabel.setFont(font);
         histoStatView.add(infoLabel);
-        infoLabel = new JLabel(htm.getBytes() + " bytes");
+        infoLabel = new JLabel(NumberFormat.getInstance().format(htm.getBytes()) + " bytes");
         infoLabel.setFont(font);
         histoStatView.add(infoLabel);
-        infoLabel = new JLabel(htm.getInstances() + " live objects");
+        infoLabel = new JLabel(NumberFormat.getInstance().format(htm.getInstances()) + " live objects");
         infoLabel.setFont(font);
         histoStatView.add(infoLabel);
         if(htm.isOOM()) {
@@ -336,6 +337,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         popup.addSeparator();
         menuItem = new JMenuItem("Select this dump for diff...");
         menuItem.addActionListener(this);
+        popup.add(menuItem);
+        menuItem = new JMenuItem("Add loggc Class Histogram...");
+        menuItem.addActionListener(this);
+        menuItem.setEnabled(false);
         popup.add(menuItem);
         
         //Add listener to the text area so the popup menu can come up.
