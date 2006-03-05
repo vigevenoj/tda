@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.4 2006-03-03 14:44:38 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.5 2006-03-05 17:11:43 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -49,6 +49,8 @@ public class HistogramTableModel extends AbstractTableModel {
     private long instances;
     
     private String filter;
+    
+    private boolean ignoreCase = false;
     
     /**
      * Creates a new instance of HistogramTableModel 
@@ -129,13 +131,23 @@ public class HistogramTableModel extends AbstractTableModel {
     
     public void setFilter(String value) {        
         filter = value;
+        if(isIgnoreCase()) {
+            value = value.toLowerCase();
+        }
+        
         if(filter == null || filter.equals("")) {
             filteredElements = null;
         } else {
             filteredElements = new Vector();
             for(int i = 0; i < elements.size(); i++) {
-                if(((Entry)elements.get(i)).className.contains(filter)) {
-                    filteredElements.add(elements.get(i));
+                if(isIgnoreCase()) {
+                    if(((Entry)elements.get(i)).className.toLowerCase().contains(value)) {
+                        filteredElements.add(elements.get(i));
+                    }
+                } else {
+                    if(((Entry)elements.get(i)).className.contains(value)) {
+                        filteredElements.add(elements.get(i));
+                    }
                 }
             }
         }
@@ -143,6 +155,18 @@ public class HistogramTableModel extends AbstractTableModel {
     
     public String getFilter() {
         return(filter);
+    }
+    
+    public void setIgnoreCase(boolean value) {
+        if(ignoreCase != value) {
+            ignoreCase = value;
+            // revalidate
+            setFilter(getFilter());
+        }
+    }
+    
+    public boolean isIgnoreCase() {
+        return(ignoreCase);
     }
 
     public class Entry {

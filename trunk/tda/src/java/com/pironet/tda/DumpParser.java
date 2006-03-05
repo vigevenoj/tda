@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParser.java,v 1.5 2006-03-02 12:24:50 irockel Exp $
+ * $Id: DumpParser.java,v 1.6 2006-03-05 17:11:42 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -47,4 +47,6 @@ public interface DumpParser {
     public boolean isFoundClassHistograms();
     
     public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root, Map dumpStore);
+    
+    public void setDumpHistogramCounter(int value);
 }

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.17 2006-03-05 13:15:25 irockel Exp $
+ * $Id: TDA.java,v 1.18 2006-03-05 17:11:42 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -63,6 +63,7 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -76,6 +77,8 @@ import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.tree.TreePath;
 
 /**
@@ -105,6 +108,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JScrollPane tableView;
     private JMenuItem loggcMenuItem;
     private JTextField filter;
+    private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
     private JTable histogramTable;
     
@@ -217,12 +221,22 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else if (nodeInfo instanceof HistogramInfo) {
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
             displayTable((HistogramTableModel) tdi.content);
+        } else if (nodeInfo instanceof String && ((String)nodeInfo).startsWith("Thread Dumps")) {
+            displayLogFile();
         } else {
             displayContent(null);
         }
         if (DEBUG) {
             System.out.println(nodeInfo.toString());
         }
+    }
+    
+    private void displayLogFile() {
+        if(splitPane.getBottomComponent() != htmlView) {
+            splitPane.setBottomComponent(htmlView);
+        }
+        htmlPane.setText("");
+        htmlPane.setCaretPosition(0);
     }
     
     private void displayContent(String text) {
@@ -263,7 +277,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             histoStatView.add(infoLabel);
         }
         JPanel filterPanel = new JPanel(new FlowLayout());
-        infoLabel = new JLabel("Filter-Expression ");
+        infoLabel = new JLabel("Filter-Expression");
         infoLabel.setFont(font);
         filterPanel.add(infoLabel);
         
@@ -272,6 +286,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         filter.addCaretListener(new FilterListener(htm));
         filterPanel.add(infoLabel);
         filterPanel.add(filter);
+        checkCase = new JCheckBox();
+        checkCase.addChangeListener(new CheckCaseListener(htm));
+        infoLabel = new JLabel("Ignore Case");
+        infoLabel.setFont(font);        
+        filterPanel.add(infoLabel);
+        filterPanel.add(checkCase);
         histoStatView.add(filterPanel);
         histogramView.add(histoStatView, BorderLayout.SOUTH);
         histogramView.add(tableView, BorderLayout.CENTER);
@@ -287,23 +307,23 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }        
 
         public void caretUpdate(CaretEvent event) {
-            System.out.println("caretChanged");
             if(!filter.getText().equals(currentText)) {
                 htm.setFilter(filter.getText());
                 histogramTable.revalidate();
             }
         }
+    }
+    
+    private class CheckCaseListener implements ChangeListener {
+        HistogramTableModel htm;
         
-        
-        public void inputMethodTextChanged(InputMethodEvent event) {
-            System.out.println("inputMethodTextChanged");
-            htm.setFilter(filter.getText());
-            histogramTable.revalidate();
+        CheckCaseListener(HistogramTableModel htm) {
+            this.htm = htm;
         }
-
-        public void caretPositionChanged(InputMethodEvent event) {
-            System.out.println("caretPositionChanged");
-            // ignore
+        
+        public void stateChanged(ChangeEvent e) {            
+            htm.setIgnoreCase(checkCase.isSelected());
+            histogramTable.revalidate();
         }
     }
     
@@ -338,9 +358,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Select this dump for diff...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        menuItem = new JMenuItem("Add loggc Class Histogram...");
+        menuItem = new JMenuItem("Parse loggc-logfile...");
         menuItem.addActionListener(this);
-        menuItem.setEnabled(false);
         popup.add(menuItem);
         
         //Add listener to the text area so the popup menu can come up.
@@ -480,7 +499,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         return menuBar;
     }
     
-    
+    /**
+     * check menu events
+     */ 
     public void actionPerformed(ActionEvent e) {
         JMenuItem source = (JMenuItem)(e.getSource());
         System.out.println(source.getText());
@@ -499,6 +520,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             showInfo();
         } else if("Search below node...".equals(source.getText())) {
             SearchDialog.createAndShowGUI(tree);
+        } else if("Parse loggc-logfile...".equals(source.getText())) {
+            parseLoggcLogfile();
         } else if("Select this dump for diff...".equals(source.getText())) {
             if(mergeDump == null) {
                 mergeDump = tree.getSelectionPath();
@@ -566,6 +589,37 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 this.getRootPane().revalidate();
             }
         }
+    }
+    
+    /**
+     * load a loggc log file based on the current selected thread dump
+     */
+    private void parseLoggcLogfile() {
+        // search for starting node
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+        tree.getLastSelectedPathComponent();
+        while(node != null && !checkNameFromNode(node, "Full Thread Dump")) {
+            node = (DefaultMutableTreeNode) node.getParent();
+        }
+        
+        // get pos of this node in the thread dump hierarchy.
+        int pos = node.getParent().getIndex(node);
+        
+        DumpParserFactory.get().getCurrentDumpParser().setDumpHistogramCounter(pos);
+        openLoggcFile();
+    }
+    
+    /**
+     * check if name of node starts with passed string
+     */
+    private boolean checkNameFromNode(DefaultMutableTreeNode node, String startsWith) {
+        Object info = node.getUserObject();
+        String result = null;
+        if(info instanceof ThreadInfo) {
+            result = ((ThreadInfo) info).threadName;
+        }
+        
+        return(result.startsWith(startsWith));
     }
     
     /**

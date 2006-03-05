@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.10 2006-03-05 09:36:45 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.11 2006-03-05 17:11:42 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -525,16 +525,25 @@ public class JDK14Parser implements DumpParser {
     
     private DefaultMutableTreeNode getNextDumpForHistogram(DefaultMutableTreeNode root) {
         if(dumpHistogramCounter == -1) {
-            dumpHistogramCounter = root.getChildCount();
+            // -1 as index starts with 0.
+            dumpHistogramCounter = root.getChildCount()-1;
         }
         DefaultMutableTreeNode result = null;
         
         if(dumpHistogramCounter > 0) {
-            result = (DefaultMutableTreeNode) root.getChildAt(dumpHistogramCounter-1);
+            result = (DefaultMutableTreeNode) root.getChildAt(dumpHistogramCounter);
             dumpHistogramCounter--;
         }
         
         return result;
+    }
+    
+    /**
+     * set the dump histogram counter to the specified value to force to start (bottom to top)
+     * from the specified thread dump.
+     */
+    public void setDumpHistogramCounter(int value) {
+       dumpHistogramCounter = value; 
     }
     
     public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump) {
