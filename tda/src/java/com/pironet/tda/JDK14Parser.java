@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.9 2006-03-03 09:56:11 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.10 2006-03-05 09:36:45 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.Vector;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -80,12 +81,16 @@ public class JDK14Parser implements DumpParser {
     }
     
     /**
-     * returns true, if a class histogram was found and added during parsing.
+     * @returns true, if a class histogram was found and added during parsing.
      */
     public boolean isFoundClassHistograms() {
         return(foundClassHistograms);
     }
     
+    /**
+     * parse the next thread dump from the stream passed with the constructor.
+     * @returns null if no more thread dumps were found.
+     */
     public MutableTreeNode parseNext() {
         if (nextDump != null) {
             MutableTreeNode tmpDump = nextDump;
@@ -298,12 +303,37 @@ public class JDK14Parser implements DumpParser {
         return(null);
     }
     
+    /**
+     * checks for the next class histogram and adds it to the tree node passed
+     * @param threadDump which tree node to add the histogram.
+     */
     private boolean checkForClassHistogram(DefaultMutableTreeNode threadDump) throws IOException {
+        HistogramTableModel classHistogram = parseNextClassHistogram(bis);
+        
+        if(classHistogram.getRowCount() > 0) {
+            addHistogramToDump(threadDump, classHistogram);            
+        }
+        
+        return(classHistogram.getRowCount() > 0);
+    }
+    
+    private void addHistogramToDump(DefaultMutableTreeNode threadDump, HistogramTableModel classHistogram) {
+        DefaultMutableTreeNode catHistogram;
+        HistogramInfo hi = new HistogramInfo("Class Histogram of Dump", classHistogram);
+        catHistogram = new DefaultMutableTreeNode(hi);
+        threadDump.add(catHistogram);
+    }
+    
+    /**
+     * parses the next class histogram found in the stream, uses the max check lines option to check
+     * how many lines to parse in advance.
+     * @param bis the stream to read.
+     */
+    private HistogramTableModel parseNextClassHistogram(BufferedReader bis) throws IOException {
         boolean finished = false;
         boolean found = false;
         HistogramTableModel classHistogram = new HistogramTableModel();
         int lineCounter = 0;
-        DefaultMutableTreeNode catHistogram;
         
         while(bis.ready() && !finished) {
             String line = bis.readLine();
@@ -330,15 +360,14 @@ public class JDK14Parser implements DumpParser {
                 }
             }
         }
-        if(classHistogram.getRowCount() > 0) {
-            HistogramInfo hi = new HistogramInfo("Class Histogram of Dump", classHistogram);
-            catHistogram = new DefaultMutableTreeNode(hi);
-            threadDump.add(catHistogram);
-        }
         
-        return(classHistogram.getRowCount() > 0);
+        return(classHistogram);
     }
     
+    /**
+     * check if any dead lock information is logged in the stream
+     * @param threadDump which tree node to add the histogram.
+     */
     private int checkForDeadlocks(DefaultMutableTreeNode threadDump) throws IOException {
         boolean finished = false;
         boolean found = false;
@@ -455,8 +484,57 @@ public class JDK14Parser implements DumpParser {
         }
     }
     
+    /**
+     * parses a loggc file stream and reads any found class histograms and adds the to the dump store
+     * @param loggcFileStream the stream to read
+     * @param root the root node of the dumps.
+     * @param dumpStore the map with the thread dumps.
+     */
     public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root, Map dumpStore) {
+        BufferedReader bis = new BufferedReader(new InputStreamReader(loggcFileStream));
+        boolean found = true;
+        Vector histograms = new Vector();
         
+        try {
+            while(bis.ready()) {
+                bis.mark(markSize);
+                String nextLine = bis.readLine();
+                if(nextLine.startsWith("num   #instances    #bytes  class name")) {
+                    bis.reset();
+                    histograms.add(parseNextClassHistogram(bis));
+                }
+            }
+            
+            // now add the found histograms to the tree.
+            for(int i = histograms.size()-1; i >= 0; i--) {
+                DefaultMutableTreeNode dump = getNextDumpForHistogram(root);
+                if(dump != null) {
+                    addHistogramToDump(dump, (HistogramTableModel) histograms.get(i));
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * this counter counts backwards for adding class histograms to the thread dumpss
+     * beginning with the last dump.
+     */
+    private int dumpHistogramCounter = -1;
+    
+    private DefaultMutableTreeNode getNextDumpForHistogram(DefaultMutableTreeNode root) {
+        if(dumpHistogramCounter == -1) {
+            dumpHistogramCounter = root.getChildCount();
+        }
+        DefaultMutableTreeNode result = null;
+        
+        if(dumpHistogramCounter > 0) {
+            result = (DefaultMutableTreeNode) root.getChildAt(dumpHistogramCounter-1);
+            dumpHistogramCounter--;
+        }
+        
+        return result;
     }
     
     public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump) {
