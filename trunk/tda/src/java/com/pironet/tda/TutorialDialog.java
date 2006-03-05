@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TutorialDialog.java,v 1.2 2006-03-04 09:31:20 irockel Exp $
+ * $Id: TutorialDialog.java,v 1.3 2006-03-05 09:36:45 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -86,7 +86,7 @@ public class TutorialDialog extends JDialog {
         }
         JScrollPane scrollPane = new JScrollPane(htmlView);
         htmlView.setEditable(false);
-        htmlView.setPreferredSize(new Dimension(500, 600));
+        htmlView.setPreferredSize(new Dimension(600, 600));
         htmlView.setCaretPosition(0);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
         closeButton = new JButton("Close");

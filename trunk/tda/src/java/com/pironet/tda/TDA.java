@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.15 2006-03-04 09:31:20 irockel Exp $
+ * $Id: TDA.java,v 1.16 2006-03-05 09:36:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -257,7 +257,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         infoLabel.setFont(font);
         histoStatView.add(infoLabel);
         if(htm.isOOM()) {
-            infoLabel = new JLabel("<html><b>OutOfMemory happened</b>");
+            infoLabel = new JLabel("<html><b>OutOfMemory found</b>");
             infoLabel.setFont(font);
             histoStatView.add(infoLabel);
         }
@@ -563,17 +563,36 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
+    /**
+     * open and parse loggc file
+     */
     private void openLoggcFile() {
         int returnVal = fc.showOpenDialog(this.getRootPane());
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             loggcFile = file.getAbsolutePath();
-            //tree = null;
-            //top = null;
             if(loggcFile != null) {
-                //init();
-                this.getRootPane().revalidate();
+                InputStream loggcFileStream = null;
+                try {
+                    loggcFileStream = new ProgressMonitorInputStream(
+                            this,
+                            "Parsing " + loggcFile,
+                            new FileInputStream(loggcFile));
+                    DumpParserFactory.get().getCurrentDumpParser().parseLoggcFile(loggcFileStream, top, threadDumps);
+                    createTree();
+                    this.getRootPane().revalidate();
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    if(loggcFileStream != null) {
+                        try {
+                            loggcFileStream.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
             }
         }
     }
