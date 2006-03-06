@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.3 2006-03-03 14:44:38 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.4 2006-03-06 08:47:21 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -95,6 +95,7 @@ public class PreferencesDialog extends JDialog {
         generalPanel.maxLinesField.setText(String.valueOf(PrefManager.get().getMaxRows()));
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
         generalPanel.dateParsingRegex.setText(PrefManager.get().getDateParsingRegex());
+        generalPanel.showHotspotClasses.setSelected(PrefManager.get().getShowHotspotClasses());
     }
     
     private void saveSettings() {
@@ -102,6 +103,7 @@ public class PreferencesDialog extends JDialog {
         PrefManager.get().setMaxRows(Integer.parseInt(generalPanel.maxLinesField.getText()));
         PrefManager.get().setStreamResetBuffer(Integer.parseInt(generalPanel.bufferField.getText()));
         PrefManager.get().setDateParsingRegex(generalPanel.dateParsingRegex.getText());
+        PrefManager.get().setShowHotspotClasses(generalPanel.showHotspotClasses.isSelected());
         dispose();
     }
     
@@ -110,11 +112,12 @@ public class PreferencesDialog extends JDialog {
         JTextField bufferField;
         JCheckBox forceLoggcLoading;
         JTextField dateParsingRegex;
+        JCheckBox showHotspotClasses;
         
         public GeneralPanel() {
             //super(new GridLayout(3,2, 10, 10));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(650, 140));
+            setPreferredSize(new Dimension(650, 150));
             
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));            
             layoutPanel.add(new JLabel("Maximum amount of lines to check for\n class histogram or possible deadlock informations"));
@@ -138,6 +141,12 @@ public class PreferencesDialog extends JDialog {
             layoutPanel.add(new JLabel("Regular Expression for parsing timestamps in logs files"));
             dateParsingRegex = new JTextField(25);
             layoutPanel.add(dateParsingRegex);
+            add(layoutPanel);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+            layoutPanel.add(new JLabel("Show internal hotspot classes in class histograms"));
+            showHotspotClasses = new JCheckBox();
+            layoutPanel.add(showHotspotClasses);
             add(layoutPanel);
         }
     }

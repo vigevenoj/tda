@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.18 2006-03-05 17:11:42 irockel Exp $
+ * $Id: TDA.java,v 1.19 2006-03-06 08:47:21 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -253,6 +253,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     private void displayTable(HistogramTableModel htm) {
         htm.setFilter("");
+        htm.setShowHotspotClasses(PrefManager.get().getShowHotspotClasses());
+
         TableSorter ts = new TableSorter(htm);
         histogramTable = new JTable(ts);
         ts.setTableHeader(histogramTable.getTableHeader());
