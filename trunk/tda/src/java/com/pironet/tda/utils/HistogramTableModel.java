@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.5 2006-03-05 17:11:43 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.6 2006-03-06 08:47:21 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -51,6 +51,8 @@ public class HistogramTableModel extends AbstractTableModel {
     private String filter;
     
     private boolean ignoreCase = false;
+    
+    private boolean showHotspotClasses = false;
     
     /**
      * Creates a new instance of HistogramTableModel 
@@ -129,13 +131,18 @@ public class HistogramTableModel extends AbstractTableModel {
         return(instances);
     }
     
+    /**
+     * set filter to the value and revalidate model, model saves original data,
+     * so it can be refiltered.
+     * @param value the filter string
+     */
     public void setFilter(String value) {        
         filter = value;
         if(isIgnoreCase()) {
             value = value.toLowerCase();
         }
         
-        if(filter == null || filter.equals("")) {
+        if(((value) == null || value.equals("")) && isShowHotspotClasses()) {
             filteredElements = null;
         } else {
             filteredElements = new Vector();
@@ -145,12 +152,32 @@ public class HistogramTableModel extends AbstractTableModel {
                         filteredElements.add(elements.get(i));
                     }
                 } else {
-                    if(((Entry)elements.get(i)).className.contains(value)) {
+                    if(isNotHotspotClass(((Entry)elements.get(i)).className) && (value.equals("") || ((Entry)elements.get(i)).className.contains(value))) {
                         filteredElements.add(elements.get(i));
                     }
                 }
             }
         }
+    }
+    
+    /**
+     * check if the className is an internal hotspot class
+     * @param className the name of the class
+     */
+    private boolean isNotHotspotClass(String className) {
+        //System.out.println("className" + className + " eval=" + (!isShowHotspotClasses() && className.startsWith("<")));
+        return(isShowHotspotClasses() || !className.contains("[internal HotSpot]"));
+    }
+    
+    public void setShowHotspotClasses(boolean value) {
+        if(showHotspotClasses != value) {
+            showHotspotClasses = value;
+            setFilter(getFilter());
+        }
+    }
+    
+    private boolean isShowHotspotClasses() {
+        return(showHotspotClasses);
     }
     
     public String getFilter() {
