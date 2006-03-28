@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.19 2006-03-06 08:47:21 irockel Exp $
+ * $Id: TDA.java,v 1.20 2006-03-28 18:43:23 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -142,8 +142,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     private String getInfoText() {
         StringBuffer info = new StringBuffer("<html><body><b>TDA - Thread Dump Analyzer</b><p>");
-        info.append("(C)opyright 2006 - TDA Team<br>");
-        info.append("Version: <b>0.1-prerelease</b><p>");
+        info.append("(C)opyright 2006 - Ingo Rockel<br>");
+        info.append("Version: <b>1.0-beta</b><p>");
         info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></body></html>");
         return(info.toString());
     }
@@ -539,7 +539,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void showInfo() {
         JOptionPane.showMessageDialog(this.getRootPane(),
                 "TDA - Thread Dump Analyzer\n\n" +
-                "(c) by TDA Team 2006\n\n" +
+                "(c) by Ingo Rockel\n\n" +
                 "TDA is free software; you can redistribute it and/or modify\n" +
                 "it under the terms of the Lesser GNU General Public License as published by\n" +
                 "the Free Software Foundation; either version 2.1 of the License, or\n" +
@@ -572,6 +572,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             prefsDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         }
         
+        frame.setEnabled(false);
         //Display the window.
         prefsDialog.reset();
         prefsDialog.pack();
