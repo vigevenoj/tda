@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.4 2006-03-06 08:47:21 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.5 2006-03-28 18:43:23 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -48,12 +48,14 @@ public class PreferencesDialog extends JDialog {
     private JPanel buttonPanel;
     private JButton okButton;
     private JButton cancelButton;
+    private JFrame frame;
     
     /** 
      * Creates a new instance of PreferencesDialog 
      */
-    public PreferencesDialog(JFrame owner) {
+    public PreferencesDialog(JFrame owner) {        
         super(owner, "Preferences");
+        frame = owner;
         getContentPane().setLayout(new BorderLayout());
         initPanel();
         setLocationRelativeTo(owner);
@@ -73,12 +75,14 @@ public class PreferencesDialog extends JDialog {
         
         okButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                frame.setEnabled(true);
                 saveSettings();                
             }
         });
         
         cancelButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                frame.setEnabled(true);
                 dispose();
             }
         });
