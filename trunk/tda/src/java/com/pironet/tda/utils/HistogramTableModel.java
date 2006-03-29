@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.6 2006-03-06 08:47:21 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.7 2006-03-29 14:10:46 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -148,11 +148,11 @@ public class HistogramTableModel extends AbstractTableModel {
             filteredElements = new Vector();
             for(int i = 0; i < elements.size(); i++) {
                 if(isIgnoreCase()) {
-                    if(((Entry)elements.get(i)).className.toLowerCase().contains(value)) {
+                    if(((Entry)elements.get(i)).className.toLowerCase().indexOf(value) >= 0) {
                         filteredElements.add(elements.get(i));
                     }
                 } else {
-                    if(isNotHotspotClass(((Entry)elements.get(i)).className) && (value.equals("") || ((Entry)elements.get(i)).className.contains(value))) {
+                    if(isNotHotspotClass(((Entry)elements.get(i)).className) && (value.equals("") || (((Entry)elements.get(i)).className.indexOf(value) >= 0))) {
                         filteredElements.add(elements.get(i));
                     }
                 }
@@ -166,7 +166,7 @@ public class HistogramTableModel extends AbstractTableModel {
      */
     private boolean isNotHotspotClass(String className) {
         //System.out.println("className" + className + " eval=" + (!isShowHotspotClasses() && className.startsWith("<")));
-        return(isShowHotspotClasses() || !className.contains("[internal HotSpot]"));
+        return(isShowHotspotClasses() || !(className.indexOf("[internal HotSpot]") >= 0));
     }
     
     public void setShowHotspotClasses(boolean value) {
@@ -226,7 +226,7 @@ public class HistogramTableModel extends AbstractTableModel {
                 className = className.replaceAll(">", "&gt;");
                 result = "<html><body><i><b>" + className + "</i></b> [internal HotSpot]</i></body></html>";
             } else if (className.lastIndexOf('.') > 0) {
-                if(className.contains("OutOfMemory")) {
+                if(className.indexOf("OutOfMemory") >= 0) {
                     setOOM(true);
                 }
                 result = "<html><body>" + className.substring(0, className.lastIndexOf('.')+1) + "<b>" + 

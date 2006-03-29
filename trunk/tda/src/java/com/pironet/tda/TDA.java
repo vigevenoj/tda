@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.20 2006-03-28 18:43:23 irockel Exp $
+ * $Id: TDA.java,v 1.21 2006-03-29 14:10:46 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -26,7 +26,6 @@ import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import java.awt.BorderLayout;
-import java.awt.event.InputMethodEvent;
 import java.io.FileNotFoundException;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -63,6 +62,7 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -594,6 +594,19 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
+    /** 
+     * Returns an ImageIcon, or null if the path was invalid. 
+     */
+    protected static ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = TDA.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
+    
     /**
      * load a loggc log file based on the current selected thread dump
      */
@@ -665,7 +678,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private static void saveState() {
         PrefManager.get().setWindowState(frame.getExtendedState());
         PrefManager.get().setSelectedPath(fc.getCurrentDirectory());
-        PrefManager.get().setPreferredSize(frame.getSize());
+        PrefManager.get().setPreferredSize(frame.getRootPane().getSize());
         PrefManager.get().setWindowPos(frame.getX(), frame.getY());
         PrefManager.get().flush();
     }
@@ -682,12 +695,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         Image image = Toolkit.getDefaultToolkit().getImage( "TDA.gif" );
         frame.setIconImage( image );
+        //frame.setIconImage(createImageIcon("resources/images/TDA.gif").getImage());
         
         // init filechooser
         fc = new JFileChooser();
         fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
         
-        frame.setPreferredSize(PrefManager.get().getPreferredSize());
+        frame.getRootPane().setPreferredSize(PrefManager.get().getPreferredSize());
         
         //Create and set up the content pane.
         TDA newContentPane = new TDA();
