@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TutorialDialog.java,v 1.3 2006-03-05 09:36:45 irockel Exp $
+ * $Id: TutorialDialog.java,v 1.4 2006-03-29 14:10:46 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -61,22 +61,15 @@ public class TutorialDialog extends JDialog {
         initPanel();
         setLocationRelativeTo(owner);
     }
-    
-    private void readContent() throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader("doc/tutorial.html"));
-        StringBuffer contentBuffer = new StringBuffer();
-        while(br.ready()) {
-            contentBuffer.append(br.readLine());
-            contentBuffer.append("\n");
-        }
-        content = contentBuffer.toString();
-    }
-    
+        
     private void initPanel() {
         try {
-            readContent();
             URL tutURL;
-            tutURL = new URL("file://" + System.getProperty("user.dir", "") + "/doc/tutorial.html");
+            if(System.getProperty("user.dir", "").indexOf(':') > 0) {
+                tutURL = new URL("file:///" + System.getProperty("user.dir", "").replace('\\', '/') + "/doc/tutorial.html");
+            } else {
+                tutURL = new URL("file://" + System.getProperty("user.dir", "") + "/doc/tutorial.html");
+            }
             //htmlView = new JEditorPane("text/html", content);
             htmlView = new JEditorPane(tutURL);
         } catch (MalformedURLException ex) {
