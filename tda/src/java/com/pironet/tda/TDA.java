@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.21 2006-03-29 14:10:46 irockel Exp $
+ * $Id: TDA.java,v 1.22 2006-03-29 19:55:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -182,7 +182,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Create a tree that allows one selection at a time.
         tree = new JTree(top);
         tree.getSelectionModel().setSelectionMode
-                (TreeSelectionModel.SINGLE_TREE_SELECTION);
+                (TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         
         //Create the scroll pane and add the tree to it.
         JScrollPane treeView = new JScrollPane(tree);
@@ -357,7 +357,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem.addActionListener(this);
         popup.add(menuItem);
         popup.addSeparator();
-        menuItem = new JMenuItem("Select this dump for diff...");
+        menuItem = new JMenuItem("Diff Selection");
         menuItem.addActionListener(this);
         popup.add(menuItem);
         menuItem = new JMenuItem("Parse loggc-logfile...");
@@ -524,12 +524,18 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             SearchDialog.createAndShowGUI(tree);
         } else if("Parse loggc-logfile...".equals(source.getText())) {
             parseLoggcLogfile();
-        } else if("Select this dump for diff...".equals(source.getText())) {
-            if(mergeDump == null) {
-                mergeDump = tree.getSelectionPath();
+        } else if("Find long running threads...".equals(source.getText())) {
+            findLongRunningThreads();
+        } else if("Diff Selection".equals(source.getText())) {
+            TreePath[] paths = tree.getSelectionPaths();
+            if(paths.length != 2) {
+                JOptionPane.showMessageDialog(this.getRootPane(),
+                        "You must select two dumps for getting a diff!\n",
+                        "Error: Can diff only two dumps...", JOptionPane.ERROR_MESSAGE);
+                
             } else {
-                System.out.println(mergeDump + " // " + tree.getSelectionPath());
-                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(top, threadDumps, mergeDump, tree.getSelectionPath());
+                System.out.println(paths[0] + " // " + paths[1]);
+                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(top, threadDumps, paths[0], paths[1]);
                 createTree();
                 this.getRootPane().revalidate();
             }
@@ -670,6 +676,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 }
             }
         }
+    }
+    
+    /**
+     * find long running threads either in all parsed thread dumps or in marked thread 
+     * dump range.
+     */
+    private void findLongRunningThreads() {
+        
     }
     
     /**

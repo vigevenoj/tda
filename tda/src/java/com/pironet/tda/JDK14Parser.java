@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.11 2006-03-05 17:11:42 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.12 2006-03-29 19:55:50 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -199,7 +199,7 @@ public class JDK14Parser implements DumpParser {
                             mmap.parseAndAddThread((String)monitorStack.pop(), title, content.toString());
                         }
                         
-                        title = line;
+                        title = line.trim();
                         content = new StringBuffer("<pre>");
                         content.append(line);
                         content.append("\n");
@@ -546,6 +546,10 @@ public class JDK14Parser implements DumpParser {
        dumpHistogramCounter = value; 
     }
     
+    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths) {
+        //FIX ME: mergeDumps needs to be redone to work with multiple paths.
+    }
+    
     public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump) {
         String firstDumpKey = getDumpStringFromTreePath(firstDump);
         String secondDumpKey = getDumpStringFromTreePath(secondDump);
@@ -561,6 +565,7 @@ public class JDK14Parser implements DumpParser {
             
             while(dumpIter.hasNext()) {
                 String threadKey = ((String) dumpIter.next()).trim();
+                System.out.println("checking key " + threadKey);
                 if(secondThreads.containsKey(threadKey)) {
                     StringBuffer content = new StringBuffer((String) firstThreads.get(threadKey));
                     content.append("\n\n---------------------------------\n\n");
