@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.7 2006-03-29 14:10:46 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.8 2006-03-29 16:22:09 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -226,9 +226,10 @@ public class HistogramTableModel extends AbstractTableModel {
                 className = className.replaceAll(">", "&gt;");
                 result = "<html><body><i><b>" + className + "</i></b> [internal HotSpot]</i></body></html>";
             } else if (className.lastIndexOf('.') > 0) {
-                if(className.indexOf("OutOfMemory") >= 0) {
+                /*if(className.indexOf("OutOfMemory") >= 0) {
                     setOOM(true);
-                }
+                }*/ // that doesn't work this way
+                
                 result = "<html><body>" + className.substring(0, className.lastIndexOf('.')+1) + "<b>" + 
                          className.substring(className.lastIndexOf('.')+1) + "</b></body></html>";
             }
