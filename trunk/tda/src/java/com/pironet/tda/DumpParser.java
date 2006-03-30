@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParser.java,v 1.6 2006-03-05 17:11:42 irockel Exp $
+ * $Id: DumpParser.java,v 1.7 2006-03-30 09:03:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -42,7 +42,9 @@ public interface DumpParser {
     
     public void close() throws IOException;
     
-    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump);
+    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths, int minOccurence);
+    
+    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence);
 
     public boolean isFoundClassHistograms();
     
