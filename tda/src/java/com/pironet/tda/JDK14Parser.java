@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.12 2006-03-29 19:55:50 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.13 2006-03-30 09:03:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -546,30 +546,47 @@ public class JDK14Parser implements DumpParser {
        dumpHistogramCounter = value; 
     }
     
-    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths) {
-        //FIX ME: mergeDumps needs to be redone to work with multiple paths.
+    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths, int minOccurence) {
+        diffDumps("Long running thread detection", root, dumpStore, paths, minOccurence);
     }
     
-    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath firstDump, TreePath secondDump) {
-        String firstDumpKey = getDumpStringFromTreePath(firstDump);
-        String secondDumpKey = getDumpStringFromTreePath(secondDump);
+    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence) {
+        diffDumps("Merge", root, dumpStore, dumps, minOccurence);
+    }
+    
+    private void diffDumps(String prefix, DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence) {
+        Vector keys = new Vector(dumps.length);        
         
-        Map firstThreads = (Map) dumpStore.get(firstDumpKey);
-        Map secondThreads = (Map) dumpStore.get(secondDumpKey);
-        
-        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode("Merge between " + firstDumpKey + " and " + secondDumpKey);
+        for(int i = 0; i < dumps.length; i++) {
+            keys.add(getDumpStringFromTreePath(dumps[i]));
+        }
+                
+        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1));
         root.add(catMerge);
         
-        if(firstThreads != null) {
-            Iterator dumpIter = firstThreads.keySet().iterator();
+        if(dumpStore.get(keys.get(0)) != null) {
+            Iterator dumpIter = ((Map) dumpStore.get(keys.get(0))).keySet().iterator();
             
             while(dumpIter.hasNext()) {
                 String threadKey = ((String) dumpIter.next()).trim();
-                System.out.println("checking key " + threadKey);
-                if(secondThreads.containsKey(threadKey)) {
-                    StringBuffer content = new StringBuffer((String) firstThreads.get(threadKey));
-                    content.append("\n\n---------------------------------\n\n");
-                    content.append((String) secondThreads.get(threadKey));
+                int occurence = 0;
+                
+                for(int i = 1; i < dumps.length; i++) {
+                    if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
+                        occurence++;
+                    }
+                }
+                
+                if(occurence >= (minOccurence-1)) {
+                    StringBuffer content = new StringBuffer("<pre>").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
+                    for(int i = 1; i < dumps.length; i++) {
+                        if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
+                            content.append("\n\n---------------------------------\n\n");
+                            content.append(keys.get(i));
+                            content.append("\n\n");
+                            content.append((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey));
+                        }
+                    }
                     createNode(catMerge, threadKey, content);
                 }
             }

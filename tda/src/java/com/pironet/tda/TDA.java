@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.22 2006-03-29 19:55:50 irockel Exp $
+ * $Id: TDA.java,v 1.23 2006-03-30 09:03:39 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -89,10 +89,8 @@ import javax.swing.tree.TreePath;
 public class TDA extends JPanel implements TreeSelectionListener, ActionListener {
     private static JFileChooser fc;
     private static boolean DEBUG = false;
-    private static JFrame frame;
+    protected static JFrame frame;
 
-    //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom3/dump.log";
-    //private static String dumpFile = "/home/irockel/kunden/metro/oom/durpcom1/OC4J~cms~default_island~1";
     private static String dumpFile;
     
     private static String loggcFile;
@@ -110,6 +108,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JTextField filter;
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
+    private LongThreadDialog longThreadDialog;
     private JTable histogramTable;
     
     public TDA() {
@@ -178,7 +177,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         worker.start();
     }
         
-    private void createTree() {
+    protected void createTree() {
         //Create a tree that allows one selection at a time.
         tree = new JTree(top);
         tree.getSelectionModel().setSelectionMode
@@ -363,6 +362,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Parse loggc-logfile...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
+        popup.addSeparator();
+        menuItem = new JMenuItem("Find long running threads...");
+        menuItem.addActionListener(this);
+        popup.add(menuItem);
         
         //Add listener to the text area so the popup menu can come up.
         MouseListener popupListener = new PopupListener(popup);
@@ -474,7 +477,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Exit TDA");
         menuItem.addActionListener(this);
-        menuItem.setEnabled(false);
         menu.add(menuItem);        
 
         //Build second menu in the menu bar.
@@ -528,14 +530,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             findLongRunningThreads();
         } else if("Diff Selection".equals(source.getText())) {
             TreePath[] paths = tree.getSelectionPaths();
-            if(paths.length != 2) {
+            if(paths.length < 2) {
                 JOptionPane.showMessageDialog(this.getRootPane(),
-                        "You must select two dumps for getting a diff!\n",
-                        "Error: Can diff only two dumps...", JOptionPane.ERROR_MESSAGE);
+                        "You must select at least two dumps for getting a diff!\n",
+                        "Error", JOptionPane.ERROR_MESSAGE);
                 
             } else {
-                System.out.println(paths[0] + " // " + paths[1]);
-                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(top, threadDumps, paths[0], paths[1]);
+                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(top, threadDumps, paths, paths.length);
                 createTree();
                 this.getRootPane().revalidate();
             }
@@ -683,7 +684,25 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      * dump range.
      */
     private void findLongRunningThreads() {
-        
+        TreePath[] paths = tree.getSelectionPaths();
+        if((paths == null) || (paths.length < 2)) {
+            JOptionPane.showMessageDialog(this.getRootPane(),
+                    "You must select at least two dumps for long thread run detection!\n",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            
+        } else {
+            if(longThreadDialog == null) {
+                longThreadDialog = new LongThreadDialog(this, paths, top, threadDumps);
+                longThreadDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            }
+            
+            frame.setEnabled(false);
+            //Display the window.
+            longThreadDialog.reset();
+            longThreadDialog.pack();
+            longThreadDialog.setVisible(true);
+            
+        }
     }
     
     /**
