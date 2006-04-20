@@ -92,17 +92,22 @@ public class LongThreadDialog extends JDialog {
     
     class SettingsPanel extends JPanel {
         JTextField minOccurenceField;
+        JTextField threadRegExField;
         
         public SettingsPanel() {
             //super(new GridLayout(3,2, 10, 10));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(320, 100));
+            setPreferredSize(new Dimension(420, 100));
             
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));            
             layoutPanel.add(new JLabel("Minimum occurence of a thread"));
             minOccurenceField = new JTextField(3);
             minOccurenceField.setText(String.valueOf(dumps.length));
             layoutPanel.add(minOccurenceField);
+            
+            layoutPanel.add(new JLabel("Regular Expression thread identifier matches"));
+            threadRegExField = new JTextField(30);
+            layoutPanel.add(threadRegExField);
             add(layoutPanel);            
         }
     }
