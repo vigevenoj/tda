@@ -12,13 +12,13 @@ package com.pironet.tda;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -70,7 +70,7 @@ public class LongThreadDialog extends JDialog {
         okButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 backRef.frame.setEnabled(true);
-                DumpParserFactory.get().getCurrentDumpParser().findLongRunningThreads(top, threadDumps, dumps, Integer.parseInt(settingsPanel.minOccurenceField.getText()));
+                DumpParserFactory.get().getCurrentDumpParser().findLongRunningThreads(top, threadDumps, dumps, Integer.parseInt(settingsPanel.minOccurenceField.getText()), settingsPanel.threadRegExField.getText());
                 backRef.createTree();
                 backRef.getRootPane().revalidate();
                 dispose();
@@ -108,6 +108,9 @@ public class LongThreadDialog extends JDialog {
             layoutPanel.add(new JLabel("Regular Expression thread identifier matches"));
             threadRegExField = new JTextField(30);
             layoutPanel.add(threadRegExField);
+            JLabel example = new JLabel("<html><body>Example is <b>\"AJPRequestHandler(.*)</b>");
+            example.setFont(new Font("SansSerif", Font.PLAIN, 10));
+            layoutPanel.add(example);
             add(layoutPanel);            
         }
     }

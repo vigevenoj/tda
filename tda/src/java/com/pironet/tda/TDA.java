@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.24 2006-04-20 07:37:08 irockel Exp $
+ * $Id: TDA.java,v 1.25 2006-04-20 08:11:16 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -536,7 +536,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         "Error", JOptionPane.ERROR_MESSAGE);
                 
             } else {
-                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(top, threadDumps, paths, paths.length);
+                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(top, threadDumps, paths, paths.length, null);
                 createTree();
                 this.getRootPane().revalidate();
             }

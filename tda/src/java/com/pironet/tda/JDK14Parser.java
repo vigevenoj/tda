@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.13 2006-03-30 09:03:39 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.14 2006-04-20 08:11:16 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -546,15 +546,15 @@ public class JDK14Parser implements DumpParser {
        dumpHistogramCounter = value; 
     }
     
-    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths, int minOccurence) {
-        diffDumps("Long running thread detection", root, dumpStore, paths, minOccurence);
+    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths, int minOccurence, String regex) {
+        diffDumps("Long running thread detection", root, dumpStore, paths, minOccurence, regex);
     }
     
-    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence) {
-        diffDumps("Merge", root, dumpStore, dumps, minOccurence);
+    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence, String regex) {
+        diffDumps("Merge", root, dumpStore, dumps, minOccurence, regex);
     }
     
-    private void diffDumps(String prefix, DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence) {
+    private void diffDumps(String prefix, DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence, String regex) {
         Vector keys = new Vector(dumps.length);        
         
         for(int i = 0; i < dumps.length; i++) {
@@ -571,23 +571,25 @@ public class JDK14Parser implements DumpParser {
                 String threadKey = ((String) dumpIter.next()).trim();
                 int occurence = 0;
                 
-                for(int i = 1; i < dumps.length; i++) {
-                    if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
-                        occurence++;
-                    }
-                }
-                
-                if(occurence >= (minOccurence-1)) {
-                    StringBuffer content = new StringBuffer("<pre>").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
+                if(regex == null || regex.equals("") || threadKey.matches(regex)) {
                     for(int i = 1; i < dumps.length; i++) {
                         if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
-                            content.append("\n\n---------------------------------\n\n");
-                            content.append(keys.get(i));
-                            content.append("\n\n");
-                            content.append((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey));
+                            occurence++;
                         }
                     }
-                    createNode(catMerge, threadKey, content);
+                
+                    if(occurence >= (minOccurence-1)) {
+                        StringBuffer content = new StringBuffer("<pre>").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
+                        for(int i = 1; i < dumps.length; i++) {
+                            if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
+                                content.append("\n\n---------------------------------\n\n");
+                                content.append(keys.get(i));
+                                content.append("\n\n");
+                                content.append((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey));
+                            }
+                        }
+                        createNode(catMerge, threadKey, content);
+                    }
                 }
             }
         }
