@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.23 2006-03-30 09:03:39 irockel Exp $
+ * $Id: TDA.java,v 1.24 2006-04-20 07:37:08 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -142,7 +142,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private String getInfoText() {
         StringBuffer info = new StringBuffer("<html><body><b>TDA - Thread Dump Analyzer</b><p>");
         info.append("(C)opyright 2006 - Ingo Rockel<br>");
-        info.append("Version: <b>1.0-beta</b><p>");
+        info.append("Version: <b>1.0-beta2</b><p>");
         info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></body></html>");
         return(info.toString());
     }
@@ -546,6 +546,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void showInfo() {
         JOptionPane.showMessageDialog(this.getRootPane(),
                 "TDA - Thread Dump Analyzer\n\n" +
+                "Version: 1.0-beta2\n\n" +
                 "(c) by Ingo Rockel\n\n" +
                 "TDA is free software; you can redistribute it and/or modify\n" +
                 "it under the terms of the Lesser GNU General Public License as published by\n" +
@@ -655,25 +656,35 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             File file = fc.getSelectedFile();
             loggcFile = file.getAbsolutePath();
             if(loggcFile != null) {
-                InputStream loggcFileStream = null;
                 try {
-                    loggcFileStream = new ProgressMonitorInputStream(
+                    final InputStream loggcFileStream = new ProgressMonitorInputStream(
                             this,
                             "Parsing " + loggcFile,
                             new FileInputStream(loggcFile));
-                    DumpParserFactory.get().getCurrentDumpParser().parseLoggcFile(loggcFileStream, top, threadDumps);
-                    createTree();
-                    this.getRootPane().revalidate();
+                    
+                    final SwingWorker worker = new SwingWorker() {
+                        public Object construct() {
+                            try {
+                                DumpParserFactory.get().getCurrentDumpParser().parseLoggcFile(loggcFileStream, top, threadDumps);
+                                
+                                createNodes(top, dumpFileStream);
+                                createTree();
+                                getRootPane().revalidate();
+                            } finally {
+                                if(loggcFileStream != null) {
+                                    try {
+                                        loggcFileStream.close();
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
+                            }
+                            return null;
+                        }
+                    };
+                    worker.start();
                 } catch (FileNotFoundException ex) {
                     ex.printStackTrace();
-                } finally {
-                    if(loggcFileStream != null) {
-                        try {
-                            loggcFileStream.close();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
                 }
             }
         }
