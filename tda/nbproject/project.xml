@@ -6,7 +6,8 @@
             <name>tda</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <source-roots>
-                <root id="src.dir"/>
+                <root id="src.none.dir"/>
+                <root id="src.dir" name="src/java"/>
             </source-roots>
             <test-roots/>
         </data>
