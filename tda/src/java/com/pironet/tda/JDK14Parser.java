@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.14 2006-04-20 08:11:16 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.15 2006-04-22 06:20:29 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -36,6 +36,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -54,10 +58,14 @@ public class JDK14Parser implements DumpParser {
     private MutableTreeNode nextDump = null;
     private BufferedReader bis = null;
     private Map threadStore = null;
+    private Pattern regexPattern = null;
+    private boolean millisTimeStamp = false;
     
     private int counter = 1;
     
     private int lineCounter = 0;
+    
+    private boolean patternError = false;
     
     private boolean foundClassHistograms = false;
     
@@ -67,8 +75,28 @@ public class JDK14Parser implements DumpParser {
     public JDK14Parser(InputStream dumpFileStream, Map threadStore) {
         this.dumpFileStream = dumpFileStream;
         this.threadStore = threadStore;
+        this.regexPattern = regexPattern;
+        this.millisTimeStamp = millisTimeStamp;
         maxCheckLines = PrefManager.get().getMaxRows();
         markSize = PrefManager.get().getStreamResetBuffer();
+        millisTimeStamp = PrefManager.get().getMillisTimeStamp();
+        
+        if((PrefManager.get().getDateParsingRegex() != null) && !PrefManager.get().getDateParsingRegex().trim().equals("")) {
+            try {
+                regexPattern = Pattern.compile(PrefManager.get().getDateParsingRegex());
+                patternError = false;
+            } catch (PatternSyntaxException pe) {
+                JOptionPane.showMessageDialog(null,
+                        "Error during parsing line for timestamp regular expression!\n" +
+                        "Please check regular expression in your preferences. Deactivating\n" +
+                        "parsing for the rest of the file! Error Message is " + pe.getMessage() + " \n",
+                        "Error during Parsing", JOptionPane.ERROR_MESSAGE);
+                
+                //System.out.println("Failed parsing! " + pe.getMessage());
+                //pe.printStackTrace();
+                patternError = true;
+            }
+        }        
     }
     
     /**
@@ -146,6 +174,7 @@ public class JDK14Parser implements DumpParser {
             MonitorMap mmap = new MonitorMap();
             Stack monitorStack = new Stack();
             long startTime = 0;
+            Matcher matched = null;
             
             while(bis.ready() && !finished) {
                 String line = bis.readLine();
@@ -155,15 +184,40 @@ public class JDK14Parser implements DumpParser {
                         locked = false;
                         overallTDI.threadName += " at line " + lineCounter;
                         if(startTime != 0) {
-                            overallTDI.threadName += " around " + new Date(startTime*1000);
                             startTime = 0;
+                        } else if(matched != null && matched.matches()) {
+                            
+                            String parsedStartTime = matched.group(1);
+                            if(millisTimeStamp) {
+                                try {
+                                    // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=234234234)
+                                    startTime = Long.parseLong(parsedStartTime) * (10^(8-parsedStartTime.length()));
+                                } catch (NumberFormatException nfe) {
+                                    startTime = 0;
+                                }
+                                overallTDI.threadName += " around " + new Date(startTime);
+                            } else {
+                                overallTDI.threadName += " around " + parsedStartTime;
+                            }
+                            parsedStartTime = null;
                         }
                         dumpKey = overallTDI.threadName;
-                    } else if(line.startsWith("timeStamp=")) {
+                    } else if(!patternError && (regexPattern != null)) {
                         try {
-                            startTime = Long.parseLong(line.substring(line.indexOf('=')+1));
-                        } catch (NumberFormatException nfe) {
-                            startTime = 0;
+                            Matcher m = regexPattern.matcher(line.trim());
+                            if(m.matches()) {
+                                matched = m;
+                            }
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Error during parsing line for timestamp regular expression!\n" +
+                                    "Please check regular expression in your preferences. Deactivating\n" +
+                                    "parsing for the rest of the file! Error Message is " + ex.getMessage() + " \n",
+                                    "Error during Parsing", JOptionPane.ERROR_MESSAGE);
+                            
+                            //System.out.println("Failed parsing! " + ex.getMessage());
+                            //ex.printStackTrace();
+                            patternError = true;
                         }
                     }
                 } else {
