@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.4 2006-03-06 08:47:21 irockel Exp $
+ * $Id: PrefManager.java,v 1.5 2006-04-22 06:20:30 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -121,6 +121,14 @@ public class PrefManager {
     
     public void setDateParsingRegex(String dateRegex) {
         toolPrefs.put("dateParsingRegex", dateRegex);
+    }
+    
+    public void setMillisTimeStamp(boolean value) {
+        toolPrefs.putBoolean("millisTimeStamp", value);
+    }
+    
+    public boolean getMillisTimeStamp() {
+        return(toolPrefs.getBoolean("millisTimeStamp", false));
     }
     
     public void setShowHotspotClasses(boolean value) {

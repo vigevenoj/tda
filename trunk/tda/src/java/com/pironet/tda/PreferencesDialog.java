@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.6 2006-03-30 09:03:39 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.7 2006-04-22 06:20:30 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -99,6 +99,7 @@ public class PreferencesDialog extends JDialog {
         generalPanel.maxLinesField.setText(String.valueOf(PrefManager.get().getMaxRows()));
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
         generalPanel.dateParsingRegex.setText(PrefManager.get().getDateParsingRegex());
+        generalPanel.isMillisTimeStamp.setSelected(PrefManager.get().getMillisTimeStamp());
         generalPanel.showHotspotClasses.setSelected(PrefManager.get().getShowHotspotClasses());
     }
     
@@ -107,6 +108,7 @@ public class PreferencesDialog extends JDialog {
         PrefManager.get().setMaxRows(Integer.parseInt(generalPanel.maxLinesField.getText()));
         PrefManager.get().setStreamResetBuffer(Integer.parseInt(generalPanel.bufferField.getText()));
         PrefManager.get().setDateParsingRegex(generalPanel.dateParsingRegex.getText());
+        PrefManager.get().setMillisTimeStamp(generalPanel.isMillisTimeStamp.isSelected());
         PrefManager.get().setShowHotspotClasses(generalPanel.showHotspotClasses.isSelected());
         dispose();
     }
@@ -117,11 +119,12 @@ public class PreferencesDialog extends JDialog {
         JCheckBox forceLoggcLoading;
         JTextField dateParsingRegex;
         JCheckBox showHotspotClasses;
+        JCheckBox isMillisTimeStamp;
         
         public GeneralPanel() {
             //super(new GridLayout(3,2, 10, 10));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(650, 170));
+            setPreferredSize(new Dimension(750, 190));
             
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));            
             layoutPanel.add(new JLabel("Maximum amount of lines to check for\n class histogram or possible deadlock informations"));
@@ -143,8 +146,14 @@ public class PreferencesDialog extends JDialog {
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
             layoutPanel.add(new JLabel("Regular Expression for parsing timestamps in logs files"));
-            dateParsingRegex = new JTextField(25);
+            dateParsingRegex = new JTextField(35);
             layoutPanel.add(dateParsingRegex);
+            add(layoutPanel);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+            layoutPanel.add(new JLabel("Parsed timestamp is a long representing msecs since 1970"));
+            isMillisTimeStamp = new JCheckBox();
+            layoutPanel.add(isMillisTimeStamp);
             add(layoutPanel);
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
