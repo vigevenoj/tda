@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.25 2006-04-20 08:11:16 irockel Exp $
+ * $Id: TDA.java,v 1.26 2006-04-23 08:14:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -75,6 +75,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
+import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
@@ -142,12 +143,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private String getInfoText() {
         StringBuffer info = new StringBuffer("<html><body><b>TDA - Thread Dump Analyzer</b><p>");
         info.append("(C)opyright 2006 - Ingo Rockel<br>");
-        info.append("Version: <b>1.0-beta2</b><p>");
+        info.append("Version: <b>1.0</b><p>");
         info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></body></html>");
         return(info.toString());
     }
     
     public void init() {
+        setUIFont (new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,10));
         try {
             dumpFileStream = new ProgressMonitorInputStream(
                     this,
@@ -427,7 +429,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         loggcMenuItem.setEnabled(false);
         menu.add(loggcMenuItem);
         
-        menu.addSeparator();
+        /*menu.addSeparator();
         menuItem = new JMenuItem("Save Session...",
                 KeyEvent.VK_S);
         menuItem.getAccessibleContext().setAccessibleDescription(
@@ -441,7 +443,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "Open a stored session of logfiles");
         menuItem.addActionListener(this);
         menuItem.setEnabled(false);
-        menu.add(menuItem);
+        menu.add(menuItem);*/
         
         menu.addSeparator();
 
@@ -546,7 +548,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void showInfo() {
         JOptionPane.showMessageDialog(this.getRootPane(),
                 "TDA - Thread Dump Analyzer\n\n" +
-                "Version: 1.0-beta2\n\n" +
+                "Version: 1.0\n\n" +
                 "(c) by Ingo Rockel\n\n" +
                 "TDA is free software; you can redistribute it and/or modify\n" +
                 "it under the terms of the Lesser GNU General Public License as published by\n" +
@@ -561,6 +563,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA\n\n",
                 "Copyright Notice", JOptionPane.INFORMATION_MESSAGE);
 
+    }
+    
+    private void setUIFont(javax.swing.plaf.FontUIResource f){
+        //
+        // sets the default font for all Swing components.
+        // ex.
+        //  setUIFont (new javax.swing.plaf.FontUIResource("Serif",Font.ITALIC,12));
+        //
+        java.util.Enumeration keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value instanceof javax.swing.plaf.FontUIResource)
+                UIManager.put(key, f);
+        }
     }
     
     private void showTutorial() {
