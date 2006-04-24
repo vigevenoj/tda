@@ -1,0 +1,11 @@
+TDA - Thread Dump Analyzer -- Version 1.0	
+
+To run the application use the scripts in the bin directory and open the log file to i
+parse.
+
+The analyzer will automatically parse and display all found dumps in the log file. 
+As it reads all data into memory, Xmx setting in scripts might need to be set accordingly 
+if big log files are read.
+
+Note: This is a 1.0 release of the software, for a tutorial see the doc directory (can 
+also be called from inside TDA.
