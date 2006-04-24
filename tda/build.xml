@@ -69,4 +69,27 @@
     nbproject/build-impl.xml file. 
 
     -->
+	
+    <property name="dist.temp.dir" value="builddist"/>	
+    <target name="makedist">
+        <mkdir dir="${dist.temp.dir}" />
+        <copy todir="${dist.temp.dir}">
+            <fileset dir="dist">
+		<include name="*.jar"/>
+            </fileset>
+	    <fileset dir=".">
+	        <include name="bin/tda.sh"/>
+		<include name="bin/tda.bat"/>
+		<include name="doc/*"/>
+		<include name="README"/>
+		<include name="COPYING"/>
+		<include name="TDA.gif"/>
+	    </fileset>
+        </copy>
+        <exec dir="${dist.temp.dir}" executable="zip">
+	    <arg value="-9r"/>
+	    <arg path="tda-bin-${buildVersion}.zip"/>
+	    <arg value="."/>
+        </exec>
+    </target>
 </project>
