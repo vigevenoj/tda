@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.26 2006-04-23 08:14:51 irockel Exp $
+ * $Id: TDA.java,v 1.27 2006-04-24 16:01:40 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -114,6 +114,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     public TDA() {
         super(new GridLayout(1,0));
+        //setUIFont (new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,10));        
         tree = new JTree();
         
         //Create the HTML viewing pane.
@@ -149,7 +150,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     public void init() {
-        setUIFont (new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,10));
         try {
             dumpFileStream = new ProgressMonitorInputStream(
                     this,
@@ -510,7 +510,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */ 
     public void actionPerformed(ActionEvent e) {
         JMenuItem source = (JMenuItem)(e.getSource());
-        System.out.println(source.getText());
         if("Open...".equals(source.getText())) {
             openFile();
         } else if("Open loggc file...".equals(source.getText())) {

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.15 2006-04-22 06:20:29 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.16 2006-04-24 16:01:40 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -190,8 +190,12 @@ public class JDK14Parser implements DumpParser {
                             String parsedStartTime = matched.group(1);
                             if(millisTimeStamp) {
                                 try {
-                                    // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=234234234)
-                                    startTime = Long.parseLong(parsedStartTime) * (10^(8-parsedStartTime.length()));
+                                    // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=2342342340)
+                                    if(parsedStartTime.length() < 13) {
+                                        startTime = Long.parseLong(parsedStartTime) * (long)Math.pow(10, 13-parsedStartTime.length());
+                                    } else {
+                                        startTime = Long.parseLong(parsedStartTime);
+                                    }
                                 } catch (NumberFormatException nfe) {
                                     startTime = 0;
                                 }
