@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.27 2006-04-24 16:01:40 irockel Exp $
+ * $Id: TDA.java,v 1.28 2006-05-02 14:22:31 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -144,7 +144,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private String getInfoText() {
         StringBuffer info = new StringBuffer("<html><body><b>TDA - Thread Dump Analyzer</b><p>");
         info.append("(C)opyright 2006 - Ingo Rockel<br>");
-        info.append("Version: <b>1.0</b><p>");
+        info.append("Version: <b>1.1</b><p>");
         info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></body></html>");
         return(info.toString());
     }
@@ -275,7 +275,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         infoLabel.setFont(font);
         histoStatView.add(infoLabel);
         if(htm.isOOM()) {
-            infoLabel = new JLabel("<html><b>OutOfMemory found</b>");
+            infoLabel = new JLabel("<html><b>OutOfMemory found!</b>");
+            infoLabel.setFont(font);
+            histoStatView.add(infoLabel);
+        }
+        if(htm.isIncomplete()) {
+            infoLabel = new JLabel("<html><b>Class Histogram is incomplete! (broken logfile?)</b>");
             infoLabel.setFont(font);
             histoStatView.add(infoLabel);
         }
@@ -547,7 +552,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void showInfo() {
         JOptionPane.showMessageDialog(this.getRootPane(),
                 "TDA - Thread Dump Analyzer\n\n" +
-                "Version: 1.0\n\n" +
+                "Version: 1.1\n\n" +
                 "(c) by Ingo Rockel\n\n" +
                 "TDA is free software; you can redistribute it and/or modify\n" +
                 "it under the terms of the Lesser GNU General Public License as published by\n" +
