@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HistogramTableModel.java,v 1.8 2006-03-29 16:22:09 irockel Exp $
+ * $Id: HistogramTableModel.java,v 1.9 2006-05-02 14:22:31 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -53,6 +53,8 @@ public class HistogramTableModel extends AbstractTableModel {
     private boolean ignoreCase = false;
     
     private boolean showHotspotClasses = false;
+    
+    private boolean incomplete = false;
     
     /**
      * Creates a new instance of HistogramTableModel 
@@ -129,6 +131,14 @@ public class HistogramTableModel extends AbstractTableModel {
     
     public long getInstances() {
         return(instances);
+    }
+    
+    public void setIncomplete(boolean value) {
+        incomplete = value;
+    }
+    
+    public boolean isIncomplete() {
+        return(incomplete);
     }
     
     /**
