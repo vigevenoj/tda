@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.29 2006-05-03 15:20:35 irockel Exp $
+ * $Id: TDA.java,v 1.30 2006-05-03 19:51:10 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -62,6 +62,7 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -101,7 +102,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JSplitPane splitPane;
     private TreePath mergeDump;
     private Map threadDumps;
-    private DefaultMutableTreeNode top;
+    private Vector topNodes;
     private InputStream dumpFileStream;
     private JScrollPane htmlView;
     private JScrollPane tableView;
@@ -150,6 +151,24 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     public void init() {
+        // clear tree
+        threadDumps = new HashMap();
+        
+        /*if(top != null) {
+            top.removeAllChildren();
+            top.removeFromParent();
+            top = null;
+        }*/
+        topNodes = new Vector();
+        
+        addDumpFile();
+    }
+    
+    /**
+     * add the set dumpFileStream to the tree
+     * @param clearTree true, if the tree should be cleared before.
+     */
+    private void addDumpFile() {
         try {
             dumpFileStream = new ProgressMonitorInputStream(
                     this,
@@ -160,31 +179,35 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         
         //Create the nodes.
-        if(top != null) {
-            top.removeAllChildren();
-            top.removeFromParent();
-            top = null;
-        }
-        top = new DefaultMutableTreeNode("Thread Dumps of " + dumpFile);
-        
-        frame.setTitle("TDA - Thread Dumps of " + dumpFile);
-        
-        threadDumps = new HashMap();
-        
+        final DefaultMutableTreeNode top = new DefaultMutableTreeNode("Thread Dumps of " + dumpFile);
+        topNodes.add(top);
+                        
         final SwingWorker worker = new SwingWorker() {
             public Object construct() {
-                createNodes(top, dumpFileStream);                    
+                createNodes(top, dumpFileStream);
                 createTree();
                 
                 return null;
             }
         };
         worker.start();
+        
     }
         
     protected void createTree() {
-        //Create a tree that allows one selection at a time.
-        tree = new JTree(top);
+        //Create a tree that allows multiple selection at a time.
+        if(topNodes.size() == 1) {
+            tree = new JTree((DefaultMutableTreeNode) topNodes.get(0));
+            frame.setTitle("TDA - Thread Dumps of " + dumpFile);
+        } else {
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Thread Dump files");
+            for(int i = 0; i < topNodes.size(); i++) {
+                root.add((DefaultMutableTreeNode) topNodes.get(i));
+            }
+            tree = new JTree(root);
+            frame.setTitle(frame.getTitle() + " ...");
+        }
+        
         tree.getSelectionModel().setSelectionMode
                 (TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         
@@ -429,6 +452,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "Open Log File with dumps");
         menuItem.addActionListener(this);
         menu.add(menuItem);
+        menuItem = new JMenuItem("Add...",
+                KeyEvent.VK_O);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_O, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Open additional Log File with dumps");
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
         loggcMenuItem = new JMenuItem("Open loggc file...",
                 KeyEvent.VK_O);
         loggcMenuItem.getAccessibleContext().setAccessibleDescription(
@@ -519,7 +550,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     public void actionPerformed(ActionEvent e) {
         JMenuItem source = (JMenuItem)(e.getSource());
         if("Open...".equals(source.getText())) {
-            openFile();
+            openFile(false);
+        } else if("Add...".equals(source.getText())) {
+            openFile(true);
         } else if("Open loggc file...".equals(source.getText())) {
             openLoggcFile();
         } else if("Preferences".equals(source.getText())) {
@@ -545,7 +578,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         "Error", JOptionPane.ERROR_MESSAGE);
                 
             } else {
-                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(top, threadDumps, paths, paths.length, null);
+                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(fetchTop(tree.getSelectionPath()), 
+                        threadDumps, paths, paths.length, null);
                 createTree();
                 this.getRootPane().revalidate();
             }
@@ -611,16 +645,23 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         prefsDialog.setVisible(true);
     }
     
-    private void openFile() {
+    /**
+     * open a log file.
+     * @param addFile check if a log file should be added or if tree should be cleared.
+     */
+    private void openFile(boolean addFile) {
         int returnVal = fc.showOpenDialog(this.getRootPane());
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             dumpFile = file.getAbsolutePath();
-            tree = null;
-            top = null;
             if(dumpFile != null) {
-                init();
+                if(addFile) {
+                    // do direct add without re-init.
+                    addDumpFile();
+                } else {
+                    init();
+                }
                 this.getRootPane().revalidate();
             }
         }
@@ -656,7 +697,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         DumpParserFactory.get().getCurrentDumpParser().setDumpHistogramCounter(pos);
         openLoggcFile();
     }
-    
+        
     /**
      * check if name of node starts with passed string
      */
@@ -689,6 +730,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                     final SwingWorker worker = new SwingWorker() {
                         public Object construct() {
                             try {
+                                DefaultMutableTreeNode top = fetchTop(tree.getSelectionPath());
                                 DumpParserFactory.get().getCurrentDumpParser().parseLoggcFile(loggcFileStream, top, threadDumps);
                                 
                                 createNodes(top, dumpFileStream);
@@ -727,7 +769,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             
         } else {
             if(longThreadDialog == null) {
-                longThreadDialog = new LongThreadDialog(this, paths, top, threadDumps);
+                longThreadDialog = new LongThreadDialog(this, paths, fetchTop(tree.getSelectionPath()), threadDumps);
                 longThreadDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             }
             
@@ -738,6 +780,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             longThreadDialog.setVisible(true);
             
         }
+    }
+    
+    private DefaultMutableTreeNode fetchTop(TreePath pathToRoot) {
+        System.out.println("Node=" + pathToRoot.getPathComponent(1).getClass().getName());
+        return((DefaultMutableTreeNode) pathToRoot.getPathComponent(1));
     }
     
     /**
