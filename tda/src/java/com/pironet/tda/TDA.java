@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.30 2006-05-03 19:51:10 irockel Exp $
+ * $Id: TDA.java,v 1.31 2006-05-04 07:11:52 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -329,6 +329,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         histoStatView.add(filterPanel);
         histogramView.add(histoStatView, BorderLayout.SOUTH);
         histogramView.add(tableView, BorderLayout.CENTER);
+        
+        histogramView.setPreferredSize(splitPane.getBottomComponent().getSize());
         
         splitPane.setBottomComponent(histogramView);
     }
