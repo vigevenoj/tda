@@ -81,9 +81,12 @@
 	        <include name="bin/tda.sh"/>
 		<include name="bin/tda.bat"/>
 		<include name="doc/*"/>
-		<include name="README"/>
+<!--		<include name="README"/>
 		<include name="COPYING"/>
-		<include name="TDA.gif"/>
+		<include name="TDA.gif"/> -->
+	    </fileset>
+	    <fileset dir="src/none/resources/">
+	        <include name="**" />
 	    </fileset>
         </copy>
         <exec dir="${dist.temp.dir}" executable="zip">
