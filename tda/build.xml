@@ -72,6 +72,7 @@
 	
     <property name="dist.temp.dir" value="builddist"/>	
     <target name="makedist">
+	<delete dir="${dist.temp.dir}" />
         <mkdir dir="${dist.temp.dir}" />
         <copy todir="${dist.temp.dir}">
             <fileset dir="dist">
@@ -81,9 +82,6 @@
 	        <include name="bin/tda.sh"/>
 		<include name="bin/tda.bat"/>
 		<include name="doc/*"/>
-<!--		<include name="README"/>
-		<include name="COPYING"/>
-		<include name="TDA.gif"/> -->
 	    </fileset>
 	    <fileset dir="src/none/resources/">
 	        <include name="**" />
@@ -91,7 +89,7 @@
         </copy>
         <exec dir="${dist.temp.dir}" executable="zip">
 	    <arg value="-9r"/>
-	    <arg path="tda-bin-${buildVersion}.zip"/>
+	    <arg path="dist/tda-bin-${buildVersion}.zip"/>
 	    <arg value="."/>
         </exec>
     </target>
