@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.31 2006-05-04 07:11:52 irockel Exp $
+ * $Id: TDA.java,v 1.32 2006-05-06 06:32:10 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -107,6 +107,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JScrollPane htmlView;
     private JScrollPane tableView;
     private JMenuItem loggcMenuItem;
+    private JMenuItem addMenuItem;
     private JTextField filter;
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
@@ -371,6 +372,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 top.add(dp.parseNext());
             }
             loggcMenuItem.setEnabled(!dp.isFoundClassHistograms() || PrefManager.get().getForceLoggcLoading());
+            addMenuItem.setEnabled(true);
         } finally {
             if(dp != null) {
                 try {
@@ -454,14 +456,16 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "Open Log File with dumps");
         menuItem.addActionListener(this);
         menu.add(menuItem);
-        menuItem = new JMenuItem("Add...",
+        menu.addSeparator();
+        addMenuItem = new JMenuItem("Add...",
                 KeyEvent.VK_O);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        addMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_O, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
+        addMenuItem.getAccessibleContext().setAccessibleDescription(
                 "Open additional Log File with dumps");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
+        addMenuItem.addActionListener(this);
+        addMenuItem.setEnabled(false);
+        menu.add(addMenuItem);
         loggcMenuItem = new JMenuItem("Open loggc file...",
                 KeyEvent.VK_O);
         loggcMenuItem.getAccessibleContext().setAccessibleDescription(
