@@ -9,6 +9,10 @@
 </p><p>
 For having the class histograms included you need to provide the -XX:+PrintClassHistogram option.
 </p>
+<h3>Obtaining a thread dump</h3>
+For getting a thread dump, you need to send a kill-Signal to the Java VM, for this you need the PID of the VM and 
+the do a <pre>kill -QUIT &lt;PID&gt;</pre> on a Unix Environment. If you use Windows you need a special tool for accomplishing 
+this, SendSignal, see References for this. It does the same like <pre>kill -QUIT</pre> on Windows-Systems. Beware: if you're using the remote connection on windows, you need to start the connection it with <pre>mstsc.exe /console</pre> otherwise you wont have sufficient rights to use the tool. The JDK will then write the thread-dump to std-out. E.g. if your application is running in a tomcat, this would be catalina.out in a default tomcat installation.
 <h3>Sample Parsing Session</h3>
 <p>Open the log file you want to analyse, TDA will search for all thread dumps in this log file and displays them in a tree. As the Sun JVM thread dump lacks any date information when the dump was requested, you can provide a regular expression in the <b>Preferences</b> which is then used for parsing the lines before the thread dump to get a time stamp (see below).</p>
 <p>For each thread dump TDA sums up all found threads and all monitors found in the threads, it also groups threads waiting on, for and locking threads.</p> 
@@ -31,6 +35,7 @@ For having the class histograms included you need to provide the -XX:+PrintClass
 <li><a href="http://www.tagtraum.com/gcviewer.html">GC-Viewer</a>
 <li><a href="http://glassbox-inspector.dev.java.net/">Glassbox Inspector</a>
 <li><a href="http://java.sun.com/j2se/1.4.2/docs/api/index.html">Java API Specification 1.4.2</a> (for regular expressions look for <b>Pattern</b> class.)
+<li><a href="http://www.latenighthacking.com/projects/2003/sendSignal/">SendSignal</a>
 </ul>
 </body>
 </html>
