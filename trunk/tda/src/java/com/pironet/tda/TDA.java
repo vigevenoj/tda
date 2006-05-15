@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.32 2006-05-06 06:32:10 irockel Exp $
+ * $Id: TDA.java,v 1.33 2006-05-15 20:24:04 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -108,6 +108,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JScrollPane tableView;
     private JMenuItem loggcMenuItem;
     private JMenuItem addMenuItem;
+    private JMenuItem addJMXMenuItem;
     private JTextField filter;
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
@@ -373,6 +374,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             loggcMenuItem.setEnabled(!dp.isFoundClassHistograms() || PrefManager.get().getForceLoggcLoading());
             addMenuItem.setEnabled(true);
+            addJMXMenuItem.setEnabled(true);
         } finally {
             if(dp != null) {
                 try {
@@ -453,19 +455,43 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_O, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open Log File with dumps");
+                "Open Log File with dumps.");
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+        menuItem = new JMenuItem("Open JMX Connection...",
+                KeyEvent.VK_N);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_N, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Open remote JMX Connection.");
+        menuItem.addActionListener(this);
+        menu.add(menuItem);
+        menu.addSeparator();
+        menuItem = new JMenuItem("Open recent file",
+                null);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Open recent log file.");
         menuItem.addActionListener(this);
         menu.add(menuItem);
         menu.addSeparator();
         addMenuItem = new JMenuItem("Add...",
-                KeyEvent.VK_O);
+                KeyEvent.VK_A);
         addMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_O, ActionEvent.ALT_MASK));
+                KeyEvent.VK_A, ActionEvent.ALT_MASK));
         addMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Open additional Log File with dumps");
+                "Open additional Log File with dumps.");
         addMenuItem.addActionListener(this);
         addMenuItem.setEnabled(false);
         menu.add(addMenuItem);
+        addJMXMenuItem = new JMenuItem("Add JMX Connection...",
+                KeyEvent.VK_J);
+        addJMXMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_J, ActionEvent.ALT_MASK));
+        addJMXMenuItem.getAccessibleContext().setAccessibleDescription(
+                "Request additional thread dumps using a remote jmx connection.");
+        addJMXMenuItem.addActionListener(this);
+        addJMXMenuItem.setEnabled(false);
+        menu.add(addJMXMenuItem);
         loggcMenuItem = new JMenuItem("Open loggc file...",
                 KeyEvent.VK_O);
         loggcMenuItem.getAccessibleContext().setAccessibleDescription(
