@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.33 2006-05-15 20:24:04 irockel Exp $
+ * $Id: TDA.java,v 1.34 2006-05-16 07:22:10 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -500,7 +500,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         loggcMenuItem.setEnabled(false);
         menu.add(loggcMenuItem);
         
-        /*menu.addSeparator();
+        menu.addSeparator();
         menuItem = new JMenuItem("Save Session...",
                 KeyEvent.VK_S);
         menuItem.getAccessibleContext().setAccessibleDescription(
@@ -514,7 +514,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "Open a stored session of logfiles");
         menuItem.addActionListener(this);
         menuItem.setEnabled(false);
-        menu.add(menuItem);*/
+        menu.add(menuItem);
         
         menu.addSeparator();
 
