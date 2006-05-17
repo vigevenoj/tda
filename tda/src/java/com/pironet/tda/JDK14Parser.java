@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.18 2006-05-08 09:21:32 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.19 2006-05-17 08:15:30 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -448,6 +448,7 @@ public class JDK14Parser implements DumpParser {
                     found = true;
                     dContent.append("<pre>");
                     dContent.append(line);
+                    dContent.append("\n");
                 } else if(lineCounter < maxCheckLines) {
                     finished = true;
                 } else {
@@ -463,8 +464,8 @@ public class JDK14Parser implements DumpParser {
                 } else if(line.startsWith("Found") && line.trim().endsWith("deadlocks.")) {
                     finished = true;
                 } else {
-                    dContent.append("<pre>");
                     dContent.append(line);
+                    dContent.append("\n");
                 }
             }
         }
