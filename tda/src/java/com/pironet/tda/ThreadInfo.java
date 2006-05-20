@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadInfo.java,v 1.1 2006-03-01 19:19:37 irockel Exp $
+ * $Id: ThreadInfo.java,v 1.2 2006-05-20 20:03:30 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -30,9 +30,11 @@ package com.pironet.tda;
 public class ThreadInfo {
     public String threadName;
     public String content;
+    public String info;
     
-    public ThreadInfo(String name, String content) {
+    public ThreadInfo(String name, String info, String content) {
         threadName = name;
+        this.info = info;
         this.content = content;
     }
     
