@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.20 2006-05-20 07:09:39 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.21 2006-05-20 20:03:30 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -140,7 +140,7 @@ public class JDK14Parser implements DumpParser {
             if(bis == null) {
                 bis = new BufferedReader(new InputStreamReader(dumpFileStream));
             }
-            overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, "");
+            overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "");
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
             catThreads = new DefaultMutableTreeNode("Threads");
@@ -229,27 +229,24 @@ public class JDK14Parser implements DumpParser {
                         if(title != null) {
                             threads.put(title, content.toString());
                             content.append("</pre></pre>");
-                            createNode(catThreads, title, content);
+                            createNode(catThreads, title, null, content);
                             threadCount++;
                         }
                         if(wContent != null) {
                             wContent.append("</b><hr>");
-                            wContent.append(content);
-                            createNode(catWaiting, title, wContent);
+                            createNode(catWaiting, title, wContent, content);
                             wContent = null;
                             waiting++;
                         }
                         if(sContent != null) {
                             sContent.append("</b><hr>");
-                            sContent.append(content);
-                            createNode(catSleeping, title, sContent);
+                            createNode(catSleeping, title, sContent, content);
                             sContent = null;
                             sleeping++;
                         }
                         if(lContent != null) {
                             lContent.append("</b><hr>");
-                            lContent.append(content);
-                            createNode(catLocking, title, lContent);
+                            createNode(catLocking, title, lContent, content);
                             lContent = null;
                             locking++;
                         }
@@ -486,7 +483,7 @@ public class JDK14Parser implements DumpParser {
         while(iter.hasNext()) {
             String monitor = (String) iter.next();
             Set[] threads = mmap.getFromMonitorMap(monitor);
-            ThreadInfo mi = new ThreadInfo(monitor, "");
+            ThreadInfo mi = new ThreadInfo(monitor, null, "");
             
             DefaultMutableTreeNode monitorNode = new DefaultMutableTreeNode(mi);
             
@@ -534,10 +531,18 @@ public class JDK14Parser implements DumpParser {
     private void createNode(DefaultMutableTreeNode category, String title, StringBuffer content) {
         createNode(category, title, content.toString());
     }
+
+    private void createNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content) {
+        createNode(category, title, info != null ? info.toString() : null, content.toString());
+    }
     
     private void createNode(DefaultMutableTreeNode category, String title, String content) {
+        createNode(category, title, null, content);
+    }
+    
+    private void createNode(DefaultMutableTreeNode category, String title, String info, String content) {
         DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, content));
+        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content));
         category.add(threadInfo);
     }
     
