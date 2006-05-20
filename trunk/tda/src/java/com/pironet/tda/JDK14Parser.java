@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.19 2006-05-17 08:15:30 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.20 2006-05-20 07:09:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -441,7 +441,7 @@ public class JDK14Parser implements DumpParser {
         StringBuffer dContent = new StringBuffer();
         DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode("Deadlocks");
         
-        while(bis.ready() && !finished) {
+        while(bis.ready() && !finished) {            
             String line = bis.readLine();
             if(!found && !line.trim().equals("")) {
                 if (line.startsWith("Found one Java-level deadlock")) {
@@ -461,7 +461,7 @@ public class JDK14Parser implements DumpParser {
                         createNode(catDeadlocks, "Deadlock No. " + (deadlocks), dContent);
                     }
                     dContent = new StringBuffer();
-                } else if(line.startsWith("Found") && line.trim().endsWith("deadlocks.")) {
+                } else if(line.startsWith("Found") && (line.trim().endsWith("deadlocks.") || line.trim().endsWith("deadlock."))) {
                     finished = true;
                 } else {
                     dContent.append(line);
