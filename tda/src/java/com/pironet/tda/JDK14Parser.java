@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.21 2006-05-20 20:03:30 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.22 2006-05-24 09:03:29 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -180,7 +180,7 @@ public class JDK14Parser implements DumpParser {
                 String line = bis.readLine();
                 lineCounter++;
                 if(locked) {
-                    if(line.startsWith("Full thread dump")) {
+                    if(line.contains("Full thread dump")) {
                         locked = false;
                         overallTDI.threadName += " at line " + lineCounter;
                         if(startTime != 0) {
