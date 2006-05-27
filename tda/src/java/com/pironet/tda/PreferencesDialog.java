@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.7 2006-04-22 06:20:30 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.8 2006-05-27 08:10:44 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -45,6 +45,7 @@ import javax.swing.JTextField;
 public class PreferencesDialog extends JDialog {
     private JTabbedPane prefsPane;
     private GeneralPanel generalPanel;
+    private RegExPanel regExPanel;
     private JPanel buttonPanel;
     private JButton okButton;
     private JButton cancelButton;
@@ -64,7 +65,9 @@ public class PreferencesDialog extends JDialog {
     private void initPanel() {
         prefsPane = new JTabbedPane();
         generalPanel = new GeneralPanel();
-        prefsPane.addTab("General", generalPanel);        
+        regExPanel = new RegExPanel();
+        prefsPane.addTab("General", generalPanel);
+        prefsPane.addTab("Date Parsing", regExPanel);
         getContentPane().add(prefsPane,BorderLayout.CENTER);
         okButton = new JButton("Ok");
         cancelButton = new JButton("Cancel");
@@ -98,18 +101,20 @@ public class PreferencesDialog extends JDialog {
         generalPanel.forceLoggcLoading.setSelected(PrefManager.get().getForceLoggcLoading());
         generalPanel.maxLinesField.setText(String.valueOf(PrefManager.get().getMaxRows()));
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
-        generalPanel.dateParsingRegex.setText(PrefManager.get().getDateParsingRegex());
-        generalPanel.isMillisTimeStamp.setSelected(PrefManager.get().getMillisTimeStamp());
         generalPanel.showHotspotClasses.setSelected(PrefManager.get().getShowHotspotClasses());
+
+        regExPanel.dateParsingRegex.setText(PrefManager.get().getDateParsingRegex());
+        regExPanel.isMillisTimeStamp.setSelected(PrefManager.get().getMillisTimeStamp());
     }
     
     private void saveSettings() {
         PrefManager.get().setForceLoggcLoading(generalPanel.forceLoggcLoading.isSelected());
         PrefManager.get().setMaxRows(Integer.parseInt(generalPanel.maxLinesField.getText()));
         PrefManager.get().setStreamResetBuffer(Integer.parseInt(generalPanel.bufferField.getText()));
-        PrefManager.get().setDateParsingRegex(generalPanel.dateParsingRegex.getText());
-        PrefManager.get().setMillisTimeStamp(generalPanel.isMillisTimeStamp.isSelected());
         PrefManager.get().setShowHotspotClasses(generalPanel.showHotspotClasses.isSelected());
+        
+        PrefManager.get().setDateParsingRegex(regExPanel.dateParsingRegex.getText());
+        PrefManager.get().setMillisTimeStamp(regExPanel.isMillisTimeStamp.isSelected());
         dispose();
     }
     
@@ -117,9 +122,7 @@ public class PreferencesDialog extends JDialog {
         JTextField maxLinesField;
         JTextField bufferField;
         JCheckBox forceLoggcLoading;
-        JTextField dateParsingRegex;
         JCheckBox showHotspotClasses;
-        JCheckBox isMillisTimeStamp;
         
         public GeneralPanel() {
             //super(new GridLayout(3,2, 10, 10));
@@ -144,7 +147,24 @@ public class PreferencesDialog extends JDialog {
             layoutPanel.add(forceLoggcLoading);
             add(layoutPanel);
             
+            
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+            layoutPanel.add(new JLabel("Show internal hotspot classes in class histograms"));
+            showHotspotClasses = new JCheckBox();
+            layoutPanel.add(showHotspotClasses);
+            add(layoutPanel);
+        }
+    }
+    
+    public class RegExPanel extends JPanel {
+        JTextField dateParsingRegex;
+        JCheckBox isMillisTimeStamp;
+        
+        RegExPanel() {
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            setPreferredSize(new Dimension(750, 190));
+            
+            JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
             layoutPanel.add(new JLabel("Regular Expression for parsing timestamps in logs files"));
             dateParsingRegex = new JTextField(35);
             layoutPanel.add(dateParsingRegex);
@@ -154,12 +174,6 @@ public class PreferencesDialog extends JDialog {
             layoutPanel.add(new JLabel("Parsed timestamp is a long representing msecs since 1970"));
             isMillisTimeStamp = new JCheckBox();
             layoutPanel.add(isMillisTimeStamp);
-            add(layoutPanel);
-            
-            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
-            layoutPanel.add(new JLabel("Show internal hotspot classes in class histograms"));
-            showHotspotClasses = new JCheckBox();
-            layoutPanel.add(showHotspotClasses);
             add(layoutPanel);
         }
     }
