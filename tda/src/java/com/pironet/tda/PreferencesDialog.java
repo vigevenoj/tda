@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.8 2006-05-27 08:10:44 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.9 2006-05-30 20:22:17 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -29,12 +29,16 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
@@ -51,10 +55,10 @@ public class PreferencesDialog extends JDialog {
     private JButton cancelButton;
     private JFrame frame;
     
-    /** 
-     * Creates a new instance of PreferencesDialog 
+    /**
+     * Creates a new instance of PreferencesDialog
      */
-    public PreferencesDialog(JFrame owner) {        
+    public PreferencesDialog(JFrame owner) {
         super(owner, "Preferences");
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
@@ -79,7 +83,7 @@ public class PreferencesDialog extends JDialog {
         okButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
-                saveSettings();                
+                saveSettings();
             }
         });
         
@@ -89,7 +93,7 @@ public class PreferencesDialog extends JDialog {
                 dispose();
             }
         });
-        reset();        
+        reset();
     }
     
     public void reset() {
@@ -102,8 +106,15 @@ public class PreferencesDialog extends JDialog {
         generalPanel.maxLinesField.setText(String.valueOf(PrefManager.get().getMaxRows()));
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
         generalPanel.showHotspotClasses.setSelected(PrefManager.get().getShowHotspotClasses());
-
-        regExPanel.dateParsingRegex.setText(PrefManager.get().getDateParsingRegex());
+        
+        DefaultComboBoxModel boxModel = new DefaultComboBoxModel();
+        String[] regexs = PrefManager.get().getDateParsingRegexs();
+        for(int i = 0; i < regexs.length; i++) {
+            boxModel.addElement(regexs[i]);
+        }
+        regExPanel.dateParsingRegexs.setModel(boxModel);
+        regExPanel.dateParsingRegexs.setSelectedItem(PrefManager.get().getDateParsingRegex());
+        
         regExPanel.isMillisTimeStamp.setSelected(PrefManager.get().getMillisTimeStamp());
     }
     
@@ -112,8 +123,8 @@ public class PreferencesDialog extends JDialog {
         PrefManager.get().setMaxRows(Integer.parseInt(generalPanel.maxLinesField.getText()));
         PrefManager.get().setStreamResetBuffer(Integer.parseInt(generalPanel.bufferField.getText()));
         PrefManager.get().setShowHotspotClasses(generalPanel.showHotspotClasses.isSelected());
-        
-        PrefManager.get().setDateParsingRegex(regExPanel.dateParsingRegex.getText());
+        PrefManager.get().setDateParsingRegex((String) regExPanel.dateParsingRegexs.getSelectedItem());
+        PrefManager.get().setDateParsingRegexs(regExPanel.dateParsingRegexs.getModel());
         PrefManager.get().setMillisTimeStamp(regExPanel.isMillisTimeStamp.isSelected());
         dispose();
     }
@@ -125,30 +136,29 @@ public class PreferencesDialog extends JDialog {
         JCheckBox showHotspotClasses;
         
         public GeneralPanel() {
-            //super(new GridLayout(3,2, 10, 10));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setPreferredSize(new Dimension(750, 190));
             
-            JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));            
+            JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Maximum amount of lines to check for\n class histogram or possible deadlock informations"));
             maxLinesField = new JTextField(3);
             layoutPanel.add(maxLinesField);
             add(layoutPanel);
             
-            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Stream Reset Buffer Size (in bytes)"));
             bufferField = new JTextField(10);
             layoutPanel.add(bufferField);
             add(layoutPanel);
             
-            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Force Open Loggc Option even if class histograms were found in general logfile"));
             forceLoggcLoading = new JCheckBox();
             layoutPanel.add(forceLoggcLoading);
             add(layoutPanel);
             
             
-            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Show internal hotspot classes in class histograms"));
             showHotspotClasses = new JCheckBox();
             layoutPanel.add(showHotspotClasses);
@@ -156,32 +166,52 @@ public class PreferencesDialog extends JDialog {
         }
     }
     
-    public class RegExPanel extends JPanel {
-        JTextField dateParsingRegex;
+    public class RegExPanel extends JPanel implements ActionListener {
+        JComboBox dateParsingRegexs;
         JCheckBox isMillisTimeStamp;
+        JButton clearButton;
+        String lastSelectedItem = null;
         
         RegExPanel() {
-            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            setLayout(new BorderLayout());
             setPreferredSize(new Dimension(750, 190));
             
-            JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
-            layoutPanel.add(new JLabel("Regular Expression for parsing timestamps in logs files"));
-            dateParsingRegex = new JTextField(35);
-            layoutPanel.add(dateParsingRegex);
-            add(layoutPanel);
+            JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             
-            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
-            layoutPanel.add(new JLabel("Parsed timestamp is a long representing msecs since 1970"));
+            layoutPanel.add(new JLabel("Regular Expression for parsing timestamps in logs files"));
+            dateParsingRegexs = new JComboBox();
+            dateParsingRegexs.setEditable(true);
+            dateParsingRegexs.addActionListener(this);
+            layoutPanel.add(dateParsingRegexs);
+            clearButton = new JButton("Clear");
+            clearButton.addActionListener(this);
+            layoutPanel.add(clearButton);
+                                    
+            add(layoutPanel,BorderLayout.CENTER);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             isMillisTimeStamp = new JCheckBox();
+            layoutPanel.add(new JLabel("Parsed timestamp is a long representing msecs since 1970"));
             layoutPanel.add(isMillisTimeStamp);
-            add(layoutPanel);
+            add(layoutPanel,BorderLayout.SOUTH);
+        }
+        
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == dateParsingRegexs) {
+                if((lastSelectedItem == null) || !((String) dateParsingRegexs.getSelectedItem()).equals(lastSelectedItem)) {
+                    dateParsingRegexs.addItem(dateParsingRegexs.getSelectedItem());
+                    lastSelectedItem = (String) dateParsingRegexs.getSelectedItem();
+                }
+            } else if (e.getSource() == clearButton) {
+                System.out.println("Resetting");
+                dateParsingRegexs.setModel(new DefaultComboBoxModel());
+            }
         }
     }
     
     //Must be called from the event-dispatching thread.
     public void resetFocus() {
-        //searchField.requestFocusInWindow();
     }
-
+    
     
 }
