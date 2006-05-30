@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.35 2006-05-20 20:03:30 irockel Exp $
+ * $Id: TDA.java,v 1.36 2006-05-30 20:40:53 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -603,7 +603,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else if("About TDA".equals(source.getText())) {
             showInfo();
         } else if("Search below node...".equals(source.getText())) {
-            SearchDialog.createAndShowGUI(tree);
+            SearchDialog.createAndShowGUI(tree, frame);
         } else if("Parse loggc-logfile...".equals(source.getText())) {
             parseLoggcLogfile();
         } else if("Find long running threads...".equals(source.getText())) {
@@ -665,6 +665,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Display the window.
         tutDialog.pack();
+        tutDialog.setLocationRelativeTo(frame);
         tutDialog.setVisible(true);
 
     }
@@ -680,6 +681,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Display the window.
         prefsDialog.reset();
         prefsDialog.pack();
+        prefsDialog.setLocationRelativeTo(frame);
         prefsDialog.setVisible(true);
     }
     
@@ -815,6 +817,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             //Display the window.
             longThreadDialog.reset();
             longThreadDialog.pack();
+            longThreadDialog.setLocationRelativeTo(frame);
             longThreadDialog.setVisible(true);
             
         }

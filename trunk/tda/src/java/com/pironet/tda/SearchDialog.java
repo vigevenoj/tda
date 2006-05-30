@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SearchDialog.java,v 1.4 2006-03-01 20:19:43 irockel Exp $
+ * $Id: SearchDialog.java,v 1.5 2006-05-30 20:40:53 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -118,10 +118,7 @@ public class SearchDialog extends JPanel
      * this method should be invoked from the
      * event-dispatching thread.
      */
-    public static void createAndShowGUI(JTree searchTree) {
-        //Make sure we have nice window decorations.
-        //JFrame.setDefaultLookAndFeelDecorated(true);
-        
+    public static void createAndShowGUI(JTree searchTree, JFrame owner) {
         //Create and set up the window.
         if(frame == null) {
             frame = new JFrame("Search below selected node... ");
@@ -143,6 +140,7 @@ public class SearchDialog extends JPanel
         
         //Display the window.
         frame.pack();
+        frame.setLocationRelativeTo(owner);
         frame.setVisible(true);
     }
 }
