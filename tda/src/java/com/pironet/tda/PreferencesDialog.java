@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.9 2006-05-30 20:22:17 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.10 2006-05-30 20:40:53 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -26,6 +26,7 @@ import com.pironet.tda.utils.PrefManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
@@ -33,12 +34,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
@@ -62,8 +61,7 @@ public class PreferencesDialog extends JDialog {
         super(owner, "Preferences");
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
-        initPanel();
-        setLocationRelativeTo(owner);
+        initPanel();        
     }
     
     private void initPanel() {
@@ -186,7 +184,7 @@ public class PreferencesDialog extends JDialog {
             clearButton = new JButton("Clear");
             clearButton.addActionListener(this);
             layoutPanel.add(clearButton);
-                                    
+            
             add(layoutPanel,BorderLayout.CENTER);
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
