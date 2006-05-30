@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.5 2006-04-22 06:20:30 irockel Exp $
+ * $Id: PrefManager.java,v 1.6 2006-05-30 20:22:17 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.io.File;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.ListModel;
 
 /**
  * Singleton class for accessing system preferences.
@@ -121,6 +122,29 @@ public class PrefManager {
     
     public void setDateParsingRegex(String dateRegex) {
         toolPrefs.put("dateParsingRegex", dateRegex);
+    }
+    
+    public String[] getDateParsingRegexs() {
+        String elems = toolPrefs.get("dateParsingRegexs", "");
+        if(elems.equals("")) {
+            elems = getDateParsingRegex();
+        }
+        return(elems.split("§§§§"));
+    }
+    
+    public void setDateParsingRegexs(ListModel regexs) {
+        toolPrefs.put("dateParsingRegexs", regexsToString(regexs));
+    }
+    
+    private String regexsToString(ListModel regexs) {
+        StringBuffer elems = new StringBuffer();
+        for(int i = 0; i < regexs.getSize(); i++) {
+            elems.append(regexs.getElementAt(i));
+            if(i+1 < regexs.getSize()) {
+                elems.append("§§§§");
+            }
+        }
+        return(elems.toString());
     }
     
     public void setMillisTimeStamp(boolean value) {
