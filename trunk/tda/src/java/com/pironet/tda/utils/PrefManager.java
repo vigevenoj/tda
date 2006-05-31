@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.6 2006-05-30 20:22:17 irockel Exp $
+ * $Id: PrefManager.java,v 1.7 2006-05-31 21:05:57 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -145,6 +145,25 @@ public class PrefManager {
             }
         }
         return(elems.toString());
+    }
+    
+    public void addToRecentFiles(String file) {
+        String[] currentFiles = getRecentFiles();
+        int start = currentFiles.length == 10 ? 1 : 0;
+        StringBuffer recentFiles = new StringBuffer();
+        
+        for(int i = start; i < currentFiles.length; i++) {
+            recentFiles.append(currentFiles[i]);
+            recentFiles.append("§§§§");
+        }
+        
+        // append new files
+        recentFiles.append(file);
+        toolPrefs.put("recentFiles", recentFiles.toString());
+    }
+    
+    public String[] getRecentFiles() {
+        return(toolPrefs.get("recentFiles", "").split("§§§§"));
     }
     
     public void setMillisTimeStamp(boolean value) {

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.36 2006-05-30 20:40:53 irockel Exp $
+ * $Id: TDA.java,v 1.37 2006-05-31 21:05:57 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -114,6 +114,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private PreferencesDialog prefsDialog;
     private LongThreadDialog longThreadDialog;
     private JTable histogramTable;
+    private JMenuItem recentFilesMenu;
     
     public TDA() {
         super(new GridLayout(1,0));
@@ -440,6 +441,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
+    // TODO: refactor menu stuff in own class/package
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
         JMenu menu;
@@ -473,12 +475,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem.addActionListener(this);
         menu.add(menuItem);
         menu.addSeparator();
-        menuItem = new JMenuItem("Open recent file",
-                null);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open recent log file.");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
+        createRecentFileMenu();
+        menu.add(recentFilesMenu);
         menu.addSeparator();
         addMenuItem = new JMenuItem("Add...",
                 KeyEvent.VK_A);
@@ -516,6 +514,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem.setEnabled(false);
         menuItem = new JMenuItem("Open stored Session...",
                 KeyEvent.VK_P);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Open a stored session of logfiles");
+        menuItem.addActionListener(this);
+        menuItem.setEnabled(false);
+        menu.add(menuItem);
+        menu.addSeparator();
+        menuItem = new JMenuItem("Open recent stored Session",
+                null);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Open a stored session of logfiles");
         menuItem.addActionListener(this);
@@ -582,12 +588,35 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         return menuBar;
     }
     
+    // TODO: refactor menu stuff in own class/package
+    public void createRecentFileMenu() {
+        String[] recentFiles = PrefManager.get().getRecentFiles();
+        
+        if(recentFiles.length > 1) {
+            recentFilesMenu = new JMenu("Open recent file");
+            
+            for(int i = 1; i < recentFiles.length; i++) {
+                if(!recentFiles[i].equals("")) {
+                    JMenuItem item = new JMenuItem(recentFiles[i]);
+                    ((JMenu) recentFilesMenu).add(item);
+                    item.addActionListener(this);
+                }
+            }
+        } else {
+            recentFilesMenu = new JMenuItem("Open recent file");
+            recentFilesMenu.setEnabled(false);
+        }
+    }
+    
     /**
      * check menu events
      */ 
     public void actionPerformed(ActionEvent e) {
         JMenuItem source = (JMenuItem)(e.getSource());
-        if("Open...".equals(source.getText())) {
+        if(source.getText().startsWith(":\\") || source.getText().startsWith("/") ) {
+            dumpFile = source.getText();
+            init();
+        } else if("Open...".equals(source.getText())) {
             openFile(false);
         } else if("Add...".equals(source.getText())) {
             openFile(true);
@@ -704,6 +733,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 }
                 this.getRootPane().revalidate();
             }
+            PrefManager.get().addToRecentFiles(file.getAbsolutePath());
         }
     }
     
