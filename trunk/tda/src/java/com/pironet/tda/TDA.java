@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.38 2006-06-01 19:18:43 irockel Exp $
+ * $Id: TDA.java,v 1.39 2006-06-01 20:41:32 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -110,8 +110,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
     private LongThreadDialog longThreadDialog;
+    private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
-    private MainMenu mainMenu;
     
     public TDA() {
         super(new GridLayout(1,0));
@@ -179,7 +179,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         
         //Create the nodes.
-        final DefaultMutableTreeNode top = new DefaultMutableTreeNode("Thread Dumps of " + dumpFile);
+        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile("Thread Dumps of " + dumpFile));
         topNodes.add(top);
                         
         final SwingWorker worker = new SwingWorker() {
@@ -200,7 +200,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             tree = new JTree((DefaultMutableTreeNode) topNodes.get(0));
             frame.setTitle("TDA - Thread Dumps of " + dumpFile);
         } else {
-            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Thread Dump files");
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Thread Dump Nodes");
             for(int i = 0; i < topNodes.size(); i++) {
                 root.add((DefaultMutableTreeNode) topNodes.get(i));
             }
@@ -254,7 +254,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else if (nodeInfo instanceof HistogramInfo) {
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
             displayTable((HistogramTableModel) tdi.content);
-        } else if (nodeInfo instanceof String && ((String)nodeInfo).startsWith("Thread Dumps")) {
+        } else if (nodeInfo instanceof Logfile && ((String)((Logfile)nodeInfo).getContent()).startsWith("Thread Dumps")) {
             displayLogFile();
         } else {
             displayContent(null);
@@ -376,9 +376,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
-            mainMenu.getLoggcMenuItem().setEnabled(!dp.isFoundClassHistograms() || PrefManager.get().getForceLoggcLoading());
-            mainMenu.getAddMenuItem().setEnabled(true);
-            mainMenu.getAddJMXMenuItem().setEnabled(true);
+            getMainMenu().getLoggcMenuItem().setEnabled(!dp.isFoundClassHistograms() || PrefManager.get().getForceLoggcLoading());
+            getMainMenu().getAddMenuItem().setEnabled(true);
+            getMainMenu().getAddJMXMenuItem().setEnabled(true);
         } finally {
             if(dp != null) {
                 try {
@@ -388,6 +388,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 }
             }
         }
+    }
+    
+    private MainMenu getMainMenu() {
+        return((MainMenu) frame.getJMenuBar());
     }
     
     public void createPopupMenu() {
@@ -448,6 +452,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             init();
         } else if("Open...".equals(source.getText())) {
             openFile(false);
+        } else if("Open JMX Connection...".equals(source.getText())) {
+            openJMXConnection(true);
+            getMainMenu().getAddMenuItem().setEnabled(true);
+            getMainMenu().getAddJMXMenuItem().setEnabled(true);
+        } else if("Add JMX Connection...".equals(source.getText())) {
+            openJMXConnection(false);
         } else if("Add...".equals(source.getText())) {
             openFile(true);
         } else if("Open loggc file...".equals(source.getText())) {
@@ -683,8 +693,37 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
+    private void openJMXConnection(boolean resetNodes) {
+        if(jmxConnectionDialog == null) {
+            jmxConnectionDialog = new JMXConnectDialog(this, frame, new DefaultMutableTreeNode());
+            jmxConnectionDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        }
+        
+        frame.setEnabled(false);
+        jmxConnectionDialog.pack();
+        jmxConnectionDialog.setLocationRelativeTo(frame);
+        jmxConnectionDialog.setVisible(true);
+        
+        if(resetNodes){
+            topNodes = new Vector();
+        }
+    }
+    
+    public void addJMXConnection(RemoteConnection jmxConnection) {
+        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(jmxConnection);
+        topNodes.add(top);
+                        
+        final SwingWorker worker = new SwingWorker() {
+            public Object construct() {
+                createTree();
+                
+                return null;
+            }
+        };
+        worker.start();
+    }
+    
     private DefaultMutableTreeNode fetchTop(TreePath pathToRoot) {
-        System.out.println("Node=" + pathToRoot.getPathComponent(1).getClass().getName());
         return((DefaultMutableTreeNode) pathToRoot.getPathComponent(1));
     }
     

@@ -17,23 +17,33 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Logfile.java,v 1.1 2006-05-15 20:24:03 irockel Exp $
+ * $Id: Logfile.java,v 1.2 2006-06-01 20:41:32 irockel Exp $
  */
 
 package com.pironet.tda;
 
 /**
- *
+ * root node info object of log file thread dump information
  * @author irockel
  */
 public class Logfile extends DumpsBaseNode {
+    String content;
     
-    /** Creates a new instance of Logfile */
-    public Logfile() {
+    /** 
+     * Creates a new instance of Logfile 
+     */
+    public Logfile(String value) {
+        content = value;
     }
     
+    /**
+     * returns the text content of this node
+     */
     public Object getContent() {
-        return null;
+        return content;
     }
     
+    public String toString() {
+        return((String) getContent());
+    }
 }
