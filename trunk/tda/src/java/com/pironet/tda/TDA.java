@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.37 2006-05-31 21:05:57 irockel Exp $
+ * $Id: TDA.java,v 1.38 2006-06-01 19:18:43 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -106,15 +106,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private InputStream dumpFileStream;
     private JScrollPane htmlView;
     private JScrollPane tableView;
-    private JMenuItem loggcMenuItem;
-    private JMenuItem addMenuItem;
-    private JMenuItem addJMXMenuItem;
     private JTextField filter;
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
     private LongThreadDialog longThreadDialog;
     private JTable histogramTable;
-    private JMenuItem recentFilesMenu;
+    private MainMenu mainMenu;
     
     public TDA() {
         super(new GridLayout(1,0));
@@ -379,9 +376,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
-            loggcMenuItem.setEnabled(!dp.isFoundClassHistograms() || PrefManager.get().getForceLoggcLoading());
-            addMenuItem.setEnabled(true);
-            addJMXMenuItem.setEnabled(true);
+            mainMenu.getLoggcMenuItem().setEnabled(!dp.isFoundClassHistograms() || PrefManager.get().getForceLoggcLoading());
+            mainMenu.getAddMenuItem().setEnabled(true);
+            mainMenu.getAddJMXMenuItem().setEnabled(true);
         } finally {
             if(dp != null) {
                 try {
@@ -440,174 +437,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
         }
     }
-    
-    // TODO: refactor menu stuff in own class/package
-    public JMenuBar createMenuBar() {
-        JMenuBar menuBar;
-        JMenu menu;
-        JMenuItem menuItem;
         
-        //Create the menu bar.
-        menuBar = new JMenuBar();
-        
-        //Build the first menu.
-        menu = new JMenu("File");
-        menu.setMnemonic(KeyEvent.VK_F);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "File Menu");
-        menuBar.add(menu);
-        
-        //a group of JMenuItems
-        menuItem = new JMenuItem("Open...",
-                KeyEvent.VK_O);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_O, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open Log File with dumps.");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-        menuItem = new JMenuItem("Open JMX Connection...",
-                KeyEvent.VK_N);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_N, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open remote JMX Connection.");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-        menu.addSeparator();
-        createRecentFileMenu();
-        menu.add(recentFilesMenu);
-        menu.addSeparator();
-        addMenuItem = new JMenuItem("Add...",
-                KeyEvent.VK_A);
-        addMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_A, ActionEvent.ALT_MASK));
-        addMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Open additional Log File with dumps.");
-        addMenuItem.addActionListener(this);
-        addMenuItem.setEnabled(false);
-        menu.add(addMenuItem);
-        addJMXMenuItem = new JMenuItem("Add JMX Connection...",
-                KeyEvent.VK_J);
-        addJMXMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_J, ActionEvent.ALT_MASK));
-        addJMXMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Request additional thread dumps using a remote jmx connection.");
-        addJMXMenuItem.addActionListener(this);
-        addJMXMenuItem.setEnabled(false);
-        menu.add(addJMXMenuItem);
-        loggcMenuItem = new JMenuItem("Open loggc file...",
-                KeyEvent.VK_O);
-        loggcMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Open GC Log files with heap dumps");
-        loggcMenuItem.addActionListener(this);
-        loggcMenuItem.setEnabled(false);
-        menu.add(loggcMenuItem);
-        
-        menu.addSeparator();
-        menuItem = new JMenuItem("Save Session...",
-                KeyEvent.VK_S);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Save the current session of loaded log files");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-        menuItem.setEnabled(false);
-        menuItem = new JMenuItem("Open stored Session...",
-                KeyEvent.VK_P);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open a stored session of logfiles");
-        menuItem.addActionListener(this);
-        menuItem.setEnabled(false);
-        menu.add(menuItem);
-        menu.addSeparator();
-        menuItem = new JMenuItem("Open recent stored Session",
-                null);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open a stored session of logfiles");
-        menuItem.addActionListener(this);
-        menuItem.setEnabled(false);
-        menu.add(menuItem);
-        
-        menu.addSeparator();
-
-        menuItem = new JMenuItem("Preferences",
-                KeyEvent.VK_P);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Set Preferences");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-        
-        menu.addSeparator();
-
-        menuItem = new JMenuItem("Exit TDA",
-                KeyEvent.VK_O);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_E, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Exit TDA");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-        
-        //Build second menu in the menu bar.
-        menu = new JMenu("Tools");
-        menu.setMnemonic(KeyEvent.VK_T);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "Tools Menu");
-        menuBar.add(menu);
-        
-        menuItem = new JMenuItem("Find long running threads...",
-                KeyEvent.VK_L);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_L, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Exit TDA");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);        
-
-        //Build second menu in the menu bar.
-        menu = new JMenu("Help");
-        menu.setMnemonic(KeyEvent.VK_H);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "Help Menu");
-        menuBar.add(menu);
-        
-        menuItem = new JMenuItem("Tutorial",
-                KeyEvent.VK_A);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "About Thread Dump Analyzer");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-        menu.addSeparator();
-        menuItem = new JMenuItem("About TDA",
-                KeyEvent.VK_A);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "About Thread Dump Analyzer");
-        menuItem.addActionListener(this);
-        menu.add(menuItem);
-        
-        return menuBar;
-    }
-    
-    // TODO: refactor menu stuff in own class/package
-    public void createRecentFileMenu() {
-        String[] recentFiles = PrefManager.get().getRecentFiles();
-        
-        if(recentFiles.length > 1) {
-            recentFilesMenu = new JMenu("Open recent file");
-            
-            for(int i = 1; i < recentFiles.length; i++) {
-                if(!recentFiles[i].equals("")) {
-                    JMenuItem item = new JMenuItem(recentFiles[i]);
-                    ((JMenu) recentFilesMenu).add(item);
-                    item.addActionListener(this);
-                }
-            }
-        } else {
-            recentFilesMenu = new JMenuItem("Open recent file");
-            recentFilesMenu.setEnabled(false);
-        }
-    }
-    
     /**
      * check menu events
      */ 
@@ -881,7 +711,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         Image image = Toolkit.getDefaultToolkit().getImage( "TDA.gif" );
         frame.setIconImage( image );
-        //frame.setIconImage(createImageIcon("resources/images/TDA.gif").getImage());
         
         // init filechooser
         fc = new JFileChooser();
@@ -897,8 +726,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
         
-        frame.setJMenuBar(newContentPane.createMenuBar());
+        frame.setJMenuBar(new MainMenu(newContentPane));
         
+        /**
+         * add window listener for persisting state of main frame
+         */
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 saveState();
@@ -919,7 +751,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         frame.setVisible(true);
     }
-    
+   
+    /**
+     * main startup method for TDA
+     */
     public static void main(String[] args) {
         if(args.length > 0) {
             dumpFile = args[0];
@@ -931,36 +766,5 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 createAndShowGUI();
             }
         });
-    }
-    
-    private class MyRenderer extends DefaultTreeCellRenderer {
-        Icon tutorialIcon;
-        
-        public MyRenderer(Icon icon) {
-            tutorialIcon = icon;
-        }
-        
-        public Component getTreeCellRendererComponent(
-                JTree tree,
-                Object value,
-                boolean sel,
-                boolean expanded,
-                boolean leaf,
-                int row,
-                boolean hasFocus) {
-            
-            super.getTreeCellRendererComponent(
-                    tree, value, sel,
-                    expanded, leaf, row,
-                    hasFocus);
-            /*if (leaf && isTutorialBook(value)) {
-                setIcon(tutorialIcon);
-                setToolTipText("This book is in the Tutorial series.");
-            } else {
-                setToolTipText(null); //no tool tip
-            }*/
-            
-            return this;
-        }
     }
 }
