@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: RemoteConnection.java,v 1.1 2006-05-15 20:24:03 irockel Exp $
+ * $Id: RemoteConnection.java,v 1.2 2006-06-01 20:41:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -28,12 +28,33 @@ package com.pironet.tda;
  * @author irockel
  */
 public class RemoteConnection extends DumpsBaseNode {
+    String content;
     
-    /** Creates a new instance of RemoteConnection */
-    public RemoteConnection() {
+    String connection;
+    
+    /** 
+     * Creates a new instance of RemoteConnection 
+     */
+    public RemoteConnection(String content, String connection) {
+        this.content = content;
+        this.connection = connection;
     }
     
+    /**
+     * return the information content
+     */
     public Object getContent() {
-        return null;
+        return content;
+    }
+    
+    /**
+     * return the raw connect string
+     */
+    public String getConnection() {
+        return connection;
+    }
+    
+    public String toString() {
+        return(((String) getContent()) + getConnection());
     }
 }
