@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JMXConnectDialog.java,v 1.1 2006-06-01 20:41:32 irockel Exp $
+ * $Id: JMXConnectDialog.java,v 1.2 2006-06-02 07:34:13 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -57,6 +57,7 @@ public class JMXConnectDialog extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         
         add(createMainPanel());
+        reset();
     }
     
     /**
@@ -101,5 +102,9 @@ public class JMXConnectDialog extends JDialog {
         });
         
         return(buttonPanel);
-    }    
+    }
+    
+    public void reset() {
+        getRootPane().setDefaultButton(okButton);
+    }
 }
