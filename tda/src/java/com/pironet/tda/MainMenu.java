@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.1 2006-06-01 19:18:43 irockel Exp $
+ * $Id: MainMenu.java,v 1.2 2006-06-02 07:33:57 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -38,7 +38,6 @@ import javax.swing.KeyStroke;
  */
 public class MainMenu extends JMenuBar {
     
-    private JMenuItem loggcMenuItem;
     private JMenuItem addMenuItem;
     private JMenuItem addJMXMenuItem;
     private JMenuItem recentFilesMenu;
@@ -53,14 +52,7 @@ public class MainMenu extends JMenuBar {
         actionListener = listener;
         createMenuBar();
     }
-    
-    /**
-     * get the loggc open menu item
-     */
-    public JMenuItem getLoggcMenuItem() {
-        return(loggcMenuItem);
-    }
-    
+        
     /**
      * get the add file to dump tree menu item
      */
@@ -136,13 +128,6 @@ public class MainMenu extends JMenuBar {
         addJMXMenuItem.addActionListener(actionListener);
         addJMXMenuItem.setEnabled(false);
         menu.add(addJMXMenuItem);
-        loggcMenuItem = new JMenuItem("Open loggc file...",
-                KeyEvent.VK_O);
-        loggcMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Open GC Log files with heap dumps");
-        loggcMenuItem.addActionListener(actionListener);
-        loggcMenuItem.setEnabled(false);
-        menu.add(loggcMenuItem);
         
         menu.addSeparator();
         menuItem = new JMenuItem("Save Session...",
