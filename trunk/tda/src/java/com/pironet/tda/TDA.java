@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.40 2006-06-02 07:33:58 irockel Exp $
+ * $Id: TDA.java,v 1.41 2006-06-02 07:37:00 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -389,7 +389,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
-    private MainMenu getMainMenu() {
+    protected MainMenu getMainMenu() {
         return((MainMenu) frame.getJMenuBar());
     }
     
@@ -453,8 +453,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             openFile(false);
         } else if("Open JMX Connection...".equals(source.getText())) {
             openJMXConnection(true);
-            getMainMenu().getAddMenuItem().setEnabled(true);
-            getMainMenu().getAddJMXMenuItem().setEnabled(true);
         } else if("Add JMX Connection...".equals(source.getText())) {
             openJMXConnection(false);
         } else if("Add...".equals(source.getText())) {

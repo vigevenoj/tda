@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JMXConnectDialog.java,v 1.2 2006-06-02 07:34:13 irockel Exp $
+ * $Id: JMXConnectDialog.java,v 1.3 2006-06-02 07:37:00 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -90,6 +90,9 @@ public class JMXConnectDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
                 backRef.addJMXConnection(new RemoteConnection("Connection to ", connectInfo.getText()));
+                backRef.getMainMenu().getAddMenuItem().setEnabled(true);
+                backRef.getMainMenu().getAddJMXMenuItem().setEnabled(true);
+
                 dispose();
             }
         });
