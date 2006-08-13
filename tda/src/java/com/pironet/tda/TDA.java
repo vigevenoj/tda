@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.41 2006-06-02 07:37:00 irockel Exp $
+ * $Id: TDA.java,v 1.42 2006-08-13 19:33:48 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -377,7 +377,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 top.add(dp.parseNext());
             }
             getMainMenu().getAddMenuItem().setEnabled(true);
-            getMainMenu().getAddJMXMenuItem().setEnabled(true);
+            //getMainMenu().getAddJMXMenuItem().setEnabled(true);
         } finally {
             if(dp != null) {
                 try {
@@ -398,6 +398,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Create the popup menu.
         JPopupMenu popup = new JPopupMenu();
+        
+        /*menuItem = new JMenuItem("Fetch Thread Dump");
+        menuItem.addActionListener(this);
+        popup.add(menuItem);
+        popup.addSeparator();*/
+        
         menuItem = new JMenuItem("Search below node...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
@@ -615,7 +621,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             result = ((ThreadInfo) info).threadName;
         }
         
-        return(result.startsWith(startsWith));
+        return(result != null && result.startsWith(startsWith));
     }
     
     /**
