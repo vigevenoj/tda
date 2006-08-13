@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.2 2006-06-02 07:33:57 irockel Exp $
+ * $Id: MainMenu.java,v 1.3 2006-08-13 19:33:48 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -97,14 +97,14 @@ public class MainMenu extends JMenuBar {
         menuItem.addActionListener(actionListener);
         menu.add(menuItem);
         
-        menuItem = new JMenuItem("Open JMX Connection...",
+        /*menuItem = new JMenuItem("Open JMX Connection...",
                 KeyEvent.VK_N);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_N, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Open remote JMX Connection.");
         menuItem.addActionListener(actionListener);
-        menu.add(menuItem);
+        menu.add(menuItem);*/
         
         menu.addSeparator();
         createRecentFileMenu();
@@ -119,7 +119,7 @@ public class MainMenu extends JMenuBar {
         addMenuItem.addActionListener(actionListener);
         addMenuItem.setEnabled(false);
         menu.add(addMenuItem);
-        addJMXMenuItem = new JMenuItem("Add JMX Connection...",
+        /*addJMXMenuItem = new JMenuItem("Add JMX Connection...",
                 KeyEvent.VK_J);
         addJMXMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_J, ActionEvent.ALT_MASK));
@@ -151,7 +151,7 @@ public class MainMenu extends JMenuBar {
                 "Open a stored session of logfiles");
         menuItem.addActionListener(actionListener);
         menuItem.setEnabled(false);
-        menu.add(menuItem);
+        menu.add(menuItem);*/
         
         menu.addSeparator();
 

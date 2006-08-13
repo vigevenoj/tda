@@ -17,10 +17,13 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: RemoteConnection.java,v 1.2 2006-06-01 20:41:32 irockel Exp $
+ * $Id: RemoteConnection.java,v 1.3 2006-08-13 19:33:48 irockel Exp $
  */
 
 package com.pironet.tda;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * base node for a thread dump from a remote (jmx) connection.
@@ -52,6 +55,21 @@ public class RemoteConnection extends DumpsBaseNode {
      */
     public String getConnection() {
         return connection;
+    }
+    
+    /**
+     * build connect for remote connection
+     */
+    public URL getConnectURL() {
+        // build rmi connect string
+        String urlString = "/jndi/rmi://" + getConnection() + "/jmxrmi";
+        URL connectURL = null;
+        try {
+            connectURL = new URL(urlString);
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+        return(connectURL);
     }
     
     public String toString() {
