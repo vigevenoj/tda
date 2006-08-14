@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.42 2006-08-13 19:33:48 irockel Exp $
+ * $Id: TDA.java,v 1.43 2006-08-14 09:33:46 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -569,6 +569,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             dumpFile = file.getAbsolutePath();
             if(dumpFile != null) {
                 if(addFile) {
+                    // root nodes are moved down.
+                    setRootNodeLevel(1);
+                    
                     // do direct add without re-init.
                     addDumpFile();
                 } else {
@@ -716,6 +719,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     public void addJMXConnection(RemoteConnection jmxConnection) {
         final DefaultMutableTreeNode top = new DefaultMutableTreeNode(jmxConnection);
         topNodes.add(top);
+        // root nodes are moved down.
+        setRootNodeLevel(1);
                         
         final SwingWorker worker = new SwingWorker() {
             public Object construct() {
@@ -727,8 +732,18 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         worker.start();
     }
     
+    private int rootNodeLevel = 0;
+    
+    private int getRootNodeLevel() {
+        return(rootNodeLevel);
+    }
+    
+    private void setRootNodeLevel(int value) {
+       rootNodeLevel = value;
+    }
+    
     private DefaultMutableTreeNode fetchTop(TreePath pathToRoot) {
-        return((DefaultMutableTreeNode) pathToRoot.getPathComponent(1));
+        return((DefaultMutableTreeNode) pathToRoot.getPathComponent(getRootNodeLevel()));
     }
     
     /**
