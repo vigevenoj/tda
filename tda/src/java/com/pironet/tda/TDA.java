@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.43 2006-08-14 09:33:46 irockel Exp $
+ * $Id: TDA.java,v 1.44 2006-09-21 09:52:02 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -145,7 +145,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private String getInfoText() {
         StringBuffer info = new StringBuffer("<html><body><b>TDA - Thread Dump Analyzer</b><p>");
         info.append("(C)opyright 2006 - Ingo Rockel<br>");
-        info.append("Version: <b>1.1</b><p>");
+        info.append("Version: <b>1.2</b><p>");
         info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></body></html>");
         return(info.toString());
     }
@@ -164,11 +164,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         addDumpFile();
     }
     
+    private boolean openFileActionRunning = false;
+    
     /**
      * add the set dumpFileStream to the tree
-     * @param clearTree true, if the tree should be cleared before.
      */
     private void addDumpFile() {
+        String[] file = new String[1];
+        file[0] = dumpFile;
+        addDumpFiles(file);
+    }
+    
+    /**
+     * add the set dumpFileStream to the tree
+     */
+    private void addDumpFiles(String[] files) {
         try {
             dumpFileStream = new ProgressMonitorInputStream(
                     this,
@@ -186,6 +196,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             public Object construct() {
                 createNodes(top, dumpFileStream);
                 createTree();
+                tree.collapseRow(3);
                 
                 return null;
             }
@@ -376,7 +387,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
-            getMainMenu().getAddMenuItem().setEnabled(true);
             //getMainMenu().getAddJMXMenuItem().setEnabled(true);
         } finally {
             if(dp != null) {
@@ -418,6 +428,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Find long running threads...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
+        popup.addSeparator();
+        menuItem = new JMenuItem("Close current thread dump...");
+        menuItem.addActionListener(this);
+        popup.add(menuItem);
         
         //Add listener to the text area so the popup menu can come up.
         MouseListener popupListener = new PopupListener(popup);
@@ -454,15 +468,19 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         JMenuItem source = (JMenuItem)(e.getSource());
         if(source.getText().startsWith(":\\") || source.getText().startsWith("/") ) {
             dumpFile = source.getText();
-            init();
+            if(firstFile) {
+                init();
+                firstFile = false;
+            } else {
+                setRootNodeLevel(1);
+                addDumpFile();
+            }
         } else if("Open...".equals(source.getText())) {
-            openFile(false);
+            openFile();
         } else if("Open JMX Connection...".equals(source.getText())) {
             openJMXConnection(true);
         } else if("Add JMX Connection...".equals(source.getText())) {
             openJMXConnection(false);
-        } else if("Add...".equals(source.getText())) {
-            openFile(true);
         } else if("Open loggc file...".equals(source.getText())) {
             openLoggcFile();
         } else if("Preferences".equals(source.getText())) {
@@ -556,30 +574,40 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         prefsDialog.setLocationRelativeTo(frame);
         prefsDialog.setVisible(true);
     }
+
+    /**
+     * flag indicates if next file to open will be the first file (so fresh open)
+     * or if a add has to be performed.
+     */
+    private boolean firstFile = true;
     
     /**
      * open a log file.
      * @param addFile check if a log file should be added or if tree should be cleared.
      */
-    private void openFile(boolean addFile) {
+    private void openFile() {
         int returnVal = fc.showOpenDialog(this.getRootPane());
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            dumpFile = file.getAbsolutePath();
-            if(dumpFile != null) {
-                if(addFile) {
-                    // root nodes are moved down.
-                    setRootNodeLevel(1);
-                    
-                    // do direct add without re-init.
-                    addDumpFile();
-                } else {
-                    init();
+            File[] files = fc.getSelectedFiles();
+            for (int i = 0; i < files.length; i++) {
+                dumpFile = files[i].getAbsolutePath();
+                if(dumpFile != null) {
+                    System.out.println("firstFile is " + firstFile);
+                    if(!firstFile) {
+                        // root nodes are moved down.
+                        setRootNodeLevel(1);
+
+                        // do direct add without re-init.
+                        addDumpFile();
+                    } else {
+                        init();
+                        firstFile = false;
+                    }
                 }
-                this.getRootPane().revalidate();
+                PrefManager.get().addToRecentFiles(files[i].getAbsolutePath());
             }
-            PrefManager.get().addToRecentFiles(file.getAbsolutePath());
+            this.getRootPane().revalidate();
         }
     }
     
@@ -772,6 +800,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         // init filechooser
         fc = new JFileChooser();
+        fc.setMultiSelectionEnabled(true);
         fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
         
         frame.getRootPane().setPreferredSize(PrefManager.get().getPreferredSize());
