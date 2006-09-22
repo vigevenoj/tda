@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.44 2006-09-21 09:52:02 irockel Exp $
+ * $Id: TDA.java,v 1.45 2006-09-22 09:21:12 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -115,14 +115,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     public TDA() {
         super(new GridLayout(1,0));
-        //setUIFont (new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,10));        
+        setUIFont (new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,11));        
         tree = new JTree();
         
         //Create the HTML viewing pane.
         htmlPane = new JEditorPane("text/html", getInfoText());
         htmlPane.setEditable(false);
         
-        JEditorPane emptyPane = new JEditorPane("text/html", "<i>empty</i>");
+        JEditorPane emptyPane = new JEditorPane("text/html", "<i><font size=-1>empty</i>");
         emptyPane.setEditable(false);
         
         htmlView = new JScrollPane(htmlPane);
@@ -143,10 +143,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private String getInfoText() {
-        StringBuffer info = new StringBuffer("<html><body><b>TDA - Thread Dump Analyzer</b><p>");
+        StringBuffer info = new StringBuffer("<html><body><font size=-1><b>TDA - Thread Dump Analyzer</b><p>");
         info.append("(C)opyright 2006 - Ingo Rockel<br>");
         info.append("Version: <b>1.2</b><p>");
-        info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></body></html>");
+        info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></font></body></html>");
         return(info.toString());
     }
     
@@ -428,10 +428,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Find long running threads...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        popup.addSeparator();
-        menuItem = new JMenuItem("Close current thread dump...");
-        menuItem.addActionListener(this);
-        popup.add(menuItem);
         
         //Add listener to the text area so the popup menu can come up.
         MouseListener popupListener = new PopupListener(popup);
@@ -498,6 +494,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             parseLoggcLogfile();
         } else if("Find long running threads...".equals(source.getText())) {
             findLongRunningThreads();
+        } else if("Close...".equals(source.getText())) {
+            closeCurrentDump();
         } else if("Diff Selection".equals(source.getText())) {
             TreePath[] paths = tree.getSelectionPaths();
             if(paths.length < 2) {
@@ -516,24 +514,28 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     private void showInfo() {
         JOptionPane.showMessageDialog(this.getRootPane(),
-                "TDA - Thread Dump Analyzer\n\n" +
-                "Version: 1.1\n\n" +
-                "(c) by Ingo Rockel\n\n" +
-                "TDA is free software; you can redistribute it and/or modify\n" +
-                "it under the terms of the Lesser GNU General Public License as published by\n" +
-                "the Free Software Foundation; either version 2.1 of the License, or\n" +
-                "(at your option) any later version.\n\n" +
-                "TDA is distributed in the hope that it will be useful,\n" +
-                "but WITHOUT ANY WARRANTY; without even the implied warranty of\n" +
-                "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" +
-                "Lesser GNU General Public License for more details.\n\n" +
-                "You should have received a copy of the Lesser GNU General Public License\n" +
-                "along with TDA; if not, write to the Free Software\n" +
-                "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA\n\n",
+                "<html><body><p><b>TDA - Thread Dump Analyzer</b></p><br>" +
+                "<p>Version: 1.2</p><br>" +
+                "<p>(c) by Ingo Rockel &lt;irockel@dev.java.net&gt;</p><br>" +
+                "<p>TDA is free software; you can redistribute it and/or modify<br>" +
+                "it under the terms of the Lesser GNU General Public License as published by<br>" +
+                "the Free Software Foundation; either version 2.1 of the License, or<br>" +
+                "(at your option) any later version.</p><br>" +
+                "TDA is distributed in the hope that it will be useful,<br>" +
+                "but WITHOUT ANY WARRANTY; without even the implied warranty of<br>" +
+                "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br>" +
+                "Lesser GNU General Public License for more details.<p><br>" +
+                "You should have received a copy of the Lesser GNU General Public License<br>" +
+                "along with TDA; if not, write to the Free Software<br>" +
+                "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA<p>",
                 "Copyright Notice", JOptionPane.INFORMATION_MESSAGE);
 
     }
     
+    /**
+     * set the ui font for all tda stuff (needs to be done for create of objects)
+     * @param f the font to user
+     */
     private void setUIFont(javax.swing.plaf.FontUIResource f){
         //
         // sets the default font for all Swing components.
@@ -593,7 +595,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             for (int i = 0; i < files.length; i++) {
                 dumpFile = files[i].getAbsolutePath();
                 if(dumpFile != null) {
-                    System.out.println("firstFile is " + firstFile);
                     if(!firstFile) {
                         // root nodes are moved down.
                         setRootNodeLevel(1);
@@ -625,21 +626,51 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     /**
-     * load a loggc log file based on the current selected thread dump
+     * search for dump root node of for given node
+     * @param node starting to search for
+     * @return root node returns null, if no root was found.
      */
-    private void parseLoggcLogfile() {
+    private DefaultMutableTreeNode getDumpRootNode(DefaultMutableTreeNode node) {
         // search for starting node
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-        tree.getLastSelectedPathComponent();
         while(node != null && !checkNameFromNode(node, "Full Thread Dump")) {
             node = (DefaultMutableTreeNode) node.getParent();
         }
+        
+        return(node);
+    }
+    
+    /**
+     * load a loggc log file based on the current selected thread dump
+     */
+    private void parseLoggcLogfile() {
+        DefaultMutableTreeNode node = getDumpRootNode((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
         
         // get pos of this node in the thread dump hierarchy.
         int pos = node.getParent().getIndex(node);
         
         DumpParserFactory.get().getCurrentDumpParser().setDumpHistogramCounter(pos);
         openLoggcFile();
+    }
+    
+    /**
+     * close the currently selected dump.
+     */
+    private void closeCurrentDump() {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        
+        while(node != null && !checkNameFromNode(node, "Thread Dumps")) {
+            node = (DefaultMutableTreeNode) node.getParent();
+        }
+        
+        Object[] options = { "Close File", "Cancel close" };
+        
+        String fileName = node.getUserObject().toString();
+        fileName = fileName.substring(fileName.indexOf('/'));
+        
+        JOptionPane.showOptionDialog(null, "<html><body>Are you sure, you want to close the currently selected dump file<br><b>" + fileName + 
+                "</b></body></html>", "Confirm closing...",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
     }
         
     /**
@@ -650,6 +681,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         String result = null;
         if(info instanceof ThreadInfo) {
             result = ((ThreadInfo) info).threadName;
+        } else if (info instanceof DumpsBaseNode) {
+            result = (String) ((DumpsBaseNode) info).getContent();
         }
         
         return(result != null && result.startsWith(startsWith));
@@ -798,10 +831,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         Image image = Toolkit.getDefaultToolkit().getImage( "TDA.gif" );
         frame.setIconImage( image );
         
-        // init filechooser
-        fc = new JFileChooser();
-        fc.setMultiSelectionEnabled(true);
-        fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
         
         frame.getRootPane().setPreferredSize(PrefManager.get().getPreferredSize());
         
@@ -814,6 +843,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         frame.setContentPane(newContentPane);
         
         frame.setJMenuBar(new MainMenu(newContentPane));
+        
+        // init filechooser
+        fc = new JFileChooser();
+        fc.setMultiSelectionEnabled(true);
+        fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
         
         /**
          * add window listener for persisting state of main frame
