@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.22 2006-05-24 09:03:29 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.23 2006-09-22 09:21:12 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -255,7 +255,7 @@ public class JDK14Parser implements DumpParser {
                         }
                         
                         title = line.trim();
-                        content = new StringBuffer("<pre>");
+                        content = new StringBuffer("<font size=-1><pre>");
                         content.append(line);
                         content.append("\n");
                     } else if (line.trim().startsWith("at ")) {
@@ -309,7 +309,7 @@ public class JDK14Parser implements DumpParser {
                     }
                 }
             }
-            StringBuffer statData = new StringBuffer("<table border=0><tr><td>Overall Thread Count</td><td><b>");
+            StringBuffer statData = new StringBuffer("<font size=-1><table border=0><tr><td>Overall Thread Count</td><td><b>");
             statData.append(threadCount);
             statData.append("</b></td></tr>\n\n<tr><td>Number of threads waiting for a monitor</td><td><b>");
             statData.append(waiting);
@@ -513,7 +513,7 @@ public class JDK14Parser implements DumpParser {
                 createNode(monitorNode, "waiting " + thread[0], thread[1]);
                 waits++;
             }
-            StringBuffer statData = new StringBuffer ("<table border=0><tr><td>Threads locking monitor</td><td><b>");
+            StringBuffer statData = new StringBuffer ("<font size=-1><table border=0><tr><td>Threads locking monitor</td><td><b>");
             statData.append(locks);
             statData.append("</b></td></tr>\n\n<tr><td>");
             statData.append("Threads sleeping on monitor</td><td><b>");
