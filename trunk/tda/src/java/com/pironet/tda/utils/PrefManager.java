@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.7 2006-05-31 21:05:57 irockel Exp $
+ * $Id: PrefManager.java,v 1.8 2006-09-22 11:30:44 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -79,6 +79,16 @@ public class PrefManager {
     public void setPreferredSize(Dimension size) {
         toolPrefs.putInt("windowHeight", size.height);
         toolPrefs.putInt("windowWidth", size.width);
+    }
+    
+    public Dimension getPreferredSizeFileChooser() {
+        return(new Dimension(toolPrefs.getInt("fileChooser.windowWidth", 0),
+               toolPrefs.getInt("fileChooser.windowHeight", 0)));
+    }
+    
+    public void setPreferredSizeFileChooser(Dimension size) {
+        toolPrefs.putInt("fileChooser.windowHeight", size.height);
+        toolPrefs.putInt("fileChooser.windowWidth", size.width);
     }
     
     public Point getWindowPos() {

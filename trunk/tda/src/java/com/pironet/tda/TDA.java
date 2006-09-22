@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.46 2006-09-22 11:20:32 irockel Exp $
+ * $Id: TDA.java,v 1.47 2006-09-22 11:30:43 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -588,9 +588,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      * @param addFile check if a log file should be added or if tree should be cleared.
      */
     private void openFile() {
-        System.out.println("fc.height=" + fc.getHeight() + " // fc.width=" + fc.getWidth());
+        if(firstFile && (PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
+            fc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
+        }
         int returnVal = fc.showOpenDialog(this.getRootPane());
-        System.out.println("fc.height=" + fc.getHeight() + " // fc.width=" + fc.getWidth());
+        fc.setPreferredSize(fc.getSize());
+        PrefManager.get().setPreferredSizeFileChooser(fc.getSize());
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File[] files = fc.getSelectedFiles();
