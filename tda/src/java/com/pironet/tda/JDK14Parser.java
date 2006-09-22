@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.24 2006-09-22 09:38:47 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.25 2006-09-22 11:20:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -496,7 +496,7 @@ public class JDK14Parser implements DumpParser {
                 locks++;
             }
             
-            // first the locks
+            // now the sleeps
             Iterator iterSleeps = threads[2].iterator();
             int sleeps = 0;
             while(iterSleeps.hasNext()) {
