@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.25 2006-09-22 11:20:32 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.26 2006-09-23 15:15:35 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -40,6 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -143,19 +144,19 @@ public class JDK14Parser implements DumpParser {
             overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "");
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
-            catThreads = new DefaultMutableTreeNode("Threads");
+            catThreads = new DefaultMutableTreeNode(new Category("Threads"));
             threadDump.add(catThreads);
             
-            catWaiting = new DefaultMutableTreeNode("Threads waiting for Monitors");
+            catWaiting = new DefaultMutableTreeNode(new Category("Threads waiting for Monitors"));
             threadDump.add(catWaiting);
             
-            catSleeping = new DefaultMutableTreeNode("Threads sleeping on Monitors");
+            catSleeping = new DefaultMutableTreeNode(new Category("Threads sleeping on Monitors"));
             threadDump.add(catSleeping);
 
-            catLocking = new DefaultMutableTreeNode("Threads locking Monitors");
+            catLocking = new DefaultMutableTreeNode(new Category("Threads locking Monitors"));
             threadDump.add(catLocking);
             
-            catMonitors = new DefaultMutableTreeNode("Monitors");
+            catMonitors = new DefaultMutableTreeNode(new Category("Monitors"));
             threadDump.add(catMonitors);
             
             String title = null;
@@ -229,24 +230,24 @@ public class JDK14Parser implements DumpParser {
                         if(title != null) {
                             threads.put(title, content.toString());
                             content.append("</pre></pre>");
-                            createNode(catThreads, title, null, content);
+                            createCategoryNode(catThreads, title, null, content);
                             threadCount++;
                         }
                         if(wContent != null) {
                             wContent.append("</b><hr>");
-                            createNode(catWaiting, title, wContent, content);
+                            createCategoryNode(catWaiting, title, wContent, content);
                             wContent = null;
                             waiting++;
                         }
                         if(sContent != null) {
                             sContent.append("</b><hr>");
-                            createNode(catSleeping, title, sContent, content);
+                            createCategoryNode(catSleeping, title, sContent, content);
                             sContent = null;
                             sleeping++;
                         }
                         if(lContent != null) {
                             lContent.append("</b><hr>");
-                            createNode(catLocking, title, lContent, content);
+                            createCategoryNode(catLocking, title, lContent, content);
                             lContent = null;
                             locking++;
                         }
@@ -324,14 +325,14 @@ public class JDK14Parser implements DumpParser {
             
             // last thread
             if(title != null) {
-                createNode(catThreads, title, content);
+                createCategoryNode(catThreads, title, null, content);
             }
             if(wContent != null) {
-                createNode(catLocking, title, wContent);
+                createCategoryNode(catLocking, title, null, wContent);
                 wContent = null;
             }
             if(lContent != null) {
-                createNode(catLocking, title, lContent);
+                createCategoryNode(catLocking, title, null, lContent);
                 lContent = null;
             }
             
@@ -524,7 +525,7 @@ public class JDK14Parser implements DumpParser {
             statData.append("</b></td></tr></table>\n\n");
             mi.content = statData.toString();
             
-            catMonitors.add(monitorNode);
+            ((Category)catMonitors.getUserObject()).addToCatTree(monitorNode);
         }
     }
     
@@ -544,6 +545,12 @@ public class JDK14Parser implements DumpParser {
         DefaultMutableTreeNode threadInfo = null;
         threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content));
         category.add(threadInfo);
+    }
+    
+    private void createCategoryNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content) {
+        DefaultMutableTreeNode threadInfo = null;
+        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString()));
+        ((Category)category.getUserObject()).addToCatTree(threadInfo);
     }
     
     private String getDumpStringFromTreePath(TreePath path) {
