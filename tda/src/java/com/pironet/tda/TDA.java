@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.47 2006-09-22 11:30:43 irockel Exp $
+ * $Id: TDA.java,v 1.48 2006-09-23 15:15:36 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -100,12 +100,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JEditorPane htmlPane;
     private JTree tree;
     private JSplitPane splitPane;
+    private JSplitPane topSplitPane;
     private TreePath mergeDump;
     private Map threadDumps;
     private Vector topNodes;
     private InputStream dumpFileStream;
     private JScrollPane htmlView;
     private JScrollPane tableView;
+    private JScrollPane dumpView;
     private JTextField filter;
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
@@ -128,10 +130,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         htmlView = new JScrollPane(htmlPane);
         JScrollPane emptyView = new JScrollPane(emptyPane);
         
+        // create the top split pane 
+        topSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        topSplitPane.setLeftComponent(emptyView);
+        
         //Add the scroll panes to a split pane.
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setBottomComponent(htmlView);
-        splitPane.setTopComponent(emptyView);
+        splitPane.setTopComponent(topSplitPane);
         
         Dimension minimumSize = new Dimension(200, 50);
         htmlView.setMinimumSize(minimumSize);
@@ -225,7 +231,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Create the scroll pane and add the tree to it.
         JScrollPane treeView = new JScrollPane(tree);
         
-        splitPane.setTopComponent(treeView);
+        topSplitPane.setLeftComponent(treeView);
         
         Dimension minimumSize = new Dimension(200, 50);
         treeView.setMinimumSize(minimumSize);
@@ -243,7 +249,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     /** Required by TreeSelectionListener interface. */
     public void valueChanged(TreeSelectionEvent e) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-        tree.getLastSelectedPathComponent();
+        e.getPath().getLastPathComponent();
         
         if (node == null) {
             return;
@@ -259,14 +265,20 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             } else {
                 displayContent(ti.content);
             }
-            if (DEBUG) {
-                System.out.print(ti.content + ":  \n    ");
-            }
         } else if (nodeInfo instanceof HistogramInfo) {
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
             displayTable((HistogramTableModel) tdi.content);
         } else if (nodeInfo instanceof Logfile && ((String)((Logfile)nodeInfo).getContent()).startsWith("Thread Dumps")) {
             displayLogFile();
+        } else if (nodeInfo instanceof Category) {
+            Category cat = ((Category) nodeInfo);
+            if(cat.getLastView() == null) {
+                dumpView = new JScrollPane(cat.getCatTree(this));
+                topSplitPane.setRightComponent(dumpView);
+                cat.setLastView(dumpView);
+            } else {
+                topSplitPane.setRightComponent(cat.getLastView());
+            }
         } else {
             displayContent(null);
         }
@@ -661,21 +673,31 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      * close the currently selected dump.
      */
     private void closeCurrentDump() {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        TreePath selPath = tree.getSelectionPath();
+        //DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
         
-        while(node != null && !checkNameFromNode(node, "Thread Dumps")) {
-            node = (DefaultMutableTreeNode) node.getParent();
+        while(selPath != null && !checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), "Thread Dumps")) {
+            
+            selPath = selPath.getParentPath();
         }
         
         Object[] options = { "Close File", "Cancel close" };
         
-        String fileName = node.getUserObject().toString();
+        String fileName = ((DefaultMutableTreeNode) selPath.getLastPathComponent()).getUserObject().toString();
         fileName = fileName.substring(fileName.indexOf('/'));
         
-        JOptionPane.showOptionDialog(null, "<html><body>Are you sure, you want to close the currently selected dump file<br><b>" + fileName + 
+        int selectValue = JOptionPane.showOptionDialog(null, "<html><body>Are you sure, you want to close the currently selected dump file<br><b>" + fileName + 
                 "</b></body></html>", "Confirm closing...",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
+        
+        // if first option "close file" is selected.
+        if(selectValue == 0) {
+            System.out.println("Deleting node");
+            tree.removeSelectionPath(selPath);
+            this.getRootPane().revalidate();
+        }
+        
     }
         
     /**

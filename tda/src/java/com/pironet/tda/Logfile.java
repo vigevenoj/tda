@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Logfile.java,v 1.2 2006-06-01 20:41:32 irockel Exp $
+ * $Id: Logfile.java,v 1.3 2006-09-23 15:15:36 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -27,7 +27,7 @@ package com.pironet.tda;
  * @author irockel
  */
 public class Logfile extends DumpsBaseNode {
-    String content;
+    private String content;
     
     /** 
      * Creates a new instance of Logfile 
