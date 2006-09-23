@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.1 2006-09-23 15:15:35 irockel Exp $
+ * $Id: Category.java,v 1.2 2006-09-23 16:33:20 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -39,6 +39,8 @@ public class Category {
     
     JScrollPane lastView = null;
     
+    JTree catTree = null;
+    
     /** 
      * Creates a new instance of Category 
      */
@@ -58,9 +60,12 @@ public class Category {
      * fetch the tree with all threads belonging to this category
      */
     public JTree getCatTree(TreeSelectionListener listener) {
-        JTree catTree = new JTree(rootNode);
-        catTree.setRootVisible(false);
-        catTree.addTreeSelectionListener(listener);
+        if(catTree == null) {
+            catTree = new JTree(rootNode);
+            catTree.setRootVisible(false);
+            catTree.addTreeSelectionListener(listener);
+        }
+        
         return(catTree);
     }
     
