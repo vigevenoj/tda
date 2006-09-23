@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.48 2006-09-23 15:15:36 irockel Exp $
+ * $Id: TDA.java,v 1.49 2006-09-23 16:16:12 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -91,6 +91,7 @@ import javax.swing.tree.TreePath;
 public class TDA extends JPanel implements TreeSelectionListener, ActionListener {
     private static JFileChooser fc;
     private static boolean DEBUG = false;
+    private static int DIVIDER_SIZE = 4;
     protected static JFrame frame;
 
     private static String dumpFile;
@@ -133,11 +134,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         // create the top split pane 
         topSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         topSplitPane.setLeftComponent(emptyView);
+        topSplitPane.setDividerSize(DIVIDER_SIZE);
         
         //Add the scroll panes to a split pane.
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setBottomComponent(htmlView);
         splitPane.setTopComponent(topSplitPane);
+        splitPane.setDividerSize(DIVIDER_SIZE);
         
         Dimension minimumSize = new Dimension(200, 50);
         htmlView.setMinimumSize(minimumSize);
@@ -195,7 +198,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         
         //Create the nodes.
-        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile("Thread Dumps of " + dumpFile));
+        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile(dumpFile));
         topNodes.add(top);
                         
         final SwingWorker worker = new SwingWorker() {
@@ -222,6 +225,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 root.add((DefaultMutableTreeNode) topNodes.get(i));
             }
             tree = new JTree(root);
+            tree.setRootVisible(false);
             frame.setTitle(frame.getTitle() + " ...");
         }
         
@@ -271,14 +275,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else if (nodeInfo instanceof Logfile && ((String)((Logfile)nodeInfo).getContent()).startsWith("Thread Dumps")) {
             displayLogFile();
         } else if (nodeInfo instanceof Category) {
-            Category cat = ((Category) nodeInfo);
-            if(cat.getLastView() == null) {
-                dumpView = new JScrollPane(cat.getCatTree(this));
-                topSplitPane.setRightComponent(dumpView);
-                cat.setLastView(dumpView);
-            } else {
-                topSplitPane.setRightComponent(cat.getLastView());
-            }
+            displayCategory(nodeInfo);
         } else {
             displayContent(null);
         }
@@ -293,6 +290,34 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         htmlPane.setText("");
         htmlPane.setCaretPosition(0);
+    }
+    
+    /**
+     * display selected category in upper right frame
+     */
+    private void displayCategory(Object nodeInfo) {
+        Category cat = ((Category) nodeInfo);
+        Dimension size = null;
+        topSplitPane.getLeftComponent().setPreferredSize(topSplitPane.getLeftComponent().getSize()); 
+        
+        if(topSplitPane.getRightComponent() != null) {
+            size = topSplitPane.getRightComponent().getSize();
+        }
+        if(cat.getLastView() == null) {
+            JTree catTree = cat.getCatTree(this);
+            dumpView = new JScrollPane(catTree);
+            if(size != null) {
+                dumpView.setPreferredSize(size);
+            }
+            
+            topSplitPane.setRightComponent(dumpView);
+            cat.setLastView(dumpView);
+        } else {
+            if(size != null) {
+                cat.getLastView().setPreferredSize(size);
+            }
+            topSplitPane.setRightComponent(cat.getLastView());
+        }
     }
     
     private void displayContent(String text) {
@@ -676,7 +701,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         TreePath selPath = tree.getSelectionPath();
         //DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
         
-        while(selPath != null && !checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), "Thread Dumps")) {
+        while(selPath != null && !checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), File.separator)) {
             
             selPath = selPath.getParentPath();
         }
