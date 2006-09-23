@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.49 2006-09-23 16:16:12 irockel Exp $
+ * $Id: TDA.java,v 1.50 2006-09-23 16:33:21 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -261,14 +261,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         Object nodeInfo = node.getUserObject();
         if (nodeInfo instanceof ThreadInfo) {
-            ThreadInfo ti = (ThreadInfo)nodeInfo;
-            if(ti.info != null) {
-                StringBuffer sb = new StringBuffer(ti.info);
-                sb.append(ti.content);
-                displayContent(sb.toString());
-            } else {
-                displayContent(ti.content);
-            }
+            displayThreadInfo(nodeInfo);
         } else if (nodeInfo instanceof HistogramInfo) {
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
             displayTable((HistogramTableModel) tdi.content);
@@ -281,6 +274,17 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         if (DEBUG) {
             System.out.println(nodeInfo.toString());
+        }
+    }
+
+    private void displayThreadInfo(Object nodeInfo) {
+        ThreadInfo ti = (ThreadInfo)nodeInfo;
+        if(ti.info != null) {
+            StringBuffer sb = new StringBuffer(ti.info);
+            sb.append(ti.content);
+            displayContent(sb.toString());
+        } else {
+            displayContent(ti.content);
         }
     }
     
@@ -317,6 +321,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 cat.getLastView().setPreferredSize(size);
             }
             topSplitPane.setRightComponent(cat.getLastView());
+        }
+        if(cat.getCatTree(this).getSelectionPath() != null) {
+            displayThreadInfo(((DefaultMutableTreeNode) cat.getCatTree(this).getSelectionPath().getLastPathComponent()).getUserObject());
+        } else {
+            displayContent(null);
         }
     }
     
