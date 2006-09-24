@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.27 2006-09-24 07:38:37 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.28 2006-09-24 08:23:15 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -662,7 +662,7 @@ public class JDK14Parser implements DumpParser {
                     }
                 
                     if(occurence >= (minOccurence-1)) {
-                        StringBuffer content = new StringBuffer("<pre>").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
+                        StringBuffer content = new StringBuffer("<pre><font size=-1>").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
                         for(int i = 1; i < dumps.length; i++) {
                             if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
                                 content.append("\n\n---------------------------------\n\n");
