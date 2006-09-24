@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SearchDialog.java,v 1.5 2006-05-30 20:40:53 irockel Exp $
+ * $Id: SearchDialog.java,v 1.6 2006-09-24 07:38:38 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -89,7 +89,7 @@ public class SearchDialog extends JPanel
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
         
-        if (SEARCH.equals(cmd)) { //Process the password.
+        if (SEARCH.equals(cmd)) {
             TreePath searchPath = searchTree.getNextMatch(searchField.getText(),searchTree.getRowCount()-1,Position.Bias.Forward);
             
             //searchTree.expandRow(searchTree.getRowCount()+1);
@@ -121,7 +121,7 @@ public class SearchDialog extends JPanel
     public static void createAndShowGUI(JTree searchTree, JFrame owner) {
         //Create and set up the window.
         if(frame == null) {
-            frame = new JFrame("Search below selected node... ");
+            frame = new JFrame("Search this category... ");
             frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             
             //Create and set up the content pane.

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.26 2006-09-23 15:15:35 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.27 2006-09-24 07:38:37 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -456,7 +456,7 @@ public class JDK14Parser implements DumpParser {
                 if(line.startsWith("Found one Java-level deadlock")) {
                     if(dContent.length() > 0) {
                         deadlocks++;
-                        createNode(catDeadlocks, "Deadlock No. " + (deadlocks), dContent);
+                        createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent);
                     }
                     dContent = new StringBuffer();
                 } else if(line.startsWith("Found") && (line.trim().endsWith("deadlocks.") || line.trim().endsWith("deadlock."))) {
@@ -469,7 +469,7 @@ public class JDK14Parser implements DumpParser {
         }
         if(dContent.length() > 0) {
             deadlocks++;
-            createNode(catDeadlocks, "Deadlock No. " + (deadlocks), dContent);
+            createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent);
         }
         
         if(deadlocks > 0) {
@@ -493,7 +493,7 @@ public class JDK14Parser implements DumpParser {
             int locks = 0;
             while(iterLocks.hasNext()) {
                 String[] thread = (String[]) iterLocks.next();
-                createNode(monitorNode, "locked by " + thread[0], thread[1]);
+                createNode(monitorNode, "locked by " + thread[0], null, thread[1]);
                 locks++;
             }
             
@@ -502,7 +502,7 @@ public class JDK14Parser implements DumpParser {
             int sleeps = 0;
             while(iterSleeps.hasNext()) {
                 String[] thread = (String[]) iterSleeps.next();
-                createNode(monitorNode, "sleeps on lock " + thread[0], thread[1]);
+                createNode(monitorNode, "sleeps on lock " + thread[0], null, thread[1]);
                 sleeps++;
             }
             
@@ -511,7 +511,7 @@ public class JDK14Parser implements DumpParser {
             int waits = 0;
             while(iterWaits.hasNext()) {
                 String[] thread = (String[]) iterWaits.next();
-                createNode(monitorNode, "waiting " + thread[0], thread[1]);
+                createNode(monitorNode, "waiting " + thread[0], null, thread[1]);
                 waits++;
             }
             StringBuffer statData = new StringBuffer ("<table border=0><tr><td><font size=-1>Threads locking monitor</td><td><b><font size=-1>");
@@ -529,24 +529,29 @@ public class JDK14Parser implements DumpParser {
         }
     }
     
-    private void createNode(DefaultMutableTreeNode category, String title, StringBuffer content) {
-        createNode(category, title, content.toString());
-    }
-
-    private void createNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content) {
-        createNode(category, title, info != null ? info.toString() : null, content.toString());
-    }
-    
-    private void createNode(DefaultMutableTreeNode category, String title, String content) {
-        createNode(category, title, null, content);
-    }
-    
-    private void createNode(DefaultMutableTreeNode category, String title, String info, String content) {
+    /**
+     * create a tree node with the provided information
+     * @param top the parent node the new node should be added to.
+     * @param title the title of the new node
+     * @param info the info part of the new node
+     * @param content the content part of the new node
+     * @see ThreadInfo 
+     */
+    private void createNode(DefaultMutableTreeNode top, String title, String info, String content) {
         DefaultMutableTreeNode threadInfo = null;
         threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content));
-        category.add(threadInfo);
+        top.add(threadInfo);
     }
     
+    /**
+     * create a node for a category (categories are "Monitors", "Threads waiting", e.g.). A ThreadInfo
+     * instance will be created with the passed information.
+     * @param category the category the node should be added to.
+     * @param title the title of the new node
+     * @param info the info part of the new node
+     * @param content the content part of the new node
+     * @see ThreadInfo 
+     */
     private void createCategoryNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content) {
         DefaultMutableTreeNode threadInfo = null;
         threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString()));
@@ -639,7 +644,7 @@ public class JDK14Parser implements DumpParser {
             keys.add(getDumpStringFromTreePath(dumps[i]));
         }
                 
-        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1));
+        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new Category(prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1)));
         root.add(catMerge);
         
         if(dumpStore.get(keys.get(0)) != null) {
@@ -666,7 +671,7 @@ public class JDK14Parser implements DumpParser {
                                 content.append((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey));
                             }
                         }
-                        createNode(catMerge, threadKey, content);
+                        createCategoryNode(catMerge, threadKey, null, content);
                     }
                 }
             }
@@ -674,6 +679,9 @@ public class JDK14Parser implements DumpParser {
         
     }
     
+    /**
+     * close this dump parser, also closes the passed dump stream
+     */
     public void close() throws IOException {
         if(bis != null) {
             bis.close();
