@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.6 2006-09-23 16:16:12 irockel Exp $
+ * $Id: MainMenu.java,v 1.7 2006-09-24 08:23:16 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -38,8 +38,8 @@ import javax.swing.KeyStroke;
  */
 public class MainMenu extends JMenuBar {
     
-    private JMenuItem addMenuItem;
-    private JMenuItem addJMXMenuItem;
+    private JMenuItem closeMenuItem;
+    private JMenuItem longMenuItem;
     private JMenuItem recentFilesMenu;
     
     private ActionListener actionListener;
@@ -52,19 +52,16 @@ public class MainMenu extends JMenuBar {
         actionListener = listener;
         createMenuBar();
     }
-        
+            
     /**
-     * get the add file to dump tree menu item
+     * get the close file menu item
      */
-    public JMenuItem getAddMenuItem() {
-        return(addMenuItem);
+    public JMenuItem getCloseMenuItem() {
+        return(closeMenuItem);
     }
     
-    /**
-     * get the add jmx connection tree menu item
-     */
-    public JMenuItem getAddJMXMenuItem() {
-        return(addJMXMenuItem);
+    public JMenuItem getLongMenuItem() {
+        return(longMenuItem);
     }
     
     /**
@@ -106,26 +103,18 @@ public class MainMenu extends JMenuBar {
         menuItem.addActionListener(actionListener);
         menu.add(menuItem);*/
         
-        menuItem = new JMenuItem("Close...",
+        closeMenuItem = new JMenuItem("Close...",
                 KeyEvent.VK_O);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_O, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
+        closeMenuItem.getAccessibleContext().setAccessibleDescription(
                 "Open Log File with dumps.");
-        menuItem.addActionListener(actionListener);
-        menu.add(menuItem);
+        closeMenuItem.addActionListener(actionListener);
+        closeMenuItem.setEnabled(false);
+        menu.add(closeMenuItem);
         
         createRecentFileMenu();
         menu.add(recentFilesMenu);
-        /*addJMXMenuItem = new JMenuItem("Add JMX Connection...",
-                KeyEvent.VK_J);
-        addJMXMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_J, ActionEvent.ALT_MASK));
-        addJMXMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Request additional thread dumps using a remote jmx connection.");
-        addJMXMenuItem.addActionListener(actionListener);
-        addJMXMenuItem.setEnabled(false);
-        menu.add(addJMXMenuItem);
         
         menu.addSeparator();
         menuItem = new JMenuItem("Save Session...",
@@ -135,21 +124,20 @@ public class MainMenu extends JMenuBar {
         menuItem.addActionListener(actionListener);
         menu.add(menuItem);
         menuItem.setEnabled(false);
-        menuItem = new JMenuItem("Open stored Session...",
+        menuItem = new JMenuItem("Open Session...",
                 KeyEvent.VK_P);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Open a stored session of logfiles");
         menuItem.addActionListener(actionListener);
         menuItem.setEnabled(false);
         menu.add(menuItem);
-        menu.addSeparator();
-        menuItem = new JMenuItem("Open recent stored Session",
+        menuItem = new JMenuItem("Open recent Session",
                 null);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Open a stored session of logfiles");
         menuItem.addActionListener(actionListener);
         menuItem.setEnabled(false);
-        menu.add(menuItem);*/
+        menu.add(menuItem);
         
         menu.addSeparator();
 
@@ -187,14 +175,15 @@ public class MainMenu extends JMenuBar {
                 "Tools Menu");
         add(menu);
         
-        menuItem = new JMenuItem("Find long running threads...",
+        longMenuItem = new JMenuItem("Find long running threads...",
                 KeyEvent.VK_L);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        longMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_L, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
+        longMenuItem.getAccessibleContext().setAccessibleDescription(
                 "Exit TDA");
-        menuItem.addActionListener(actionListener);
-        menu.add(menuItem);
+        longMenuItem.addActionListener(actionListener);
+        longMenuItem.setEnabled(false);
+        menu.add(longMenuItem);
 
         menuItem = new JMenuItem("Filter...",
                 KeyEvent.VK_F);

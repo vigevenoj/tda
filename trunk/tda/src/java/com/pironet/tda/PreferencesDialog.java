@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.10 2006-05-30 20:40:53 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.11 2006-09-24 08:23:16 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -135,7 +135,7 @@ public class PreferencesDialog extends JDialog {
         
         public GeneralPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(750, 190));
+            setPreferredSize(new Dimension(580, 190));
             
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Maximum amount of lines to check for\n class histogram or possible deadlock informations"));
@@ -172,7 +172,7 @@ public class PreferencesDialog extends JDialog {
         
         RegExPanel() {
             setLayout(new BorderLayout());
-            setPreferredSize(new Dimension(750, 190));
+            setPreferredSize(new Dimension(580, 190));
             
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             

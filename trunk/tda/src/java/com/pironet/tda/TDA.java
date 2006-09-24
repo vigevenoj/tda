@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.51 2006-09-24 07:38:38 irockel Exp $
+ * $Id: TDA.java,v 1.52 2006-09-24 08:23:17 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -179,12 +179,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         // clear tree
         threadDumps = new HashMap();
         
-        /*if(top != null) {
-            top.removeAllChildren();
-            top.removeFromParent();
-            top = null;
-        }*/
         topNodes = new Vector();
+        getMainMenu().getLongMenuItem().setEnabled(true);
+        getMainMenu().getCloseMenuItem().setEnabled(true);
         
         addDumpFile();
     }
@@ -457,7 +454,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
-            //getMainMenu().getAddJMXMenuItem().setEnabled(true);
         } finally {
             if(dp != null) {
                 try {
@@ -490,8 +486,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Parse loggc-logfile...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        popup.addSeparator();
         menuItem = new JMenuItem("Find long running threads...");
+        menuItem.addActionListener(this);
+        popup.add(menuItem);
+        menuItem = new JMenuItem("Apply Filter...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
         
@@ -557,8 +555,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else if("Open...".equals(source.getText())) {
             chooseFile();
         } else if("Open JMX Connection...".equals(source.getText())) {
-            openJMXConnection(true);
-        } else if("Add JMX Connection...".equals(source.getText())) {
             openJMXConnection(false);
         } else if("Open loggc file...".equals(source.getText())) {
             openLoggcFile();
