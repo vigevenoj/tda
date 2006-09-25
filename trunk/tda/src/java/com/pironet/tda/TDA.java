@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.53 2006-09-25 08:46:53 irockel Exp $
+ * $Id: TDA.java,v 1.54 2006-09-25 09:10:07 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -138,10 +138,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         // init L&F
         setupLookAndFeel();
-        
-        // setup font
-        setUIFont (new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,11));        
-        
+                
         // init everything
         tree = new JTree();
         
@@ -198,6 +195,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                             currentLAFI = plafs[j];
                             if(currentLAFI.getName().startsWith(instPlafs[i])) {
                                 UIManager.setLookAndFeel(currentLAFI.getClassName());
+                                    // setup font
+                                    setUIFont(new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,11));
                                 break search;
                             }
                         }
@@ -259,9 +258,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         
         final SwingWorker worker = new SwingWorker() {
             public Object construct() {
+                int divider = splitPane.getDividerLocation();
                 createNodes(top, dumpFileStream);
                 createTree();
-                tree.collapseRow(3);
+                tree.expandRow(1);
+                splitPane.setDividerLocation(divider);
                 
                 return null;
             }
