@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.52 2006-09-24 08:23:17 irockel Exp $
+ * $Id: TDA.java,v 1.53 2006-09-25 08:46:53 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -114,6 +114,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JTextField filter;
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
+    private FilterDialog filterDialog;
     private LongThreadDialog longThreadDialog;
     private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
@@ -134,7 +135,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     private TDA() {
         super(new GridLayout(1,0));
+        
+        // init L&F
+        setupLookAndFeel();
+        
+        // setup font
         setUIFont (new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,11));        
+        
+        // init everything
         tree = new JTree();
         
         //Create the HTML viewing pane.
@@ -165,6 +173,41 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 
         //Add the split pane to this panel.
         add(splitPane);
+    }
+    
+    private void setupLookAndFeel() {
+        try {
+            //--- set the desired preconfigured plaf ---
+            UIManager.LookAndFeelInfo currentLAFI = null;
+            
+            // retrieve plaf param.
+            String plaf = "Mac,Windows,Metal";
+            
+            // this line needs to be implemented in order to make L&F work properly
+            UIManager.getLookAndFeelDefaults().put("ClassLoader", getClass().getClassLoader());
+            
+            // query list of L&Fs
+            UIManager.LookAndFeelInfo[] plafs = UIManager.getInstalledLookAndFeels();
+            
+            if ((plaf != null) && (!"".equals(plaf))) {
+                
+                String[] instPlafs = plaf.split(",");
+                search:
+                    for(int i = 0; i < instPlafs.length; i++) {
+                        for(int j=0; j<plafs.length; j++) {
+                            currentLAFI = plafs[j];
+                            if(currentLAFI.getName().startsWith(instPlafs[i])) {
+                                UIManager.setLookAndFeel(currentLAFI.getClassName());
+                                break search;
+                            }
+                        }
+                    }
+            }
+        } catch (Exception except) {
+            System.out.println("[Info] Couldn't initialize L&F. Reason : " + except.getMessage());
+            except.printStackTrace();
+            System.out.println("[Info] Will fallback to System L&F!");
+        }
     }
     
     private String getInfoText() {
@@ -560,6 +603,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             openLoggcFile();
         } else if("Preferences".equals(source.getText())) {
             showPreferencesDialog();
+        } else if("Filters...".equals(source.getText())) {
+            showFilterDialog();
         } else if("Exit TDA".equals(source.getText())) {
             saveState();
             frame.dispose();
@@ -661,6 +706,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         prefsDialog.setVisible(true);
     }
 
+    private void showFilterDialog() {
+        //Create and set up the window.
+        if(filterDialog == null) {
+            filterDialog = new FilterDialog(frame);
+            filterDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        }
+        
+        frame.setEnabled(false);
+        //Display the window.
+        filterDialog.reset();
+        filterDialog.pack();
+        filterDialog.setLocationRelativeTo(frame);
+        filterDialog.setVisible(true);
+    }
+    
     /**
      * flag indicates if next file to open will be the first file (so fresh open)
      * or if a add has to be performed.
