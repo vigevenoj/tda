@@ -17,29 +17,24 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.1 2006-09-24 15:09:48 irockel Exp $
+ * $Id: FilterDialog.java,v 1.2 2006-09-27 07:55:39 irockel Exp $
  */
 
 package com.pironet.tda;
 
-import com.pironet.tda.utils.PrefManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Toolkit;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
 
 /**
  *
@@ -48,8 +43,7 @@ import javax.swing.JTextField;
 public class FilterDialog extends JDialog {
     private FilterPanel filterPanel;
     private JPanel buttonPanel;
-    private JButton okButton;
-    private JButton cancelButton;
+    private JButton closeButton;
     private JFrame frame;
     
     /**
@@ -65,41 +59,63 @@ public class FilterDialog extends JDialog {
     private void initPanel() {
         filterPanel = new FilterPanel();
         getContentPane().add(filterPanel,BorderLayout.CENTER);
-        okButton = new JButton("Ok");
-        cancelButton = new JButton("Cancel");
+        closeButton = new JButton("Close");
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-        getContentPane().add(buttonPanel, BorderLayout.EAST);
+        buttonPanel.add(closeButton);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         
-        okButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
-            }
-        });
-        
-        cancelButton.addActionListener( new ActionListener() {
+        closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
                 dispose();
             }
         });
+        
+        /*cancelButton.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.setEnabled(true);
+                dispose();
+            }
+        });*/
         reset();
     }
     
     public void reset() {
-        getRootPane().setDefaultButton(okButton);
+        getRootPane().setDefaultButton(closeButton);
     }
     
     class FilterPanel extends JPanel {
-        JTextField maxLinesField;
-        JTextField bufferField;
-        JCheckBox forceLoggcLoading;
-        JCheckBox showHotspotClasses;
+        JButton addButton = null;
+        JButton removeButton = null;
+        JButton editButton = null;
+        
+        JPanel buttonFlow = null;
+        
+        JList filterList = null;
+        
+        JScrollPane scrollPane = null;
         
         public FilterPanel() {
-            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(580, 190));
+            setLayout(new BorderLayout());
+            
+            buttonFlow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            add(Box.createVerticalStrut(5), BorderLayout.NORTH);
+            add(Box.createHorizontalStrut(5),BorderLayout.WEST);
+            JPanel innerButtonPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+            
+            innerButtonPanel.add(addButton = new JButton("Add"));
+            innerButtonPanel.add(removeButton = new JButton("Remove"));
+            innerButtonPanel.add(editButton = new JButton("Edit"));
+            buttonFlow.add(innerButtonPanel);
+            
+            add(buttonFlow,BorderLayout.EAST);
+            setPreferredSize(new Dimension(380, 290));
+            
+            
+            filterList = new JList(new String[] {"Idle Threads Filter", "System Threads Filter"});
+            scrollPane = new JScrollPane(filterList);
+            
+            add(scrollPane,BorderLayout.CENTER);
             
         }
     }
