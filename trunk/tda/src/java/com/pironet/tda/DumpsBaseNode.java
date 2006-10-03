@@ -14,10 +14,10 @@
  * Lesser GNU General Public License for more details.
  *
  * You should have received a copy of the Lesser GNU General Public License
- * along with Foobar; if not, write to the Free Software
+ * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpsBaseNode.java,v 1.1 2006-05-15 20:24:03 irockel Exp $
+ * $Id: DumpsBaseNode.java,v 1.2 2006-10-03 07:27:54 irockel Exp $
  */
 
 package com.pironet.tda;
