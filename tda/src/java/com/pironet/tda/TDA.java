@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.54 2006-09-25 09:10:07 irockel Exp $
+ * $Id: TDA.java,v 1.55 2006-10-03 07:27:55 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -105,7 +105,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JSplitPane splitPane;
     private JSplitPane topSplitPane;
     private TreePath mergeDump;
-    private Map threadDumps;
+    private DumpStore dumpStore;
     private Vector topNodes;
     private InputStream dumpFileStream;
     private JScrollPane htmlView;
@@ -219,7 +219,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     public void init() {
         // clear tree
-        threadDumps = new HashMap();
+        dumpStore = new DumpStore();
         
         topNodes = new Vector();
         getMainMenu().getLongMenuItem().setEnabled(true);
@@ -259,7 +259,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         final SwingWorker worker = new SwingWorker() {
             public Object construct() {
                 int divider = splitPane.getDividerLocation();
-                createNodes(top, dumpFileStream);
+                addThreadDumps(top, dumpFileStream);
                 createTree();
                 tree.expandRow(1);
                 splitPane.setDividerLocation(divider);
@@ -296,8 +296,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         Dimension minimumSize = new Dimension(200, 50);
         treeView.setMinimumSize(minimumSize);
-        //Enable tool tips.
-        //ToolTipManager.sharedInstance().registerComponent(tree);
         
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
@@ -491,10 +489,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
-    private void createNodes(DefaultMutableTreeNode top, InputStream dumpFileStream) {
+    private void addThreadDumps(DefaultMutableTreeNode top, InputStream dumpFileStream) {
         DumpParser dp = null;
         try {
-            dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, threadDumps);
+            String fileName = top.getUserObject().toString();
+            Map dumpMap = new HashMap();
+            dumpStore.addFileToDumpFiles(fileName, dumpMap);
+            dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, dumpMap);
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
@@ -634,8 +635,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         "Error", JOptionPane.ERROR_MESSAGE);
                 
             } else {
-                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(fetchTop(tree.getSelectionPath()), 
-                        threadDumps, paths, paths.length, null);
+                DefaultMutableTreeNode mergeRoot = fetchTop(tree.getSelectionPath());
+                Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
+                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(mergeRoot, 
+                        dumpMap, paths, paths.length, null);
                 createTree();
                 this.getRootPane().revalidate();
             }
@@ -885,9 +888,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         public Object construct() {
                             try {
                                 DefaultMutableTreeNode top = fetchTop(tree.getSelectionPath());
-                                DumpParserFactory.get().getCurrentDumpParser().parseLoggcFile(loggcFileStream, top, threadDumps);
+
+                                DumpParserFactory.get().getCurrentDumpParser().parseLoggcFile(loggcFileStream, top);
                                 
-                                createNodes(top, dumpFileStream);
+                                addThreadDumps(top, dumpFileStream);
                                 createTree();
                                 getRootPane().revalidate();
                             } finally {
@@ -923,7 +927,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             
         } else {
             if(longThreadDialog == null) {
-                longThreadDialog = new LongThreadDialog(this, paths, fetchTop(tree.getSelectionPath()), threadDumps);
+                DefaultMutableTreeNode mergeRoot = fetchTop(tree.getSelectionPath());
+                Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
+
+                longThreadDialog = new LongThreadDialog(this, paths, mergeRoot, dumpMap);
                 longThreadDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             }
             

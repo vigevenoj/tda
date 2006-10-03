@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.28 2006-09-24 08:23:15 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.29 2006-10-03 07:27:54 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -571,9 +571,8 @@ public class JDK14Parser implements DumpParser {
      * parses a loggc file stream and reads any found class histograms and adds the to the dump store
      * @param loggcFileStream the stream to read
      * @param root the root node of the dumps.
-     * @param dumpStore the map with the thread dumps.
      */
-    public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root, Map dumpStore) {
+    public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root) {
         BufferedReader bis = new BufferedReader(new InputStreamReader(loggcFileStream));
         boolean found = true;
         Vector histograms = new Vector();

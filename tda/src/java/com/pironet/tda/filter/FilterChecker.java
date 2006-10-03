@@ -1,14 +1,14 @@
 /*
- * Logfile.java
+ * FilterChecker.java
  *
  * This file is part of TDA - Thread Dump Analysis Tool.
  *
- * Foobar is free software; you can redistribute it and/or modify
+ * TDA is free software; you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or
  * (at your option) any later version.
  *
- * Foobar is distributed in the hope that it will be useful,
+ * TDA is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
@@ -17,33 +17,20 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Logfile.java,v 1.4 2006-10-03 07:27:54 irockel Exp $
+ * $Id: FilterChecker.java,v 1.1 2006-10-03 07:27:55 irockel Exp $
  */
-
-package com.pironet.tda;
+package com.pironet.tda.filter;
 
 /**
- * root node info object of log file thread dump information
+ * has a list of filters and checks a given thread if it matches any of the filters.
  * @author irockel
  */
-public class Logfile extends DumpsBaseNode {
-    private String content;
+public class FilterChecker {
     
     /** 
-     * Creates a new instance of Logfile 
+     * Creates a new instance of FilterChecker 
      */
-    public Logfile(String value) {
-        content = value;
+    public FilterChecker() {
     }
     
-    /**
-     * returns the text content of this node
-     */
-    public Object getContent() {
-        return content;
-    }
-    
-    public String toString() {
-        return((String) getContent());
-    }
 }
