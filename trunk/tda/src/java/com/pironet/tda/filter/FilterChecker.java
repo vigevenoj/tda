@@ -17,20 +17,58 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterChecker.java,v 1.1 2006-10-03 07:27:55 irockel Exp $
+ * $Id: FilterChecker.java,v 1.2 2006-10-16 20:10:47 irockel Exp $
  */
 package com.pironet.tda.filter;
 
+import com.pironet.tda.ThreadInfo;
+import com.pironet.tda.utils.PrefManager;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * has a list of filters and checks a given thread if it matches any of the filters.
+ * has a list of filters and checks for a given thread if it matches any of the filters.
  * @author irockel
  */
 public class FilterChecker {
+    /**
+     * filters checked by this checker instance.
+     */
+    private Map filters = null;
     
     /** 
      * Creates a new instance of FilterChecker 
      */
-    public FilterChecker() {
+    public FilterChecker(Map checkFilters) {
+        filters = checkFilters;
+    }
+    
+    /**
+     * return a filter checker for all general filters
+     */
+    public static FilterChecker getGeneralFilterChecker() {
+        Map filters = PrefManager.get().getGeneralFilters();
+        
+        return(new FilterChecker(filters));
+    }
+    
+    /**
+     * add the given filter to the lists of filters
+     */
+    public void addToFilters(Filter filter) {
+        if(filters == null) {
+            filters = new HashMap();
+        }
+        
+        filters.put(filter.getName(), filter);
+    }
+    
+    /**
+     * checks if the given thread info passes the filters of
+     * this filter checker instance
+     */
+    public boolean check(ThreadInfo ti) {
+        return(true);
     }
     
 }
