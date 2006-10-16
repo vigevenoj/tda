@@ -19,13 +19,14 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.9 2006-09-24 07:38:39 irockel Exp $
+ * $Id: PrefManager.java,v 1.10 2006-10-16 20:10:47 irockel Exp $
  */
 package com.pironet.tda.utils;
 
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
+import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.ListModel;
@@ -206,6 +207,14 @@ public class PrefManager {
     
     public boolean getShowHotspotClasses() {
         return(toolPrefs.getBoolean("showHotspotClasses", false));
+    }
+    
+    public Map getGeneralFilters() {
+        return(null);
+    }
+    
+    public Map getSpecialFilters() {
+        return(null);
     }
     
     public void flush() {

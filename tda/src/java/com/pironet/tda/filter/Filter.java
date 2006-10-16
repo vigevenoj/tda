@@ -17,9 +17,11 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.1 2006-10-03 07:27:55 irockel Exp $
+ * $Id: Filter.java,v 1.2 2006-10-16 20:10:46 irockel Exp $
  */
 package com.pironet.tda.filter;
+
+import java.util.regex.Pattern;
 
 /**
  * represents a filter for filtering threads or monitors to display
@@ -27,11 +29,86 @@ package com.pironet.tda.filter;
  * @author irockel
  */
 public class Filter {
+    /**
+     * name of this filter, just something describing for this filter
+     */
+    private String name = null;
     
+    /**
+     * a regular expression of the filter
+     */
+    private String filterExpression = null;
+    
+    /**
+     * the precompiled pattern.
+     */
+    private Pattern filterExpressionPattern = null;
+    
+    /**
+     * true, if filter is a general filter, which should be applied
+     * to all thread infos
+     */
+    private boolean generalFilter = false;
+        
     /** 
      * Creates a new instance of Filter 
+     * @param name the name of the filter
+     * @param regEx the reg ex of the filter
+     * @param gf true, if filter is general filter
      */
-    public Filter() {
+    public Filter(String name, String regEx, boolean gf) {
+        setName(name);
+        setFilterExpression(regEx);
+        setGeneralFilter(gf);
     }
     
+    /**
+     * set the name of this filter
+     */
+    private void setName(String value) {
+        name = value;
+    }
+    
+    /**
+     * get filter name
+     */
+    public String getName() {
+        return(name);
+    }
+    
+    /**
+     * get the filter expression as string
+     */
+    public String getFilterExpression() {
+        return(filterExpression);
+    }
+    
+    private void setFilterExpression(String regEx) {
+        filterExpression = regEx;
+    }
+    
+    /**
+     * get the filter expression as precompiled pattern
+     */
+    public Pattern getFilterExpressionPattern() {
+        if(filterExpressionPattern == null) {
+            filterExpressionPattern = Pattern.compile(getFilterExpression());
+        }
+        
+        return(filterExpressionPattern);
+    }
+    
+    /**
+     * set general filter flag
+     */
+    public void setGeneralFilter(boolean value) {
+        generalFilter = value;
+    }
+    
+    /**
+     * @return true, if filter is a general filter
+     */
+    public boolean isGeneralFilter() {
+        return(generalFilter);
+    }
 }
