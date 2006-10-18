@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.29 2006-10-03 07:27:54 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.30 2006-10-18 20:05:16 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -437,7 +437,7 @@ public class JDK14Parser implements DumpParser {
         int deadlocks = 0;
         int lineCounter = 0;
         StringBuffer dContent = new StringBuffer();
-        DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode("Deadlocks");
+        DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(new Category("Deadlocks"));
         
         while(bis.ready() && !finished) {            
             String line = bis.readLine();
