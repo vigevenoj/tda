@@ -17,24 +17,24 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.1 2006-10-16 20:10:46 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.2 2006-11-01 18:44:32 irockel Exp $
  */
 
 package com.pironet.tda;
 
-import com.pironet.tda.FilterDialog.FilterPanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- *
  * dialog for editing filters.
  * @author irockel
  */
@@ -48,8 +48,8 @@ public class EditFilterDialog extends JDialog {
     /**
      * Creates a new instance of PreferencesDialog
      */
-    public EditFilterDialog(JFrame owner) {
-        super(owner, "Edit Filter");
+    public EditFilterDialog(JFrame owner, String frameTitle) {
+        super(owner, frameTitle);
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
         initPanel();        
@@ -59,6 +59,7 @@ public class EditFilterDialog extends JDialog {
         settingsPanel = new SettingsPanel();
         getContentPane().add(settingsPanel,BorderLayout.CENTER);
         okButton = new JButton("Ok");
+        cancelButton = new JButton("Cancel");
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
@@ -86,15 +87,24 @@ public class EditFilterDialog extends JDialog {
     
     class SettingsPanel extends JPanel {
         JTextField regEx = null;
+        JCheckBox generalFilter = null;
                 
         public SettingsPanel() {
             setLayout(new BorderLayout());
-            FlowLayout fl = new FlowLayout(FlowLayout.RIGHT);            
+            FlowLayout fl = new FlowLayout(FlowLayout.RIGHT);
+            JPanel innerSettingsPanel = new JPanel(fl);
+            
+            regEx = new JTextField(30);
+            innerSettingsPanel.add(new JLabel("Match Expression"));
+            innerSettingsPanel.add(regEx);
+            add(innerSettingsPanel, BorderLayout.CENTER);
+            
+            innerSettingsPanel = new JPanel(fl);
+            innerSettingsPanel.add(new JLabel("Filter is a general filter"));
+            innerSettingsPanel.add(generalFilter = new JCheckBox());
+            add(innerSettingsPanel, BorderLayout.SOUTH);
+            
         }
-    }
-        
-    //Must be called from the event-dispatching thread.
-    public void resetFocus() {
-    }    
+    }        
 }
 

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.2 2006-09-27 07:55:39 irockel Exp $
+ * $Id: FilterDialog.java,v 1.3 2006-11-01 18:44:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 /**
- *
+ * overview of all available filters
  * @author irockel
  */
 public class FilterDialog extends JDialog {
@@ -57,7 +57,7 @@ public class FilterDialog extends JDialog {
     }
     
     private void initPanel() {
-        filterPanel = new FilterPanel();
+        filterPanel = new FilterPanel((JFrame) this.getOwner());
         getContentPane().add(filterPanel,BorderLayout.CENTER);
         closeButton = new JButton("Close");
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -70,13 +70,6 @@ public class FilterDialog extends JDialog {
                 dispose();
             }
         });
-        
-        /*cancelButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
-                dispose();
-            }
-        });*/
         reset();
     }
     
@@ -84,7 +77,7 @@ public class FilterDialog extends JDialog {
         getRootPane().setDefaultButton(closeButton);
     }
     
-    class FilterPanel extends JPanel {
+    class FilterPanel extends JPanel implements ActionListener {
         JButton addButton = null;
         JButton removeButton = null;
         JButton editButton = null;
@@ -95,7 +88,10 @@ public class FilterDialog extends JDialog {
         
         JScrollPane scrollPane = null;
         
-        public FilterPanel() {
+        JFrame owner = null; 
+        
+        public FilterPanel(JFrame owner) {
+            this.owner = owner;
             setLayout(new BorderLayout());
             
             buttonFlow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -106,11 +102,14 @@ public class FilterDialog extends JDialog {
             innerButtonPanel.add(addButton = new JButton("Add"));
             innerButtonPanel.add(removeButton = new JButton("Remove"));
             innerButtonPanel.add(editButton = new JButton("Edit"));
+            addButton.addActionListener(this);
+            removeButton.addActionListener(this);
+            editButton.addActionListener(this);
+            
             buttonFlow.add(innerButtonPanel);
             
             add(buttonFlow,BorderLayout.EAST);
             setPreferredSize(new Dimension(380, 290));
-            
             
             filterList = new JList(new String[] {"Idle Threads Filter", "System Threads Filter"});
             scrollPane = new JScrollPane(filterList);
@@ -118,9 +117,33 @@ public class FilterDialog extends JDialog {
             add(scrollPane,BorderLayout.CENTER);
             
         }
+        
+        public void actionPerformed(ActionEvent e) {
+            String cmd = e.getActionCommand();
+            
+            if ("Add".equals(cmd)) {
+                createFilterDialog("Add Filter");
+            } else if("Edit".equals(cmd)) {
+                createFilterDialog("Edit Filter");
+            }
+        }
+        
+        private void createFilterDialog(String title) {
+            EditFilterDialog fDiag = new EditFilterDialog(owner, title);
+            fDiag.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            
+            owner.setEnabled(false);
+            
+            //Display the window.
+            fDiag.reset();
+            fDiag.pack();
+            fDiag.setLocationRelativeTo(frame);
+            fDiag.setVisible(true);
+        }
     }
         
     //Must be called from the event-dispatching thread.
     public void resetFocus() {
     }    
+
 }
