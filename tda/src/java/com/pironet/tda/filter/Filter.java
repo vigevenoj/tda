@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.2 2006-10-16 20:10:46 irockel Exp $
+ * $Id: Filter.java,v 1.3 2006-11-26 16:31:15 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -49,6 +49,22 @@ public class Filter {
      * to all thread infos
      */
     private boolean generalFilter = false;
+    
+    /**
+     * specifies if this filter is a exclusion filter
+     */
+    private boolean exclusionFilter = false;
+    
+    /**
+     * specifies the filter rule which the filter expression applies to
+     */
+    private int filterRule = 0;
+    
+    /**
+     * empty default constructor
+     */
+    public Filter() {
+    }
         
     /** 
      * Creates a new instance of Filter 
@@ -56,16 +72,18 @@ public class Filter {
      * @param regEx the reg ex of the filter
      * @param gf true, if filter is general filter
      */
-    public Filter(String name, String regEx, boolean gf) {
+    public Filter(String name, String regEx, int fr, boolean gf, boolean exf) {
         setName(name);
         setFilterExpression(regEx);
         setGeneralFilter(gf);
+        setExclusionFilter(exf);
+        setFilterRule(fr);
     }
     
     /**
      * set the name of this filter
      */
-    private void setName(String value) {
+    public void setName(String value) {
         name = value;
     }
     
@@ -83,7 +101,7 @@ public class Filter {
         return(filterExpression);
     }
     
-    private void setFilterExpression(String regEx) {
+    public void setFilterExpression(String regEx) {
         filterExpression = regEx;
     }
     
@@ -110,5 +128,31 @@ public class Filter {
      */
     public boolean isGeneralFilter() {
         return(generalFilter);
+    }
+    
+    /**
+     * set exclusion filter flag
+     */
+    public void setExclusionFilter(boolean value) {
+        exclusionFilter = value;
+    }
+    
+    /**
+     * @return true, if filter is a exclusion filter
+     */
+    public boolean isExclusionFilter() {
+        return(exclusionFilter);
+    }
+
+    public int getFilterRule() {
+        return filterRule;
+    }
+
+    public void setFilterRule(int filterRule) {
+        this.filterRule = filterRule;
+    }
+    
+    public String toString() {
+        return (getName() + (isGeneralFilter() ? " (general) " : ""));
     }
 }

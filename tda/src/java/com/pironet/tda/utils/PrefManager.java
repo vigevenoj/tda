@@ -19,16 +19,19 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.10 2006-10-16 20:10:47 irockel Exp $
+ * $Id: PrefManager.java,v 1.11 2006-11-26 16:31:15 irockel Exp $
  */
 package com.pironet.tda.utils;
 
+import com.pironet.tda.filter.Filter;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
 /**
@@ -209,14 +212,49 @@ public class PrefManager {
         return(toolPrefs.getBoolean("showHotspotClasses", false));
     }
     
-    public Map getGeneralFilters() {
-        return(null);
+    /**
+     * temporary storage for filters to not to have them be parsed again
+     */
+    private ListModel cachedFilters = null;
+    
+    public ListModel getFilters() {
+        String filterString = toolPrefs.get("filters", "");
+        DefaultListModel filters = new DefaultListModel();
+        if(filterString.length() > 0) {
+            String[] sFilters = filterString.split("§§§§");
+            filters.ensureCapacity(sFilters.length);
+            for(int i = 0; i < sFilters.length; i++) {
+                String[] filterData = sFilters[i].split("€€€€");
+                Filter newFilter = new Filter(filterData[0],
+                        filterData[1], Integer.parseInt(filterData[2]),
+                        filterData[3].equals("true"), filterData[4].equals("true"));
+                filters.add(i, newFilter);
+            }
+        }
+        return(filters);
     }
     
-    public Map getSpecialFilters() {
-        return(null);
+    public void setFilters(ListModel filters) {
+        // store into cache
+        cachedFilters = filters;
+        StringBuffer filterString = new StringBuffer();
+        for(int i = 0; i < filters.getSize(); i++) {
+            if(i > 0) {
+                filterString.append("§§§§");
+            }
+            filterString.append(((Filter)filters.getElementAt(i)).getName());
+            filterString.append("€€€€");
+            filterString.append(((Filter)filters.getElementAt(i)).getFilterExpression());
+            filterString.append("€€€€");
+            filterString.append(((Filter)filters.getElementAt(i)).getFilterRule());
+            filterString.append("€€€€");
+            filterString.append(((Filter)filters.getElementAt(i)).isGeneralFilter());
+            filterString.append("€€€€");
+            filterString.append(((Filter)filters.getElementAt(i)).isExclusionFilter());
+        }
+        toolPrefs.put("filters", filterString.toString());
     }
-    
+        
     public void flush() {
         try {
             toolPrefs.flush();

@@ -17,11 +17,12 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.3 2006-11-01 18:44:32 irockel Exp $
+ * $Id: FilterDialog.java,v 1.4 2006-11-26 16:31:15 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.PrefManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -33,6 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -50,7 +52,7 @@ public class FilterDialog extends JDialog {
      * Creates a new instance of PreferencesDialog
      */
     public FilterDialog(JFrame owner) {
-        super(owner, "General Filter Settings");
+        super(owner, "Filter Settings");
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
         initPanel();        
@@ -67,6 +69,7 @@ public class FilterDialog extends JDialog {
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
+                PrefManager.get().setFilters(filterPanel.filterList.getModel());
                 dispose();
             }
         });
@@ -111,7 +114,7 @@ public class FilterDialog extends JDialog {
             add(buttonFlow,BorderLayout.EAST);
             setPreferredSize(new Dimension(380, 290));
             
-            filterList = new JList(new String[] {"Idle Threads Filter", "System Threads Filter"});
+            filterList = new JList(PrefManager.get().getFilters());
             scrollPane = new JScrollPane(filterList);
             
             add(scrollPane,BorderLayout.CENTER);
@@ -122,14 +125,23 @@ public class FilterDialog extends JDialog {
             String cmd = e.getActionCommand();
             
             if ("Add".equals(cmd)) {
-                createFilterDialog("Add Filter");
+                createFilterDialog("Add Filter", true);
             } else if("Edit".equals(cmd)) {
-                createFilterDialog("Edit Filter");
+                createFilterDialog("Edit Filter", false);
+            } else if("Remove".equals(cmd)) {
+                removeFilter();
             }
         }
         
-        private void createFilterDialog(String title) {
-            EditFilterDialog fDiag = new EditFilterDialog(owner, title);
+        private void removeFilter() {
+            if(JOptionPane.showConfirmDialog(null, "Are you sure, you want to remove the selected filter?", "Confirm Remove",  
+                    JOptionPane.YES_NO_OPTION) == 0) {
+                
+            }
+        }
+        
+        private void createFilterDialog(String title, boolean isAdd) {
+            EditFilterDialog fDiag = new EditFilterDialog(owner, title, filterList, isAdd);
             fDiag.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             
             owner.setEnabled(false);

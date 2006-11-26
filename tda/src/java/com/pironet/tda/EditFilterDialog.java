@@ -17,20 +17,24 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.2 2006-11-01 18:44:32 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.3 2006-11-26 16:31:15 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.filter.Filter;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -44,19 +48,23 @@ public class EditFilterDialog extends JDialog {
     private JButton okButton;
     private JButton cancelButton;
     private JFrame frame;
+    private JList filterList;
+    private boolean isAdd = false;
     
     /**
      * Creates a new instance of PreferencesDialog
      */
-    public EditFilterDialog(JFrame owner, String frameTitle) {
+    public EditFilterDialog(JFrame owner, String frameTitle, JList filterList, boolean isAdd) {
         super(owner, frameTitle);
+        this.isAdd = isAdd;
+        this.filterList = filterList;
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
-        initPanel();        
+        initPanel();
     }
-    
+
     private void initPanel() {
-        settingsPanel = new SettingsPanel();
+        settingsPanel = new SettingsPanel(!isAdd ? (Filter) filterList.getSelectedValue() : null);
         getContentPane().add(settingsPanel,BorderLayout.CENTER);
         okButton = new JButton("Ok");
         cancelButton = new JButton("Cancel");
@@ -65,14 +73,22 @@ public class EditFilterDialog extends JDialog {
         buttonPanel.add(cancelButton);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         
-        okButton.addActionListener( new ActionListener() {
+        okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
+                if(!isAdd) {
+                    Filter filter = (Filter) filterList.getModel().getElementAt(filterList.getSelectedIndex());
+                    applyFilter(filter);
+                } else {
+                    Filter filter = new Filter();
+                    applyFilter(filter);
+                    addToList(filter);
+                }
                 dispose();
             }
         });
         
-        cancelButton.addActionListener( new ActionListener() {
+        cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
                 dispose();
@@ -81,30 +97,94 @@ public class EditFilterDialog extends JDialog {
         reset();
     }
     
+    private void applyFilter(Filter filter) {
+        filter.setName(settingsPanel.filterName.getText());
+        filter.setFilterExpression(settingsPanel.regEx.getText());
+        filter.setFilterRule(settingsPanel.filterRule.getSelectedIndex());
+        filter.setGeneralFilter(settingsPanel.generalFilter.isSelected());
+        filter.setExclusionFilter(settingsPanel.isExclusionFilter.isSelected());
+    }
+    
+    private void addToList(Filter filter) {
+        DefaultListModel dlm = ((DefaultListModel) filterList.getModel());
+        
+        dlm.ensureCapacity(dlm.getSize() +1);
+        dlm.addElement(filter);
+        filterList.ensureIndexIsVisible(dlm.getSize());
+    }
+                    
     public void reset() {
         getRootPane().setDefaultButton(okButton);
     }
     
     class SettingsPanel extends JPanel {
+        JTextField filterName = null;
         JTextField regEx = null;
         JCheckBox generalFilter = null;
-                
-        public SettingsPanel() {
+        JCheckBox isExclusionFilter = null;
+        JComboBox filterRule = null;
+        
+        public SettingsPanel(Filter presetFilter) {
             setLayout(new BorderLayout());
             FlowLayout fl = new FlowLayout(FlowLayout.RIGHT);
             JPanel innerSettingsPanel = new JPanel(fl);
             
+            filterName = new JTextField(30);
+            innerSettingsPanel.add(new JLabel("Filter Name"));
+            innerSettingsPanel.add(filterName);
+            add(innerSettingsPanel, BorderLayout.NORTH);
+            
+            innerSettingsPanel = new JPanel(fl);
             regEx = new JTextField(30);
             innerSettingsPanel.add(new JLabel("Match Expression"));
             innerSettingsPanel.add(regEx);
             add(innerSettingsPanel, BorderLayout.CENTER);
             
-            innerSettingsPanel = new JPanel(fl);
-            innerSettingsPanel.add(new JLabel("Filter is a general filter"));
-            innerSettingsPanel.add(generalFilter = new JCheckBox());
+            innerSettingsPanel = new JPanel(new BorderLayout());
+            JPanel innerInnerSettingsPanel = new JPanel(fl);
+            innerInnerSettingsPanel.add(new JLabel("Filter rule"));
+            innerInnerSettingsPanel.add(filterRule = new JComboBox(new String[] {"has in title", "matches title", "has in stack",
+               "matches stack", "waiting on", "waiting for", "locking"}));
+            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.NORTH);
+            
+            innerInnerSettingsPanel = new JPanel(fl);
+            innerInnerSettingsPanel.add(new JLabel("Filter is a exclusion filter"));
+            innerInnerSettingsPanel.add(isExclusionFilter = new JCheckBox());
+            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.CENTER);
+            
+            innerInnerSettingsPanel = new JPanel(fl);
+            innerInnerSettingsPanel.add(new JLabel("Filter is a general filter"));
+            innerInnerSettingsPanel.add(generalFilter = new JCheckBox());
+            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.SOUTH);
             add(innerSettingsPanel, BorderLayout.SOUTH);
             
+            if(presetFilter != null) {
+                fillFilterData(presetFilter);
+            }
+            
         }
-    }        
+        
+        /**
+         * fill the dialog with the preset filter data.
+         */
+        private void fillFilterData(Filter presetFilter) {
+            filterName.setText(presetFilter.getName());
+            regEx.setText(presetFilter.getFilterExpression());
+            filterRule.setSelectedIndex(presetFilter.getFilterRule());
+            isExclusionFilter.setSelected(presetFilter.isExclusionFilter());
+            generalFilter.setSelected(presetFilter.isGeneralFilter());
+        }
+
+        /**
+         * return the set up data as filter
+         * @return filte with filled in data.
+         */
+        public Filter getAsFilter() {
+            Filter newFilter = new Filter(filterName.getText(),
+                    regEx.getText(), filterRule.getSelectedIndex(), generalFilter.isSelected(), 
+                    isExclusionFilter.isSelected());
+            return newFilter;
+        }
+    }
 }
 
