@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.30 2006-10-18 20:05:16 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.31 2006-11-30 15:20:33 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -40,7 +40,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -310,6 +309,32 @@ public class JDK14Parser implements DumpParser {
                     }
                 }
             }
+            // last thread
+            if(title != null) {
+                threads.put(title, content.toString());
+                content.append("</pre></pre>");
+                createCategoryNode(catThreads, title, null, content);
+                threadCount++;
+            }
+            if(wContent != null) {
+                wContent.append("</b><hr>");
+                createCategoryNode(catWaiting, title, null, wContent);
+                wContent = null;
+                waiting++;
+            }
+            if(sContent != null) {
+                sContent.append("</b><hr>");
+                createCategoryNode(catSleeping, title, sContent, content);
+                sContent = null;
+                sleeping++;
+            }
+            if(lContent != null) {
+                sContent.append("</b><hr>");
+                createCategoryNode(catLocking, title, null, lContent);
+                lContent = null;
+                locking++;
+            }
+            
             StringBuffer statData = new StringBuffer("<font size=-1><table border=0><tr><td><font size=-1>Overall Thread Count</td><td><b><font size=-1>");
             statData.append(threadCount);
             statData.append("</b></td></tr>\n\n<tr><td><font size=-1>Number of threads waiting for a monitor</td><td><b><font size=-1>");
@@ -323,18 +348,11 @@ public class JDK14Parser implements DumpParser {
             statData.append("</b></td></tr></table>");
             overallTDI.content = statData.toString();
             
-            // last thread
-            if(title != null) {
-                createCategoryNode(catThreads, title, null, content);
-            }
-            if(wContent != null) {
-                createCategoryNode(catLocking, title, null, wContent);
-                wContent = null;
-            }
-            if(lContent != null) {
-                createCategoryNode(catLocking, title, null, lContent);
-                lContent = null;
-            }
+            ((Category) catThreads.getUserObject()).setName(((Category) catThreads.getUserObject()) + " (" + threadCount + " Threads overall)");
+            ((Category) catWaiting.getUserObject()).setName(((Category) catWaiting.getUserObject()) + " (" + waiting + " Threads waiting)");
+            ((Category) catSleeping.getUserObject()).setName(((Category) catSleeping.getUserObject()) + " (" + sleeping + " Threads sleeping)");
+            ((Category) catLocking.getUserObject()).setName(((Category) catLocking.getUserObject()) + " (" + locking + " Threads locking)");
+            
             
             // dump monitors 
             if(mmap.size() > 0) {
