@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.31 2006-11-30 15:20:33 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.32 2006-12-28 09:34:46 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -329,7 +329,7 @@ public class JDK14Parser implements DumpParser {
                 sleeping++;
             }
             if(lContent != null) {
-                sContent.append("</b><hr>");
+                lContent.append("</b><hr>");
                 createCategoryNode(catLocking, title, null, lContent);
                 lContent = null;
                 locking++;
