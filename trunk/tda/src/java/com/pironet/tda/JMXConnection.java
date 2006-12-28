@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JMXConnection.java,v 1.1 2006-08-13 19:33:48 irockel Exp $
+ * $Id: JMXConnection.java,v 1.2 2006-12-28 17:34:03 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -48,7 +48,7 @@ public class JMXConnection implements DumpParser {
     public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths, int minOccurence, String regex) {
     }
 
-    public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root, Map dumpStore) {
+    public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root) {
     }
 
     public void setDumpHistogramCounter(int value) {
@@ -78,5 +78,6 @@ public class JMXConnection implements DumpParser {
      */
     public void close() throws IOException {
     }
+
     
 }
