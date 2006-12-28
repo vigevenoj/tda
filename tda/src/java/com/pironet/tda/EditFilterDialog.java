@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.3 2006-11-26 16:31:15 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.4 2006-12-28 17:34:21 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -79,6 +79,9 @@ public class EditFilterDialog extends JDialog {
                 if(!isAdd) {
                     Filter filter = (Filter) filterList.getModel().getElementAt(filterList.getSelectedIndex());
                     applyFilter(filter);
+                    // reset to fire change event.
+                    ((DefaultListModel) filterList.getModel()).setElementAt(filter, filterList.getSelectedIndex());
+                    
                 } else {
                     Filter filter = new Filter();
                     applyFilter(filter);
@@ -103,6 +106,7 @@ public class EditFilterDialog extends JDialog {
         filter.setFilterRule(settingsPanel.filterRule.getSelectedIndex());
         filter.setGeneralFilter(settingsPanel.generalFilter.isSelected());
         filter.setExclusionFilter(settingsPanel.isExclusionFilter.isSelected());
+        filter.setEnabled(settingsPanel.isEnabled.isSelected());
     }
     
     private void addToList(Filter filter) {
@@ -122,6 +126,7 @@ public class EditFilterDialog extends JDialog {
         JTextField regEx = null;
         JCheckBox generalFilter = null;
         JCheckBox isExclusionFilter = null;
+        JCheckBox isEnabled = null;
         JComboBox filterRule = null;
         
         public SettingsPanel(Filter presetFilter) {
@@ -144,7 +149,12 @@ public class EditFilterDialog extends JDialog {
             JPanel innerInnerSettingsPanel = new JPanel(fl);
             innerInnerSettingsPanel.add(new JLabel("Filter rule"));
             innerInnerSettingsPanel.add(filterRule = new JComboBox(new String[] {"has in title", "matches title", "has in stack",
-               "matches stack", "waiting on", "waiting for", "locking"}));
+               "matches stack", "waiting on", "waiting for", "locking", "sleeping"}));
+            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.NORTH);
+            
+            innerInnerSettingsPanel = new JPanel(fl);
+            innerInnerSettingsPanel.add(new JLabel("Is Filter enabled"));
+            innerInnerSettingsPanel.add(isEnabled = new JCheckBox());
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.NORTH);
             
             innerInnerSettingsPanel = new JPanel(fl);
@@ -155,7 +165,7 @@ public class EditFilterDialog extends JDialog {
             innerInnerSettingsPanel = new JPanel(fl);
             innerInnerSettingsPanel.add(new JLabel("Filter is a general filter"));
             innerInnerSettingsPanel.add(generalFilter = new JCheckBox());
-            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.SOUTH);
+            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.EAST);
             add(innerSettingsPanel, BorderLayout.SOUTH);
             
             if(presetFilter != null) {
@@ -173,6 +183,7 @@ public class EditFilterDialog extends JDialog {
             filterRule.setSelectedIndex(presetFilter.getFilterRule());
             isExclusionFilter.setSelected(presetFilter.isExclusionFilter());
             generalFilter.setSelected(presetFilter.isGeneralFilter());
+            isEnabled.setSelected(presetFilter.isEnabled());
         }
 
         /**
@@ -182,7 +193,7 @@ public class EditFilterDialog extends JDialog {
         public Filter getAsFilter() {
             Filter newFilter = new Filter(filterName.getText(),
                     regEx.getText(), filterRule.getSelectedIndex(), generalFilter.isSelected(), 
-                    isExclusionFilter.isSelected());
+                    isExclusionFilter.isSelected(), isEnabled.isSelected());
             return newFilter;
         }
     }

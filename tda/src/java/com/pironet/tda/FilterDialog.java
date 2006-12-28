@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.4 2006-11-26 16:31:15 irockel Exp $
+ * $Id: FilterDialog.java,v 1.5 2006-12-28 17:34:21 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -30,6 +30,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Box;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -37,6 +38,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * overview of all available filters
@@ -80,7 +83,7 @@ public class FilterDialog extends JDialog {
         getRootPane().setDefaultButton(closeButton);
     }
     
-    class FilterPanel extends JPanel implements ActionListener {
+    class FilterPanel extends JPanel implements ActionListener, ListSelectionListener  {
         JButton addButton = null;
         JButton removeButton = null;
         JButton editButton = null;
@@ -105,6 +108,9 @@ public class FilterDialog extends JDialog {
             innerButtonPanel.add(addButton = new JButton("Add"));
             innerButtonPanel.add(removeButton = new JButton("Remove"));
             innerButtonPanel.add(editButton = new JButton("Edit"));
+            removeButton.setEnabled(false);
+            editButton.setEnabled(false);
+            
             addButton.addActionListener(this);
             removeButton.addActionListener(this);
             editButton.addActionListener(this);
@@ -114,20 +120,33 @@ public class FilterDialog extends JDialog {
             add(buttonFlow,BorderLayout.EAST);
             setPreferredSize(new Dimension(380, 290));
             
-            filterList = new JList(PrefManager.get().getFilters());
+            //createList();
+            filterList = new JList(PrefManager.get().getFilters());            
             scrollPane = new JScrollPane(filterList);
+            filterList.addListSelectionListener(this);
             
             add(scrollPane,BorderLayout.CENTER);
             
+        }
+        
+        public void createList() {
+            int selectedIndex = -1;
+            if(filterList != null) {
+               selectedIndex = filterList.getSelectedIndex();
+            }
+            
+            if(selectedIndex > -1) {
+                filterList.setSelectedIndex(selectedIndex);
+            }
         }
         
         public void actionPerformed(ActionEvent e) {
             String cmd = e.getActionCommand();
             
             if ("Add".equals(cmd)) {
-                createFilterDialog("Add Filter", true);
+                createFilterDialog("Add Filter", true, -1);
             } else if("Edit".equals(cmd)) {
-                createFilterDialog("Edit Filter", false);
+                createFilterDialog("Edit Filter", false, filterList.getSelectedIndex());
             } else if("Remove".equals(cmd)) {
                 removeFilter();
             }
@@ -136,11 +155,11 @@ public class FilterDialog extends JDialog {
         private void removeFilter() {
             if(JOptionPane.showConfirmDialog(null, "Are you sure, you want to remove the selected filter?", "Confirm Remove",  
                     JOptionPane.YES_NO_OPTION) == 0) {
-                
+                ((DefaultListModel) filterList.getModel()).removeElementAt(filterList.getSelectedIndex());
             }
         }
         
-        private void createFilterDialog(String title, boolean isAdd) {
+        private void createFilterDialog(String title, boolean isAdd, int selectedIndex) {
             EditFilterDialog fDiag = new EditFilterDialog(owner, title, filterList, isAdd);
             fDiag.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             
@@ -152,10 +171,21 @@ public class FilterDialog extends JDialog {
             fDiag.setLocationRelativeTo(frame);
             fDiag.setVisible(true);
         }
+        
+        public void valueChanged(ListSelectionEvent e) {
+            if(filterList.getSelectedIndex() >= 0) {
+                removeButton.setEnabled(true);
+                editButton.setEnabled(true);
+            } else {
+                removeButton.setEnabled(false);
+                editButton.setEnabled(false);
+            }
+        }
     }
         
     //Must be called from the event-dispatching thread.
     public void resetFocus() {
     }    
+
 
 }
