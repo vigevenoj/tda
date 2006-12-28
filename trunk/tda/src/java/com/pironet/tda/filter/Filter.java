@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.3 2006-11-26 16:31:15 irockel Exp $
+ * $Id: Filter.java,v 1.4 2006-12-28 17:34:21 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -29,6 +29,24 @@ import java.util.regex.Pattern;
  * @author irockel
  */
 public class Filter {
+    
+    // static defines for filter rules.
+    public static int HAS_IN_TITLE_RULE = 0;
+    
+    public static int MATCHES_TITLE_RULE = 1;
+    
+    public static int HAS_IN_STACK_RULE = 2;
+    
+    public static int MATCHES_STACK_RULE = 3;
+    
+    public static int WAITING_ON_RULE = 4;
+    
+    public static int WAITING_FOR_RULE = 5;
+    
+    public static int LOCKING_RULE = 6;
+    
+    public static int SLEEPING_RULE = 7;
+    
     /**
      * name of this filter, just something describing for this filter
      */
@@ -56,6 +74,11 @@ public class Filter {
     private boolean exclusionFilter = false;
     
     /**
+     * specifies if this filter is currently active
+     */
+    private boolean enabled = false;
+    
+    /**
      * specifies the filter rule which the filter expression applies to
      */
     private int filterRule = 0;
@@ -72,12 +95,13 @@ public class Filter {
      * @param regEx the reg ex of the filter
      * @param gf true, if filter is general filter
      */
-    public Filter(String name, String regEx, int fr, boolean gf, boolean exf) {
+    public Filter(String name, String regEx, int fr, boolean gf, boolean exf, boolean enabled) {
         setName(name);
         setFilterExpression(regEx);
         setGeneralFilter(gf);
         setExclusionFilter(exf);
         setFilterRule(fr);
+        setEnabled(enabled);
     }
     
     /**
@@ -152,7 +176,16 @@ public class Filter {
         this.filterRule = filterRule;
     }
     
-    public String toString() {
-        return (getName() + (isGeneralFilter() ? " (general) " : ""));
+    public boolean isEnabled() {
+        return enabled;
     }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
+    public String toString() {
+        return (getName() + (isGeneralFilter() ? " (general) " : "") + (isEnabled() ? "" : " (disabled)"));
+    }
+
 }

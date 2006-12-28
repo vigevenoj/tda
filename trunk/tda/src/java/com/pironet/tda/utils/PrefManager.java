@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.11 2006-11-26 16:31:15 irockel Exp $
+ * $Id: PrefManager.java,v 1.12 2006-12-28 17:34:21 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -219,18 +219,34 @@ public class PrefManager {
     
     public ListModel getFilters() {
         String filterString = toolPrefs.get("filters", "");
-        DefaultListModel filters = new DefaultListModel();
+        DefaultListModel filters = null;
         if(filterString.length() > 0) {
+            filters = new DefaultListModel();
             String[] sFilters = filterString.split("§§§§");
             filters.ensureCapacity(sFilters.length);
             for(int i = 0; i < sFilters.length; i++) {
                 String[] filterData = sFilters[i].split("€€€€");
                 Filter newFilter = new Filter(filterData[0],
                         filterData[1], Integer.parseInt(filterData[2]),
-                        filterData[3].equals("true"), filterData[4].equals("true"));
+                        filterData[3].equals("true"), filterData[4].equals("true"), filterData[5].equals("true"));
                 filters.add(i, newFilter);
             }
+        } else {
+            filters = getPredefinedFilters();
         }
+        return(filters);
+    }
+    
+    /**
+     * generate the default filter set.
+     */
+    private DefaultListModel getPredefinedFilters() {
+        Filter newFilter = new Filter("System Thread Exclusion Filter", "at", Filter.HAS_IN_STACK_RULE, true, false, false);
+        DefaultListModel filters = new DefaultListModel();
+        filters.ensureCapacity(2);
+        filters.add(0, newFilter);
+        newFilter = new Filter("Idle Threads Filter", "", Filter.SLEEPING_RULE, true, true, false);
+        filters.add(1, newFilter);
         return(filters);
     }
     
@@ -251,6 +267,8 @@ public class PrefManager {
             filterString.append(((Filter)filters.getElementAt(i)).isGeneralFilter());
             filterString.append("€€€€");
             filterString.append(((Filter)filters.getElementAt(i)).isExclusionFilter());
+            filterString.append("€€€€");
+            filterString.append(((Filter)filters.getElementAt(i)).isEnabled());
         }
         toolPrefs.put("filters", filterString.toString());
     }

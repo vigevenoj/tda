@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterChecker.java,v 1.2 2006-10-16 20:10:47 irockel Exp $
+ * $Id: FilterChecker.java,v 1.3 2006-12-28 17:34:21 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -47,7 +47,7 @@ public class FilterChecker {
      * return a filter checker for all general filters
      */
     public static FilterChecker getGeneralFilterChecker() {
-        Map filters = PrefManager.get().getGeneralFilters();
+        Map filters = null; //PrefManager.get().getGeneralFilters();
         
         return(new FilterChecker(filters));
     }
