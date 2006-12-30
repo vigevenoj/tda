@@ -17,14 +17,16 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterChecker.java,v 1.3 2006-12-28 17:34:21 irockel Exp $
+ * $Id: FilterChecker.java,v 1.4 2006-12-30 10:03:13 irockel Exp $
  */
 package com.pironet.tda.filter;
 
 import com.pironet.tda.ThreadInfo;
 import com.pironet.tda.utils.PrefManager;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import javax.swing.ListModel;
 
 /**
  * has a list of filters and checks for a given thread if it matches any of the filters.
@@ -36,6 +38,8 @@ public class FilterChecker {
      */
     private Map filters = null;
     
+    private static Map generalFilters = null;
+    
     /** 
      * Creates a new instance of FilterChecker 
      */
@@ -46,10 +50,19 @@ public class FilterChecker {
     /**
      * return a filter checker for all general filters
      */
-    public static FilterChecker getGeneralFilterChecker() {
-        Map filters = null; //PrefManager.get().getGeneralFilters();
+    public static FilterChecker getFilterChecker() {
+        if(generalFilters == null) {
+            generalFilters = new HashMap();
+            ListModel filters = PrefManager.get().getFilters();
+            for(int i = 0; i < filters.getSize(); i++) {
+                Filter currentFilter = (Filter) filters.getElementAt(i);
+                if(currentFilter.isEnabled() && currentFilter.isGeneralFilter()) {
+                    generalFilters.put(currentFilter.getName(), currentFilter);
+                }
+            }
+        }
         
-        return(new FilterChecker(filters));
+        return(new FilterChecker(generalFilters));
     }
     
     /**
@@ -68,7 +81,13 @@ public class FilterChecker {
      * this filter checker instance
      */
     public boolean check(ThreadInfo ti) {
-        return(true);
+        boolean result = true;
+        Iterator filterIter = filters.values().iterator();
+        while(result && filterIter.hasNext()) {
+            Filter filter = (Filter) filterIter.next();
+            result = filter.matches(ti);
+        }
+        return(result);
     }
     
 }
