@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.3 2006-12-30 10:03:12 irockel Exp $
+ * $Id: Category.java,v 1.4 2006-12-30 10:24:56 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -120,14 +120,15 @@ public class Category {
     }
 
     private JTree filterTree(DefaultMutableTreeNode rootNode) {
-        System.out.println("Filtering...");
         DefaultMutableTreeNode filteredRootNode = new DefaultMutableTreeNode("root");
         if(rootNode != null) {
             Enumeration enumChilds = rootNode.children();
-            while(enumChilds.hasMoreElements()) {
-                DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) enumChilds.nextElement();
+            for(int i = 0; i < rootNode.getChildCount(); i++) {
+                DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) rootNode.getChildAt(i);
                 if(getFilterChecker().check((ThreadInfo) childNode.getUserObject())) {
-                    filteredRootNode.add(childNode);
+                    // node needs to be cloned as it is otherwise removed from rootNode.
+                    DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(childNode.getUserObject());    
+                    filteredRootNode.add(newChild);
                 }
             }
         }
