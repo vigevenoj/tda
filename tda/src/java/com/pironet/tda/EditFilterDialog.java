@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.4 2006-12-28 17:34:21 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.5 2006-12-30 10:03:13 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -153,11 +153,6 @@ public class EditFilterDialog extends JDialog {
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.NORTH);
             
             innerInnerSettingsPanel = new JPanel(fl);
-            innerInnerSettingsPanel.add(new JLabel("Is Filter enabled"));
-            innerInnerSettingsPanel.add(isEnabled = new JCheckBox());
-            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.NORTH);
-            
-            innerInnerSettingsPanel = new JPanel(fl);
             innerInnerSettingsPanel.add(new JLabel("Filter is a exclusion filter"));
             innerInnerSettingsPanel.add(isExclusionFilter = new JCheckBox());
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.CENTER);
@@ -166,6 +161,12 @@ public class EditFilterDialog extends JDialog {
             innerInnerSettingsPanel.add(new JLabel("Filter is a general filter"));
             innerInnerSettingsPanel.add(generalFilter = new JCheckBox());
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.EAST);
+            
+            innerInnerSettingsPanel = new JPanel(fl);
+            innerInnerSettingsPanel.add(new JLabel("Is Filter enabled"));
+            innerInnerSettingsPanel.add(isEnabled = new JCheckBox());
+            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.SOUTH);
+            
             add(innerSettingsPanel, BorderLayout.SOUTH);
             
             if(presetFilter != null) {

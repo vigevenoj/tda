@@ -17,10 +17,11 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.4 2006-12-28 17:34:21 irockel Exp $
+ * $Id: Filter.java,v 1.5 2006-12-30 10:03:13 irockel Exp $
  */
 package com.pironet.tda.filter;
 
+import com.pironet.tda.ThreadInfo;
 import java.util.regex.Pattern;
 
 /**
@@ -31,21 +32,21 @@ import java.util.regex.Pattern;
 public class Filter {
     
     // static defines for filter rules.
-    public static int HAS_IN_TITLE_RULE = 0;
+    public static final int HAS_IN_TITLE_RULE = 0;
     
-    public static int MATCHES_TITLE_RULE = 1;
+    public static final int MATCHES_TITLE_RULE = 1;
     
-    public static int HAS_IN_STACK_RULE = 2;
+    public static final int HAS_IN_STACK_RULE = 2;
     
-    public static int MATCHES_STACK_RULE = 3;
+    public static final int MATCHES_STACK_RULE = 3;
     
-    public static int WAITING_ON_RULE = 4;
+    public static final int WAITING_ON_RULE = 4;
     
-    public static int WAITING_FOR_RULE = 5;
+    public static final int WAITING_FOR_RULE = 5;
     
-    public static int LOCKING_RULE = 6;
+    public static final int LOCKING_RULE = 6;
     
-    public static int SLEEPING_RULE = 7;
+    public static final int SLEEPING_RULE = 7;
     
     /**
      * name of this filter, just something describing for this filter
@@ -127,6 +128,8 @@ public class Filter {
     
     public void setFilterExpression(String regEx) {
         filterExpression = regEx;
+        // reset any precompiled data.
+        filterExpressionPattern = null;
     }
     
     /**
@@ -134,7 +137,7 @@ public class Filter {
      */
     public Pattern getFilterExpressionPattern() {
         if(filterExpressionPattern == null) {
-            filterExpressionPattern = Pattern.compile(getFilterExpression());
+            filterExpressionPattern = Pattern.compile(getFilterExpression(), Pattern.DOTALL);
         }
         
         return(filterExpressionPattern);
@@ -184,8 +187,59 @@ public class Filter {
         this.enabled = enabled;
     }
     
+    public boolean matches(ThreadInfo ti) {
+        boolean result = true;
+        if(isEnabled()) {
+            switch(getFilterRule()) {
+                case HAS_IN_TITLE_RULE :
+                    result = getFilterExpressionPattern().matcher(ti.threadName).find();
+                    break;
+                case MATCHES_TITLE_RULE :
+                    result = getFilterExpressionPattern().matcher(ti.threadName).matches();
+                    break;
+                case HAS_IN_STACK_RULE : 
+                    result = getFilterExpressionPattern().matcher(ti.content).find();
+                    break;
+                case MATCHES_STACK_RULE :
+                    result = getFilterExpressionPattern().matcher(ti.content).matches();
+                    break;
+                case WAITING_ON_RULE :
+                    result = ti.content.contains("- waiting on") && checkLine(ti, "- waiting on", '<', ')');
+                    break;
+                case WAITING_FOR_RULE :
+                    result = ti.threadName.contains("waiting for monitor entry") &&
+                            checkLine(ti, "- waiting to lock", '<', ')');
+                    break;
+                case LOCKING_RULE :
+                    result = ti.content.contains("- locked") && checkLine(ti, "- locked", '<', ')');
+                    break;
+                case SLEEPING_RULE :
+                    result = ti.threadName.contains("Object.wait()");
+                    break;
+            }
+            //System.out.println("Filter " + getFilterExpression() + " result = " + result + " // content" + ti.content);
+            
+            // invert if it is exclusion filter
+            if(isExclusionFilter()) {
+                result = !result;
+            }
+        }
+        return(result);
+    }
+    
+    /**
+     * checks a sub line for a lock handler (for waiting, locking, monitor entry)
+     */
+    private boolean checkLine(ThreadInfo ti, String contains, char beginChar, char endChar) {
+        int beginFrom = ti.content.indexOf(contains);
+        int beginIndex = ti.content.indexOf(beginChar, beginFrom);
+        int endIndex = ti.content.indexOf(endChar, beginIndex);
+        String matchLine = ti.content.substring(beginIndex, endIndex);
+        
+        return getFilterExpressionPattern().matcher(matchLine).matches();
+    }
+
     public String toString() {
         return (getName() + (isGeneralFilter() ? " (general) " : "") + (isEnabled() ? "" : " (disabled)"));
     }
-
 }

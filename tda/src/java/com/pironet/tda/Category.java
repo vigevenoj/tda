@@ -17,11 +17,14 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.2 2006-09-23 16:33:20 irockel Exp $
+ * $Id: Category.java,v 1.3 2006-12-30 10:03:12 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.filter.FilterChecker;
+import com.pironet.tda.utils.PrefManager;
+import java.util.Enumeration;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionListener;
@@ -33,13 +36,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @author irockel
  */
 public class Category {
-    String name = null;
+    private String name = null;
     
-    DefaultMutableTreeNode rootNode = null;
+    private DefaultMutableTreeNode rootNode = null;
     
-    JScrollPane lastView = null;
+    private JScrollPane lastView = null;
     
-    JTree catTree = null;
+    private JTree filteredCatTree;
+    
+    private FilterChecker filterChecker = null;
     
     /** 
      * Creates a new instance of Category 
@@ -56,17 +61,32 @@ public class Category {
         return(name);
     }
         
+    private long lastUpdated = -1;
+    
     /**
-     * fetch the tree with all threads belonging to this category
+     * return category tree with filtered child nodes
      */
     public JTree getCatTree(TreeSelectionListener listener) {
-        if(catTree == null) {
-            catTree = new JTree(rootNode);
-            catTree.setRootVisible(false);
-            catTree.addTreeSelectionListener(listener);
+        if((filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
+            // first refresh filter checker with current filters
+            setFilterChecker(FilterChecker.getFilterChecker());
+            
+            // FIXME: what to do with special filters?
+            
+            // apply new filter settings.
+            filteredCatTree = filterTree(rootNode);
+            filteredCatTree.setRootVisible(false);
+            filteredCatTree.addTreeSelectionListener(listener);
+            setLastUpdated();
         }
-        
-        return(catTree);
+        return(filteredCatTree);
+    }
+    
+    /**
+     * return amount of filtered nodes
+     */
+    public int howManyFiltered() {
+       return(0); 
     }
     
     public String toString() {
@@ -89,5 +109,36 @@ public class Category {
     
     public JScrollPane getLastView() {
         return(lastView);
+    }
+
+    private long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    private void setLastUpdated() {
+        this.lastUpdated = System.currentTimeMillis();
+    }
+
+    private JTree filterTree(DefaultMutableTreeNode rootNode) {
+        System.out.println("Filtering...");
+        DefaultMutableTreeNode filteredRootNode = new DefaultMutableTreeNode("root");
+        if(rootNode != null) {
+            Enumeration enumChilds = rootNode.children();
+            while(enumChilds.hasMoreElements()) {
+                DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) enumChilds.nextElement();
+                if(getFilterChecker().check((ThreadInfo) childNode.getUserObject())) {
+                    filteredRootNode.add(childNode);
+                }
+            }
+        }
+        return new JTree(filteredRootNode);
+    }
+
+    private FilterChecker getFilterChecker() {
+        return filterChecker;
+    }
+
+    private void setFilterChecker(FilterChecker filterChecker) {
+        this.filterChecker = filterChecker;
     }
 }

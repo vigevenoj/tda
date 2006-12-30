@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.12 2006-12-28 17:34:21 irockel Exp $
+ * $Id: PrefManager.java,v 1.13 2006-12-30 10:03:13 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -241,7 +241,7 @@ public class PrefManager {
      * generate the default filter set.
      */
     private DefaultListModel getPredefinedFilters() {
-        Filter newFilter = new Filter("System Thread Exclusion Filter", "at", Filter.HAS_IN_STACK_RULE, true, false, false);
+        Filter newFilter = new Filter("System Thread Exclusion Filter", ".*at\\s.*", Filter.HAS_IN_STACK_RULE, true, false, false);
         DefaultListModel filters = new DefaultListModel();
         filters.ensureCapacity(2);
         filters.add(0, newFilter);
@@ -271,6 +271,20 @@ public class PrefManager {
             filterString.append(((Filter)filters.getElementAt(i)).isEnabled());
         }
         toolPrefs.put("filters", filterString.toString());
+        setFilterLastChanged();
+    }
+    
+    private long filterLastChanged = -1;
+    
+    /**
+     * return time stamp of last change time stamp of filter settings
+     */
+    public long getFiltersLastChanged(){
+        return(filterLastChanged);
+    }
+    
+    private void setFilterLastChanged() {
+        filterLastChanged = System.currentTimeMillis();
     }
         
     public void flush() {
