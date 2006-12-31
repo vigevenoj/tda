@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.4 2006-12-30 10:24:56 irockel Exp $
+ * $Id: Category.java,v 1.5 2006-12-31 09:31:37 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -39,6 +39,7 @@ public class Category {
     private String name = null;
     
     private DefaultMutableTreeNode rootNode = null;
+    private DefaultMutableTreeNode filteredRootNode = null;
     
     private JScrollPane lastView = null;
     
@@ -86,7 +87,7 @@ public class Category {
      * return amount of filtered nodes
      */
     public int howManyFiltered() {
-       return(0); 
+       return(filteredRootNode != null && rootNode != null ? rootNode.getChildCount() - filteredRootNode.getChildCount() : 0); 
     }
     
     public String toString() {
@@ -108,6 +109,10 @@ public class Category {
     }
     
     public JScrollPane getLastView() {
+        if(getLastUpdated() < PrefManager.get().getFiltersLastChanged()) {
+            // reset view as changed filters need to be applied.
+            lastView = null;
+        }
         return(lastView);
     }
 
@@ -120,7 +125,7 @@ public class Category {
     }
 
     private JTree filterTree(DefaultMutableTreeNode rootNode) {
-        DefaultMutableTreeNode filteredRootNode = new DefaultMutableTreeNode("root");
+        filteredRootNode = new DefaultMutableTreeNode("root");
         if(rootNode != null) {
             Enumeration enumChilds = rootNode.children();
             for(int i = 0; i < rootNode.getChildCount(); i++) {
