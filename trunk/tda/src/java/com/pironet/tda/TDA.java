@@ -17,12 +17,13 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.55 2006-10-03 07:27:55 irockel Exp $
+ * $Id: TDA.java,v 1.56 2006-12-31 09:31:36 irockel Exp $
  */
 package com.pironet.tda;
 
 import com.pironet.tda.utils.HistogramTableModel;
 import com.pironet.tda.utils.PrefManager;
+import com.pironet.tda.utils.StatusBar;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import java.awt.BorderLayout;
@@ -118,6 +119,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private LongThreadDialog longThreadDialog;
     private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
+
+    private StatusBar statusBar;
     
     /**
      * singleton access method for TDA
@@ -134,7 +137,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      * private constructor for singleton TDA
      */
     private TDA() {
-        super(new GridLayout(1,0));
+        super(new BorderLayout());
         
         // init L&F
         setupLookAndFeel();
@@ -169,7 +172,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         splitPane.setDividerLocation(100);
                 
         //Add the split pane to this panel.
-        add(splitPane);
+        add(splitPane,BorderLayout.CENTER);
+        statusBar = new StatusBar();
+        add(statusBar, BorderLayout.SOUTH);
     }
     
     private void setupLookAndFeel() {
@@ -388,6 +393,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         if(needDividerPos) {
             topSplitPane.setDividerLocation(PrefManager.get().getTopDividerPos());
+        }
+        if(cat.howManyFiltered() > 0) {
+            statusBar.setInfoText("Filtered " + cat.howManyFiltered() + " elements in this category.");
+        } else {
+            statusBar.setInfoText("TDA - Thread Dump Analyzer 1.2");
         }
     }
     
