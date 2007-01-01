@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SearchDialog.java,v 1.6 2006-09-24 07:38:38 irockel Exp $
+ * $Id: SearchDialog.java,v 1.7 2007-01-01 20:20:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -32,32 +32,34 @@ import javax.swing.tree.TreePath;
  *
  * @author irockel
  */
-public class SearchDialog extends JPanel
+public class SearchDialog extends JDialog
         implements ActionListener {
     
     private static String SEARCH = "search";
     private static String CANCEL = "cancel";
-    
-    private static JFrame frame;
-    
-    private JFrame controllingFrame; //needed for dialogs
+        
     private JTextField searchField;
     
     private JTree searchTree;
     
-    public SearchDialog(JFrame f, JTree tree) {
-        //Use the default FlowLayout.
-        controllingFrame = f;
+    private JScrollPane view;
+    
+    public SearchDialog(JFrame owner, JTree tree, JScrollPane view) {
+        super(owner, "Search this category... ");
+        setLayout(new FlowLayout(FlowLayout.LEFT));
         
         //Create everything.
         searchField = new JTextField(10);
         searchField.setActionCommand(SEARCH);
         searchField.addActionListener(this);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         JLabel label = new JLabel("Enter search string: ");
         label.setLabelFor(searchField);
         
         searchTree = tree;
+        
+        this.view = view;
         
         JComponent buttonPane = createButtonPanel();
         
@@ -73,15 +75,11 @@ public class SearchDialog extends JPanel
     protected JComponent createButtonPanel() {
         JPanel p = new JPanel(new GridLayout(0,1));
         JButton searchButton = new JButton("Search");
-        //JButton cancelButton = new JButton("Cancel");
         
         searchButton.setActionCommand(SEARCH);
-        //cancelButton.setActionCommand(CANCEL);
         searchButton.addActionListener(this);
-        //cancelButton.addActionListener(this);
         
         p.add(searchButton);
-        //p.add(cancelButton);
         
         return p;
     }
@@ -94,17 +92,21 @@ public class SearchDialog extends JPanel
             
             //searchTree.expandRow(searchTree.getRowCount()+1);
             if(searchPath != null) {
+                System.out.println("searchPath=" + searchPath);
+                searchTree.setExpandsSelectedPaths(true);
                 searchTree.setSelectionPath(searchPath);
+                searchTree.repaint();
                 Rectangle view = searchTree.getPathBounds(searchPath);
-                ((JViewport) searchTree.getParent()).scrollRectToVisible(view);
-                frame.setVisible(false);
+                this.view.scrollRectToVisible(view);
+                dispose();
+                searchTree.requestFocusInWindow();
             } else {
-                JOptionPane.showMessageDialog(controllingFrame,
+                JOptionPane.showMessageDialog(getOwner(),
                         searchField.getText() + " not found!",
                         "Search Error",
                         JOptionPane.ERROR_MESSAGE);
+                resetFocus();
             }
-            resetFocus();
         }
     }
     
@@ -113,34 +115,6 @@ public class SearchDialog extends JPanel
         searchField.requestFocusInWindow();
     }
     
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
-    public static void createAndShowGUI(JTree searchTree, JFrame owner) {
-        //Create and set up the window.
-        if(frame == null) {
-            frame = new JFrame("Search this category... ");
-            frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-            
-            //Create and set up the content pane.
-            final SearchDialog newContentPane = new SearchDialog(frame, searchTree);
-            newContentPane.setOpaque(true); //content panes must be opaque
-            frame.setContentPane(newContentPane);
-            
-            //Make sure the focus goes to the right component
-            //whenever the frame is initially given the focus.
-            frame.addWindowListener(new WindowAdapter() {
-                public void windowActivated(WindowEvent e) {
-                    newContentPane.resetFocus();
-                }
-            });
-        }
-        
-        //Display the window.
-        frame.pack();
-        frame.setLocationRelativeTo(owner);
-        frame.setVisible(true);
+    public void reset() {
     }
 }

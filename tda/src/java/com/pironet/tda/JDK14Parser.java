@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.32 2006-12-28 09:34:46 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.33 2007-01-01 20:20:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -155,7 +155,8 @@ public class JDK14Parser implements DumpParser {
             catLocking = new DefaultMutableTreeNode(new Category("Threads locking Monitors"));
             threadDump.add(catLocking);
             
-            catMonitors = new DefaultMutableTreeNode(new Category("Monitors"));
+            // create category for monitors with disabled filtering.
+            catMonitors = new DefaultMutableTreeNode(new Category("Monitors", false));
             threadDump.add(catMonitors);
             
             String title = null;

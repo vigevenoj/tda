@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.5 2006-12-31 09:31:37 irockel Exp $
+ * $Id: Category.java,v 1.6 2007-01-01 20:20:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -47,11 +47,21 @@ public class Category {
     
     private FilterChecker filterChecker = null;
     
+    private boolean filterEnabled = true;
+    
     /** 
      * Creates a new instance of Category 
      */
     public Category(String name) {
+        this(name, true);
+    }
+    
+    /** 
+     * Creates a new instance of Category 
+     */
+    public Category(String name, boolean filtering) {
         setName(name);
+        filterEnabled = filtering;
     }
     
     public void setName(String value) {
@@ -68,7 +78,7 @@ public class Category {
      * return category tree with filtered child nodes
      */
     public JTree getCatTree(TreeSelectionListener listener) {
-        if((filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
+        if(filterEnabled && (filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
             // first refresh filter checker with current filters
             setFilterChecker(FilterChecker.getFilterChecker());
             
@@ -79,6 +89,10 @@ public class Category {
             filteredCatTree.setRootVisible(false);
             filteredCatTree.addTreeSelectionListener(listener);
             setLastUpdated();
+        } else if (!filterEnabled) {
+            filteredCatTree = new JTree(rootNode);
+            filteredCatTree.setRootVisible(false);
+            filteredCatTree.addTreeSelectionListener(listener);            
         }
         return(filteredCatTree);
     }
@@ -88,6 +102,10 @@ public class Category {
      */
     public int howManyFiltered() {
        return(filteredRootNode != null && rootNode != null ? rootNode.getChildCount() - filteredRootNode.getChildCount() : 0); 
+    }
+    
+    public int showing() {
+       return(filteredRootNode != null ? filteredRootNode.getChildCount() : 0);
     }
     
     public String toString() {
