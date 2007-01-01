@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: StatusBar.java,v 1.1 2006-12-31 09:31:36 irockel Exp $
+ * $Id: StatusBar.java,v 1.2 2007-01-01 20:20:09 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.text.NumberFormat;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,17 +47,33 @@ public class StatusBar extends JPanel {
      */
     public StatusBar() {
         super(new BorderLayout());
-        add(infoLabel = new JLabel("TDA - Thread Dump Analyzer 1.2"), BorderLayout.WEST);
+        add(createInfoPanel(), BorderLayout.WEST);
         add(createMemoryStatus(), BorderLayout.CENTER);
         JPanel iconPanel = new JPanel(new BorderLayout());
         iconPanel.add(new JLabel(new AngledLinesWindowsCornerIcon()), BorderLayout.SOUTH);
         add(iconPanel, BorderLayout.EAST);
     }
     
+    /**
+     * set the info text of the status bar
+     */
     public void setInfoText(String text) {
         infoLabel.setText(text);
     }
     
+    private JPanel createInfoPanel() {
+        infoLabel = new JLabel(AppInfo.getStatusBarInfo());
+        FlowLayout fl = new FlowLayout(FlowLayout.LEFT);
+        fl.setHgap(5);
+        JPanel infoPanel = new JPanel(fl);
+        infoPanel.add(infoLabel);
+        
+        return(infoPanel);
+    }
+    
+    /**
+     * create the memory status panel, also includes a resize icon on the lower right
+     */
     private JPanel createMemoryStatus() {
         memStatus = new JProgressBar(0, 100);
         memStatus.setPreferredSize(new Dimension(100, 15));
@@ -72,12 +89,20 @@ public class StatusBar extends JPanel {
     
 }
 
+/**
+ * runnable object for running in a background thread to update the memory
+ * status of the application
+ */
 class MemoryStatusUpdater implements Runnable {
     private JProgressBar memStatus = null;
     private Runtime rt = Runtime.getRuntime();
+
+    private NumberFormat formatter;
     
     public MemoryStatusUpdater(JProgressBar memStatus) {
         this.memStatus = memStatus;
+        this.formatter = NumberFormat.getInstance();
+        formatter.setMaximumFractionDigits(1);
     }
     
     public void run() {
@@ -86,8 +111,10 @@ class MemoryStatusUpdater implements Runnable {
                 double factor = (int) rt.totalMemory() / 100;
                 int perc = (int) ((rt.totalMemory() - rt.freeMemory()) / factor);
                 memStatus.setValue(perc);
-                memStatus.setString(((rt.totalMemory() - rt.freeMemory()) / 1024 / 1024) + "M/" +
-                        (rt.totalMemory() / 1024 / 1024) +"M");
+                double usedMem = (rt.totalMemory() - rt.freeMemory()) / 1024.0 / 1024.0;
+                double totalMem = rt.totalMemory() / 1024.0 / 1024.0;
+                memStatus.setString(formatter.format(usedMem) + "MB/" +
+                        formatter.format(totalMem) +"MB");
                 Thread.sleep(5000);
             }
         } catch (InterruptedException ex) {

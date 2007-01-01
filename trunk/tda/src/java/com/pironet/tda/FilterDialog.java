@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.5 2006-12-28 17:34:21 irockel Exp $
+ * $Id: FilterDialog.java,v 1.6 2007-01-01 20:20:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -58,7 +58,7 @@ public class FilterDialog extends JDialog {
         super(owner, "Filter Settings");
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
-        initPanel();        
+        initPanel();  
     }
     
     private void initPanel() {
@@ -67,6 +67,7 @@ public class FilterDialog extends JDialog {
         closeButton = new JButton("Close");
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(closeButton);
+        //buttonPanel.add(cancelButton);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         
         closeButton.addActionListener( new ActionListener() {
