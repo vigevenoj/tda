@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.8 2006-09-25 08:46:53 irockel Exp $
+ * $Id: MainMenu.java,v 1.9 2007-01-18 09:35:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -116,7 +116,7 @@ public class MainMenu extends JMenuBar {
         createRecentFileMenu();
         menu.add(recentFilesMenu);
         
-        menu.addSeparator();
+/*        menu.addSeparator();
         menuItem = new JMenuItem("Save Session...",
                 KeyEvent.VK_S);
         menuItem.getAccessibleContext().setAccessibleDescription(
@@ -137,7 +137,7 @@ public class MainMenu extends JMenuBar {
                 "Open a stored session of logfiles");
         menuItem.addActionListener(actionListener);
         menuItem.setEnabled(false);
-        menu.add(menuItem);
+        menu.add(menuItem);*/
         
         menu.addSeparator();
 
@@ -208,7 +208,7 @@ public class MainMenu extends JMenuBar {
         menu.getAccessibleContext().setAccessibleDescription(
                 "Help Menu");
         
-        menuItem = new JMenuItem("Tutorial",
+        menuItem = new JMenuItem("Overview",
                 KeyEvent.VK_A);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "About Thread Dump Analyzer");

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.57 2007-01-01 20:20:08 irockel Exp $
+ * $Id: TDA.java,v 1.58 2007-01-18 09:35:32 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -152,7 +152,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         htmlPane = new JEditorPane("text/html", getInfoText());
         htmlPane.setEditable(false);
         
-        JEditorPane emptyPane = new JEditorPane("text/html", "<i><font size=-1>empty</i>");
+        JEditorPane emptyPane = new JEditorPane("text/html", "");
         emptyPane.setEditable(false);
         
         htmlView = new JScrollPane(htmlPane);
@@ -172,14 +172,17 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         Dimension minimumSize = new Dimension(200, 50);
         htmlView.setMinimumSize(minimumSize);
         emptyView.setMinimumSize(minimumSize);
-        splitPane.setDividerLocation(100);
         
         //Add the split pane to this panel.
-        add(splitPane,BorderLayout.CENTER);
+        add(htmlView, BorderLayout.CENTER);
         statusBar = new StatusBar();
         add(statusBar, BorderLayout.SOUTH);
     }
     
+    /**
+     * tries the native look and feel on mac and windows and metal on unix (gtk still
+     * isn't looking that nice, even in 1.6)
+     */
     private void setupLookAndFeel() {
         try {
             //--- set the desired preconfigured plaf ---
@@ -227,7 +230,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         info.append("Version: <b>");
         info.append(AppInfo.getVersion());
         info.append("</b><p>");
-        info.append("Select File/Open to open your log file containing thread dumps to start analyzing these thread dumps.<p></font></body></html>");
+        info.append("Select File/Open to open your log file with thread dumps (see Help/Overview for information how to obtain them) to start analyzing these thread dumps.<p></font></body></html>");
         return(info.toString());
     }
     
@@ -239,7 +242,24 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         getMainMenu().getLongMenuItem().setEnabled(true);
         getMainMenu().getCloseMenuItem().setEnabled(true);
         
-        addDumpFile();
+        addDumpFile();        
+        if(topSplitPane.getDividerLocation() <= 0) {
+            topSplitPane.setDividerLocation(200);
+        }
+        
+        // change from html view to split pane
+        remove(0);
+        revalidate();
+        htmlPane.setText("");
+        splitPane.setBottomComponent(htmlView);
+        add(splitPane, BorderLayout.CENTER);
+        if(PrefManager.get().getDividerPos() > 0) {
+            splitPane.setDividerLocation(PrefManager.get().getDividerPos());
+        } else {
+            // set default divider location
+            splitPane.setDividerLocation(100);
+        }
+        revalidate();
     }
     
     private boolean openFileActionRunning = false;
@@ -629,12 +649,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else if("Exit TDA".equals(source.getText())) {
             saveState();
             frame.dispose();
-        } else if("Tutorial".equals(source.getText())) {
-            showTutorial();
+        } else if("Overview".equals(source.getText())) {
+            showHelpOverview();
         } else if("About TDA".equals(source.getText())) {
             showInfo();
         } else if("Search...".equals(source.getText())) {
             showSearchDialog();
+        } else if("Apply Filter...".equals(source.getText())) {
+            showApplyFilterDialog();
         } else if("Parse loggc-logfile...".equals(source.getText())) {
             parseLoggcLogfile();
         } else if("Find long running threads...".equals(source.getText())) {
@@ -702,8 +724,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
-    private void showTutorial() {
-        TutorialDialog tutDialog = new TutorialDialog(frame);
+    private void showHelpOverview() {
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame);
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
@@ -729,6 +751,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void showFilterDialog() {
+        
         //Create and set up the window.
         if(filterDialog == null) {
             filterDialog = new FilterDialog(frame);
@@ -786,6 +809,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 } else {
                     init();
                     firstFile = false;
+                    setFileOpen(true);
                 }
             }
             
@@ -793,10 +817,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 PrefManager.get().addToRecentFiles(files[i].getAbsolutePath());
             }
         }
-        if(PrefManager.get().getDividerPos() > 0) {
-            System.out.println("Set DividerPos=" + PrefManager.get().getDividerPos());
-            splitPane.setDividerLocation(PrefManager.get().getDividerPos());
-        }
+
         this.getRootPane().revalidate();
     }
     
@@ -864,7 +885,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         // if first option "close file" is selected.
         if(selectValue == 0) {
-            System.out.println("Deleting node");
             tree.removeSelectionPath(selPath);
             this.getRootPane().revalidate();
         }
@@ -1017,9 +1037,24 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         PrefManager.get().setSelectedPath(fc.getCurrentDirectory());
         PrefManager.get().setPreferredSize(frame.getRootPane().getSize());
         PrefManager.get().setWindowPos(frame.getX(), frame.getY());
-        PrefManager.get().setTopDividerPos(topSplitPane.getDividerLocation());
-        PrefManager.get().setDividerPos(splitPane.getDividerLocation());
+        if(isFileOpen()) {
+            PrefManager.get().setTopDividerPos(topSplitPane.getDividerLocation());
+            PrefManager.get().setDividerPos(splitPane.getDividerLocation());
+        }
         PrefManager.get().flush();
+    }
+    
+    /**
+     * trigger, if a file is opened
+     */
+    private boolean fileOpen = false;
+
+    private boolean isFileOpen() {
+        return fileOpen;
+    }
+    
+    private void setFileOpen(boolean value) {
+        fileOpen = value;
     }
     
     /**
@@ -1077,6 +1112,26 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         frame.setVisible(true);
     }
     
+    private void showApplyFilterDialog() {
+        TreePath firstSelected = tree.getSelectionPath();
+        Category cat = (Category) ((DefaultMutableTreeNode) firstSelected.getLastPathComponent()).getUserObject();
+        ApplyFilterDialog applyFilterDialog = new ApplyFilterDialog(frame, cat);
+        
+        frame.setEnabled(false);
+        
+        //Display the window.
+        applyFilterDialog.reset();
+        applyFilterDialog.pack();
+        applyFilterDialog.setLocationRelativeTo(frame);
+        applyFilterDialog.setVisible(true);
+        
+        applyFilterDialog.addWindowListener(new WindowAdapter() {
+                public void windowClosed(WindowEvent e) {
+                    frame.setEnabled(true);
+                }
+            });
+    }
+
     /**
      * display search dialog for current category
      */
@@ -1117,5 +1172,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
         });
     }
+
     
 }

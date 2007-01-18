@@ -1,5 +1,5 @@
 /*
- * TutorialDialog.java
+ * HelpOverviewDialog.java
  *
  * This file is part of TDA - Thread Dump Analysis Tool.
  *
@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TutorialDialog.java,v 1.4 2006-03-29 14:10:46 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.1 2007-01-18 09:35:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -44,7 +44,7 @@ import javax.swing.JTabbedPane;
  *
  * @author irockel
  */
-public class TutorialDialog extends JDialog {
+public class HelpOverviewDialog extends JDialog {
     private JEditorPane htmlView;
     private JTabbedPane prefsPane;
     private JPanel buttonPanel;
@@ -55,8 +55,8 @@ public class TutorialDialog extends JDialog {
     /** 
      * Creates a new instance of PreferencesDialog 
      */
-    public TutorialDialog(JFrame owner) {
-        super(owner, "Tutorial");
+    public HelpOverviewDialog(JFrame owner) {
+        super(owner, "Overview");
         getContentPane().setLayout(new BorderLayout());
         initPanel();
         setLocationRelativeTo(owner);

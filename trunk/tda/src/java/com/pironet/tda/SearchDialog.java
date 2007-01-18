@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SearchDialog.java,v 1.7 2007-01-01 20:20:08 irockel Exp $
+ * $Id: SearchDialog.java,v 1.8 2007-01-18 09:35:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -92,7 +92,6 @@ public class SearchDialog extends JDialog
             
             //searchTree.expandRow(searchTree.getRowCount()+1);
             if(searchPath != null) {
-                System.out.println("searchPath=" + searchPath);
                 searchTree.setExpandsSelectedPaths(true);
                 searchTree.setSelectionPath(searchPath);
                 searchTree.repaint();
