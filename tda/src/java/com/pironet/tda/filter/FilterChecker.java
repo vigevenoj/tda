@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterChecker.java,v 1.4 2006-12-30 10:03:13 irockel Exp $
+ * $Id: FilterChecker.java,v 1.5 2007-01-18 09:49:46 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -52,17 +52,21 @@ public class FilterChecker {
      */
     public static FilterChecker getFilterChecker() {
         if(generalFilters == null) {
-            generalFilters = new HashMap();
-            ListModel filters = PrefManager.get().getFilters();
-            for(int i = 0; i < filters.getSize(); i++) {
-                Filter currentFilter = (Filter) filters.getElementAt(i);
-                if(currentFilter.isEnabled() && currentFilter.isGeneralFilter()) {
-                    generalFilters.put(currentFilter.getName(), currentFilter);
-                }
-            }
+            setGeneralFilters();
         }
         
         return(new FilterChecker(generalFilters));
+    }
+    
+    private static void setGeneralFilters() {
+        generalFilters = new HashMap();
+        ListModel filters = PrefManager.get().getFilters();
+        for(int i = 0; i < filters.getSize(); i++) {
+            Filter currentFilter = (Filter) filters.getElementAt(i);
+            if(currentFilter.isEnabled() && currentFilter.isGeneralFilter()) {
+                generalFilters.put(currentFilter.getName(), currentFilter);
+            }
+        }
     }
     
     /**
@@ -90,4 +94,32 @@ public class FilterChecker {
         return(result);
     }
     
+    public boolean recheck(ThreadInfo ti) {
+        // reset general filters
+        setGeneralFilters();
+        Iterator iter = filters.values().iterator();
+        
+        // remove disabled filters
+        while(iter.hasNext()) {
+            Filter filter = (Filter) iter.next();
+            if(!filter.isEnabled()) {
+                filters.remove(filter.getName());
+            }
+        }
+
+        // add new or enabled filters
+        iter = generalFilters.values().iterator();
+        while(iter.hasNext()) {
+            Filter filter = (Filter) iter.next();
+            addToFilters(filter);
+        }
+        return(check(ti));
+    }
+    
+    /**
+     * get iterator on all set filters
+     */
+    public Iterator iterOfFilters() {
+        return(filters.values().iterator());
+    }
 }
