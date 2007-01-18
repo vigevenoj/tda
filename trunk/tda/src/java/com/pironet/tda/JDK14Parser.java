@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.33 2007-01-01 20:20:08 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.34 2007-01-18 09:50:56 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -295,7 +295,8 @@ public class JDK14Parser implements DumpParser {
                     }
                     
                     // last thread reached?
-                    if(line.startsWith("\"Suspend Checker Thread\"")) {
+                    if(line.startsWith("\"Suspend Checker Thread\"") ||
+                       line.startsWith("\"VM Periodic Task Thread\"")) {
                         finished = true;
                         bis.mark(markSize);
                         if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
