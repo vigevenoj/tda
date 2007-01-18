@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.13 2006-12-30 10:03:13 irockel Exp $
+ * $Id: PrefManager.java,v 1.14 2007-01-18 09:36:17 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -215,24 +215,28 @@ public class PrefManager {
     /**
      * temporary storage for filters to not to have them be parsed again
      */
-    private ListModel cachedFilters = null;
+    private DefaultListModel cachedFilters = null;
     
     public ListModel getFilters() {
-        String filterString = toolPrefs.get("filters", "");
         DefaultListModel filters = null;
-        if(filterString.length() > 0) {
-            filters = new DefaultListModel();
-            String[] sFilters = filterString.split("§§§§");
-            filters.ensureCapacity(sFilters.length);
-            for(int i = 0; i < sFilters.length; i++) {
-                String[] filterData = sFilters[i].split("€€€€");
-                Filter newFilter = new Filter(filterData[0],
-                        filterData[1], Integer.parseInt(filterData[2]),
-                        filterData[3].equals("true"), filterData[4].equals("true"), filterData[5].equals("true"));
-                filters.add(i, newFilter);
+        if(cachedFilters == null) {
+            String filterString = toolPrefs.get("filters", "");
+            if(filterString.length() > 0) {
+                filters = new DefaultListModel();
+                String[] sFilters = filterString.split("§§§§");
+                filters.ensureCapacity(sFilters.length);
+                for(int i = 0; i < sFilters.length; i++) {
+                    String[] filterData = sFilters[i].split("€€€€");
+                    Filter newFilter = new Filter(filterData[0],
+                            filterData[1], Integer.parseInt(filterData[2]),
+                            filterData[3].equals("true"), filterData[4].equals("true"), filterData[5].equals("true"));
+                    filters.add(i, newFilter);
+                }
+            } else {
+                filters = getPredefinedFilters();
             }
         } else {
-            filters = getPredefinedFilters();
+            filters = cachedFilters;
         }
         return(filters);
     }
@@ -250,7 +254,7 @@ public class PrefManager {
         return(filters);
     }
     
-    public void setFilters(ListModel filters) {
+    public void setFilters(DefaultListModel filters) {
         // store into cache
         cachedFilters = filters;
         StringBuffer filterString = new StringBuffer();

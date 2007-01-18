@@ -17,13 +17,14 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.6 2007-01-01 20:20:08 irockel Exp $
+ * $Id: Category.java,v 1.7 2007-01-18 09:35:33 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.filter.FilterChecker;
 import com.pironet.tda.utils.PrefManager;
+import java.util.Date;
 import java.util.Enumeration;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -127,6 +128,7 @@ public class Category {
     }
     
     public JScrollPane getLastView() {
+        //System.out.println("lastUpdated=" + new Date(getLastUpdated()) + " // filterChanged=" + new Date(PrefManager.get().getFiltersLastChanged()));
         if(getLastUpdated() < PrefManager.get().getFiltersLastChanged()) {
             // reset view as changed filters need to be applied.
             lastView = null;
@@ -148,7 +150,7 @@ public class Category {
             Enumeration enumChilds = rootNode.children();
             for(int i = 0; i < rootNode.getChildCount(); i++) {
                 DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) rootNode.getChildAt(i);
-                if(getFilterChecker().check((ThreadInfo) childNode.getUserObject())) {
+                if(getFilterChecker().recheck((ThreadInfo) childNode.getUserObject())) {
                     // node needs to be cloned as it is otherwise removed from rootNode.
                     DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(childNode.getUserObject());    
                     filteredRootNode.add(newChild);
@@ -158,7 +160,10 @@ public class Category {
         return new JTree(filteredRootNode);
     }
 
-    private FilterChecker getFilterChecker() {
+    public FilterChecker getFilterChecker() {
+        if(filterChecker == null) {
+            setFilterChecker(FilterChecker.getFilterChecker());
+        }
         return filterChecker;
     }
 

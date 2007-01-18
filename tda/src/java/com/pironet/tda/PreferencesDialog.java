@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.11 2006-09-24 08:23:16 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.12 2007-01-18 09:35:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -201,7 +201,6 @@ public class PreferencesDialog extends JDialog {
                     lastSelectedItem = (String) dateParsingRegexs.getSelectedItem();
                 }
             } else if (e.getSource() == clearButton) {
-                System.out.println("Resetting");
                 dateParsingRegexs.setModel(new DefaultComboBoxModel());
             }
         }
