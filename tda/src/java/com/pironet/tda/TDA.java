@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.58 2007-01-18 09:35:32 irockel Exp $
+ * $Id: TDA.java,v 1.59 2007-04-01 07:51:09 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -145,6 +145,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         // init L&F
         setupLookAndFeel();
         
+        init();
+    }
+    
+    private void init() {
         // init everything
         tree = new JTree();
         
@@ -234,7 +238,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         return(info.toString());
     }
     
-    public void init() {
+    public void initDumpDisplay() {
         // clear tree
         dumpStore = new DumpStore();
         
@@ -807,7 +811,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                     // do direct add without re-init.
                     addDumpFile();
                 } else {
-                    init();
+                    initDumpDisplay();
                     firstFile = false;
                     setFileOpen(true);
                 }
@@ -885,8 +889,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         // if first option "close file" is selected.
         if(selectValue == 0) {
-            tree.removeSelectionPath(selPath);
-            this.getRootPane().revalidate();
+            // remove stuff from the top nodes
+            topNodes.remove(selPath.getLastPathComponent());
+            
+            if(topNodes.size() == 0) {
+                // simply do a reinit, as there is anything to display
+                removeAll();
+                revalidate();
+                
+                init();
+            } else {
+                // rebuild jtree
+                createTree();
+                //tree = new JTree(topNodes);
+            }
+            revalidate();
         }
         
     }
@@ -1075,7 +1092,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Create and set up the content pane.
         if(dumpFile != null) {
-            TDA.get().init();
+            TDA.get().initDumpDisplay();
         }
         
         TDA.get().setOpaque(true); //content panes must be opaque
