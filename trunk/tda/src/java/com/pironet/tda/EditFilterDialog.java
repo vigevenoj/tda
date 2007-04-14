@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.5 2006-12-30 10:03:13 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.6 2007-04-14 06:31:45 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -157,10 +157,11 @@ public class EditFilterDialog extends JDialog {
             innerInnerSettingsPanel.add(isExclusionFilter = new JCheckBox());
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.CENTER);
             
-            innerInnerSettingsPanel = new JPanel(fl);
+            /*innerInnerSettingsPanel = new JPanel(fl);
             innerInnerSettingsPanel.add(new JLabel("Filter is a general filter"));
             innerInnerSettingsPanel.add(generalFilter = new JCheckBox());
-            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.EAST);
+            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.EAST);*/
+            generalFilter = new JCheckBox("", true);
             
             innerInnerSettingsPanel = new JPanel(fl);
             innerInnerSettingsPanel.add(new JLabel("Is Filter enabled"));

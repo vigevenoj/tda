@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.14 2007-01-18 09:36:17 irockel Exp $
+ * $Id: PrefManager.java,v 1.15 2007-04-14 06:31:45 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -179,17 +179,21 @@ public class PrefManager {
     
     public void addToRecentFiles(String file) {
         String[] currentFiles = getRecentFiles();
-        int start = currentFiles.length == 10 ? 1 : 0;
-        StringBuffer recentFiles = new StringBuffer();
         
-        for(int i = start; i < currentFiles.length; i++) {
-            recentFiles.append(currentFiles[i]);
-            recentFiles.append("§§§§");
+        // only add files already in it
+        if(!hasInRecentFiles(file, currentFiles)) {
+            int start = currentFiles.length == 10 ? 1 : 0;
+            StringBuffer recentFiles = new StringBuffer();
+            
+            for(int i = start; i < currentFiles.length; i++) {
+                recentFiles.append(currentFiles[i]);
+                recentFiles.append("§§§§");
+            }
+            
+            // append new files
+            recentFiles.append(file);
+            toolPrefs.put("recentFiles", recentFiles.toString());
         }
-        
-        // append new files
-        recentFiles.append(file);
-        toolPrefs.put("recentFiles", recentFiles.toString());
     }
     
     public String[] getRecentFiles() {
@@ -297,5 +301,20 @@ public class PrefManager {
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * check if new file is in given recent file list
+     */
+    private boolean hasInRecentFiles(String file, String[] currentFiles) {
+        boolean found = false;
+        
+        for(int i = 0; i < currentFiles.length; i++) {
+           if(file.equals(currentFiles[i])) {
+               found = true;
+               break;
+           } 
+        }
+        return found;
     }
 }
