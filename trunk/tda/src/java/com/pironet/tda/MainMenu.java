@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.9 2007-01-18 09:35:32 irockel Exp $
+ * $Id: MainMenu.java,v 1.10 2007-04-14 08:12:26 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -41,15 +41,17 @@ public class MainMenu extends JMenuBar {
     private JMenuItem closeMenuItem;
     private JMenuItem longMenuItem;
     private JMenuItem recentFilesMenu;
+    private JMenuItem closeAllMenuItem;
     
-    private ActionListener actionListener;
+    private TDA listener;
+
 
 
     /** 
      * Creates a new instance of the MainMenu 
      */
-    public MainMenu(ActionListener listener) {
-        actionListener = listener;
+    public MainMenu(TDA listener) {
+        this.listener = listener;
         createMenuBar();
     }
             
@@ -58,6 +60,13 @@ public class MainMenu extends JMenuBar {
      */
     public JMenuItem getCloseMenuItem() {
         return(closeMenuItem);
+    }
+    
+    /**
+     * get the close all file menu item
+     */
+    public JMenuItem getCloseAllMenuItem() {
+        return(closeAllMenuItem);
     }
     
     public JMenuItem getLongMenuItem() {
@@ -83,6 +92,7 @@ public class MainMenu extends JMenuBar {
         menu = new JMenu("File");
         menu.setMnemonic(KeyEvent.VK_F);
         menu.getAccessibleContext().setAccessibleDescription("File Menu");
+        menu.addMenuListener(listener);
         
         //a group of JMenuItems
         menuItem = new JMenuItem("Open...",
@@ -91,7 +101,7 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_O, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Open Log File with dumps.");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
         
         /*menuItem = new JMenuItem("Open JMX Connection...",
@@ -103,15 +113,19 @@ public class MainMenu extends JMenuBar {
         menuItem.addActionListener(actionListener);
         menu.add(menuItem);*/
         
-        closeMenuItem = new JMenuItem("Close...",
-                KeyEvent.VK_X);
-        closeMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_X, ActionEvent.ALT_MASK));
+        closeMenuItem = new JMenuItem("Close...");
         closeMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Open Log File with dumps.");
-        closeMenuItem.addActionListener(actionListener);
+                "Close currently selected dump file.");
+        closeMenuItem.addActionListener(listener);
         closeMenuItem.setEnabled(false);
         menu.add(closeMenuItem);
+        
+        closeAllMenuItem = new JMenuItem("Close all...");
+        closeAllMenuItem.getAccessibleContext().setAccessibleDescription(
+                "Close all open dump files.");
+        closeAllMenuItem.addActionListener(listener);
+        closeAllMenuItem.setEnabled(false);
+        menu.add(closeAllMenuItem);
         
         createRecentFileMenu();
         menu.add(recentFilesMenu);
@@ -145,7 +159,7 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_P);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Set Preferences");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
         
         menu.addSeparator();
@@ -156,7 +170,7 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_E, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Exit TDA");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
         
         return(menu);
@@ -181,7 +195,7 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_L, ActionEvent.ALT_MASK));
         longMenuItem.getAccessibleContext().setAccessibleDescription(
                 "Exit TDA");
-        longMenuItem.addActionListener(actionListener);
+        longMenuItem.addActionListener(listener);
         longMenuItem.setEnabled(false);
         menu.add(longMenuItem);
 
@@ -191,7 +205,7 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_F, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Setup Filter");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
         
         return(menu);
@@ -212,14 +226,14 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_A);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "About Thread Dump Analyzer");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
         menu.addSeparator();
         menuItem = new JMenuItem("About TDA",
                 KeyEvent.VK_A);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "About Thread Dump Analyzer");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
         
         return(menu);
@@ -238,7 +252,7 @@ public class MainMenu extends JMenuBar {
                 if(!recentFiles[i].equals("")) {
                     JMenuItem item = new JMenuItem(recentFiles[i]);
                     ((JMenu) recentFilesMenu).add(item);
-                    item.addActionListener(actionListener);
+                    item.addActionListener(listener);
                 }
             }
         } else {

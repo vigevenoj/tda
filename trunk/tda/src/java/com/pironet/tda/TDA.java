@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.60 2007-04-14 06:31:45 irockel Exp $
+ * $Id: TDA.java,v 1.61 2007-04-14 08:12:26 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -36,6 +36,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import javax.swing.JTree;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
@@ -90,7 +92,7 @@ import javax.swing.tree.TreePath;
  *
  * @author irockel
  */
-public class TDA extends JPanel implements TreeSelectionListener, ActionListener {
+public class TDA extends JPanel implements TreeSelectionListener, ActionListener, MenuListener {
     private static JFileChooser fc;
     private static boolean DEBUG = false;
     private static int DIVIDER_SIZE = 4;
@@ -184,6 +186,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         firstFile = true;
         setFileOpen(false);
+        
     }
     
     /**
@@ -248,6 +251,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         topNodes = new Vector();
         getMainMenu().getLongMenuItem().setEnabled(true);
         getMainMenu().getCloseMenuItem().setEnabled(true);
+        getMainMenu().getCloseAllMenuItem().setEnabled(true);
         
         addDumpFile();        
         if(topSplitPane.getDividerLocation() <= 0) {
@@ -670,6 +674,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             findLongRunningThreads();
         } else if("Close...".equals(source.getText())) {
             closeCurrentDump();
+        } else if("Close all...".equals(source.getText())) {
+            closeAllDumps();
         } else if("Diff Selection".equals(source.getText())) {
             TreePath[] paths = tree.getSelectionPaths();
             if(paths.length < 2) {
@@ -873,7 +879,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     private void closeCurrentDump() {
         TreePath selPath = tree.getSelectionPath();
-        //DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
         
         while(selPath != null && !checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), File.separator)) {
             
@@ -901,14 +906,44 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 revalidate();
                 
                 init();
+                getMainMenu().getLongMenuItem().setEnabled(false);
+                getMainMenu().getCloseMenuItem().setEnabled(false);
+                getMainMenu().getCloseAllMenuItem().setEnabled(false);
             } else {
                 // rebuild jtree
                 createTree();
-                //tree = new JTree(topNodes);
             }
             revalidate();
         }
         
+    }
+    
+    /**
+     * close all open dumps
+     */
+    private void closeAllDumps() {        
+        Object[] options = { "Close all", "Cancel close" };
+        
+        int selectValue = JOptionPane.showOptionDialog(null, "<html><body>Are you sure, you want to close all open dump files", "Confirm closing...",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+        
+        // if first option "close file" is selected.
+        if(selectValue == 0) {
+            // remove stuff from the top nodes
+            topNodes = new Vector();
+            
+            // simply do a reinit, as there is anything to display
+            removeAll();
+            revalidate();
+            
+            init();
+            revalidate();
+            
+            getMainMenu().getLongMenuItem().setEnabled(false);
+            getMainMenu().getCloseMenuItem().setEnabled(false);
+            getMainMenu().getCloseAllMenuItem().setEnabled(false);
+        }        
     }
     
     /**
@@ -1191,6 +1226,25 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 createAndShowGUI();
             }
         });
+    }
+
+    /**
+     * check file menu
+     */
+    public void menuSelected(MenuEvent e) {
+        JMenu source = (JMenu) e.getSource();
+        if((source != null) && "File".equals(source.getText())) {
+            // close menu item only active, if something is selected.
+            getMainMenu().getCloseMenuItem().setEnabled(tree.getSelectionPath() != null);
+        }
+    }
+
+    public void menuDeselected(MenuEvent e) {
+        // nothing to do
+    }
+
+    public void menuCanceled(MenuEvent e) {
+        // nothing to do
     }
 
     
