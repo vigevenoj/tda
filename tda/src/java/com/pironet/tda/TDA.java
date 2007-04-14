@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.59 2007-04-01 07:51:09 irockel Exp $
+ * $Id: TDA.java,v 1.60 2007-04-14 06:31:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -181,6 +181,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         add(htmlView, BorderLayout.CENTER);
         statusBar = new StatusBar();
         add(statusBar, BorderLayout.SOUTH);
+        
+        firstFile = true;
+        setFileOpen(false);
     }
     
     /**
@@ -577,9 +580,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Find long running threads...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        menuItem = new JMenuItem("Apply Filter...");
+        /*menuItem = new JMenuItem("Apply Filter...");
         menuItem.addActionListener(this);
-        popup.add(menuItem);
+        popup.add(menuItem);*/
         
         //Add listener to the text area so the popup menu can come up.
         MouseListener popupListener = new PopupListener(popup);
