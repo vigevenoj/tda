@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SearchDialog.java,v 1.8 2007-01-18 09:35:32 irockel Exp $
+ * $Id: SearchDialog.java,v 1.9 2007-04-15 06:53:44 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -41,10 +41,8 @@ public class SearchDialog extends JDialog
     private JTextField searchField;
     
     private JTree searchTree;
-    
-    private JScrollPane view;
-    
-    public SearchDialog(JFrame owner, JTree tree, JScrollPane view) {
+        
+    public SearchDialog(JFrame owner, JTree tree) {
         super(owner, "Search this category... ");
         setLayout(new FlowLayout(FlowLayout.LEFT));
         
@@ -58,8 +56,6 @@ public class SearchDialog extends JDialog
         label.setLabelFor(searchField);
         
         searchTree = tree;
-        
-        this.view = view;
         
         JComponent buttonPane = createButtonPanel();
         
@@ -87,16 +83,13 @@ public class SearchDialog extends JDialog
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
         
-        if (SEARCH.equals(cmd)) {
-            TreePath searchPath = searchTree.getNextMatch(searchField.getText(),searchTree.getRowCount()-1,Position.Bias.Forward);
+        if (SEARCH.equals(cmd)) {            
+            TreePath searchPath = searchTree.getNextMatch(searchField.getText(),0,Position.Bias.Forward);
             
-            //searchTree.expandRow(searchTree.getRowCount()+1);
             if(searchPath != null) {
-                searchTree.setExpandsSelectedPaths(true);
                 searchTree.setSelectionPath(searchPath);
-                searchTree.repaint();
                 Rectangle view = searchTree.getPathBounds(searchPath);
-                this.view.scrollRectToVisible(view);
+                ((JViewport) searchTree.getParent()).scrollRectToVisible(view);
                 dispose();
                 searchTree.requestFocusInWindow();
             } else {
@@ -116,4 +109,5 @@ public class SearchDialog extends JDialog
     
     public void reset() {
     }
+
 }
