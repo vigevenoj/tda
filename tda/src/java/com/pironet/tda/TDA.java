@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.61 2007-04-14 08:12:26 irockel Exp $
+ * $Id: TDA.java,v 1.62 2007-04-15 06:53:44 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1196,7 +1196,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         JTree catTree = ((Category) node.getUserObject()).getCatTree(this);
         
         //Create and set up the window.
-        searchDialog = new SearchDialog(frame, catTree, dumpView);
+        searchDialog = new SearchDialog(frame, catTree);
         
         frame.setEnabled(false);
         //Display the window.
