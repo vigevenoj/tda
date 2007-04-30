@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.1 2007-01-18 09:35:32 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.2 2007-04-30 11:43:03 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -64,13 +64,7 @@ public class HelpOverviewDialog extends JDialog {
         
     private void initPanel() {
         try {
-            URL tutURL;
-            if(System.getProperty("user.dir", "").indexOf(':') > 0) {
-                tutURL = new URL("file:///" + System.getProperty("user.dir", "").replace('\\', '/') + "/doc/tutorial.html");
-            } else {
-                tutURL = new URL("file://" + System.getProperty("user.dir", "") + "/doc/tutorial.html");
-            }
-            //htmlView = new JEditorPane("text/html", content);
+            URL tutURL = HelpOverviewDialog.class.getResource("doc/tutorial.html");
             htmlView = new JEditorPane(tutURL);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
