@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<jnlp spec="1.0" codebase="http://tda.dev.java.net/">
+<jnlp spec="1.0" codebase="https://tda.dev.java.net/">
    <information>
       <title>TDA - Thread Dump Analyzer 1.2</title>
       <vendor>Ingo Rockel</vendor>
