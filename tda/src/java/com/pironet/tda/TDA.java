@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.65 2007-04-30 14:17:11 irockel Exp $
+ * $Id: TDA.java,v 1.66 2007-04-30 20:11:39 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -332,6 +332,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             frame.setTitle(frame.getTitle() + " ...");
         }
         
+        tree.setShowsRootHandles(true);
         tree.getSelectionModel().setSelectionMode
                 (TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         

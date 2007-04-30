@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.9 2007-04-30 10:57:59 irockel Exp $
+ * $Id: Category.java,v 1.10 2007-04-30 20:11:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -96,12 +96,18 @@ public class Category {
             
             // apply new filter settings.
             filteredCatTree = filterTree(rootNode);
+            if(getName().startsWith("Monitors")) {
+                filteredCatTree.setShowsRootHandles(true);
+            }
             filteredCatTree.setCellRenderer(new TreeRenderer());
             filteredCatTree.setRootVisible(false);
             filteredCatTree.addTreeSelectionListener(listener);
             setLastUpdated();
         } else if (!filterEnabled && (filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
             filteredCatTree = new JTree(rootNode);
+            if(getName().startsWith("Monitors")) {
+                filteredCatTree.setShowsRootHandles(true);
+            }
             filteredCatTree.setCellRenderer(new TreeRenderer());
             filteredCatTree.setRootVisible(false);
             filteredCatTree.addTreeSelectionListener(listener);            
