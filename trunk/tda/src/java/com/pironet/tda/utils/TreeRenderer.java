@@ -10,6 +10,7 @@
 package com.pironet.tda.utils;
 
 import com.pironet.tda.Category;
+import com.pironet.tda.Logfile;
 import com.pironet.tda.TDA;
 import com.pironet.tda.ThreadInfo;
 import java.awt.Component;
@@ -37,7 +38,7 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
         } else if (leaf && isThreadInfo(value)) {
             setIcon(TDA.createImageIcon("Thread.gif"));
         } else if(!leaf) {
-            if(((DefaultMutableTreeNode) value).isRoot()) {
+            if(((DefaultMutableTreeNode) value).isRoot() || isLogfile(value)) {
                 setIcon(TDA.createImageIcon("Root.gif"));
             } else if(isThreadInfo(value)) {
                 setIcon(TDA.createImageIcon("Monitor.gif"));
@@ -65,5 +66,10 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         return((node.getUserObject() instanceof ThreadInfo) && 
                 !((ThreadInfo) node.getUserObject()).threadName.startsWith("Full"));
+    }
+    
+    private boolean isLogfile(Object value) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        return(node.getUserObject() instanceof Logfile);
     }
 }
