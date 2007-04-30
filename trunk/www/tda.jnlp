@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<jnlp spec="1.0" codebase="http://tda.dev.java.net/">
+   <information>
+      <title>TDA - Thread Dump Analyzer 1.2</title>
+      <vendor>Ingo Rockel</vendor>
+   </information>
+   <resources>
+      <j2se version="1.4+" href="http://java.sun.com/products/autodl/j2se"/>
+      <jar href="tda.jar"/>
+   </resources>
+   <application-desc main-class="com.pironet.tda.TDA"/>
+   <security>
+      <all-permissions/>
+   </security>
+</jnlp>
+
