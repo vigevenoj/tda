@@ -17,15 +17,17 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.8 2007-04-15 06:53:44 irockel Exp $
+ * $Id: Category.java,v 1.9 2007-04-30 10:57:59 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.filter.FilterChecker;
 import com.pironet.tda.utils.PrefManager;
+import com.pironet.tda.utils.TreeRenderer;
 import java.util.Date;
 import java.util.Enumeration;
+import javax.swing.Icon;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionListener;
@@ -50,19 +52,22 @@ public class Category {
     
     private boolean filterEnabled = true;
     
+    private Icon icon = null;
+        
     /** 
      * Creates a new instance of Category 
      */
-    public Category(String name) {
-        this(name, true);
+    public Category(String name, Icon treeIcon) {
+        this(name, treeIcon, true);
     }
-    
+
     /** 
      * Creates a new instance of Category 
      */
-    public Category(String name, boolean filtering) {
+    public Category(String name, Icon treeIcon, boolean filtering) {
         setName(name);
         filterEnabled = filtering;
+        icon = treeIcon;
     }
     
     public void setName(String value) {
@@ -71,6 +76,10 @@ public class Category {
     
     public String getName() {
         return(name);
+    }
+    
+    public Icon getIcon() {
+        return(icon);
     }
         
     private long lastUpdated = -1;
@@ -87,11 +96,13 @@ public class Category {
             
             // apply new filter settings.
             filteredCatTree = filterTree(rootNode);
+            filteredCatTree.setCellRenderer(new TreeRenderer());
             filteredCatTree.setRootVisible(false);
             filteredCatTree.addTreeSelectionListener(listener);
             setLastUpdated();
         } else if (!filterEnabled && (filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
             filteredCatTree = new JTree(rootNode);
+            filteredCatTree.setCellRenderer(new TreeRenderer());
             filteredCatTree.setRootVisible(false);
             filteredCatTree.addTreeSelectionListener(listener);            
         }

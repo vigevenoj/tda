@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.62 2007-04-15 06:53:44 irockel Exp $
+ * $Id: TDA.java,v 1.63 2007-04-30 10:57:59 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -27,6 +27,7 @@ import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.StatusBar;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
+import com.pironet.tda.utils.TreeRenderer;
 import java.awt.BorderLayout;
 import java.io.FileNotFoundException;
 import javax.swing.JEditorPane;
@@ -333,6 +334,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         tree.getSelectionModel().setSelectionMode
                 (TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+        
+        tree.setCellRenderer(new TreeRenderer());
         
         //Create the scroll pane and add the tree to it.
         JScrollPane treeView = new JScrollPane(tree);
@@ -703,6 +706,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 AppInfo.getVersion() +
                 "</p><br>" +
                 "<p>(c) by Ingo Rockel &lt;irockel@dev.java.net&gt;</p><br>" +
+                "<p>Icons used are based on Benno System Icons by Benno Meyer.</p><br>" +
                 "<p>TDA is free software; you can redistribute it and/or modify<br>" +
                 "it under the terms of the Lesser GNU General Public License as published by<br>" +
                 "the Free Software Foundation; either version 2.1 of the License, or<br>" +
@@ -837,8 +841,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     /**
      * Returns an ImageIcon, or null if the path was invalid.
      */
-    protected static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = TDA.class.getResource(path);
+    public static ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = TDA.class.getResource("icons/" + path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
@@ -1122,7 +1126,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         frame = new JFrame("TDA - Thread Dump Analyzer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        Image image = Toolkit.getDefaultToolkit().getImage( "TDA.gif" );
+        //Image image = Toolkit.getDefaultToolkit().getImage( "TDA.gif" );
+        Image image = TDA.createImageIcon("TDA.gif").getImage();
         frame.setIconImage( image );
         
         
