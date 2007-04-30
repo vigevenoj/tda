@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.64 2007-04-30 11:41:31 irockel Exp $
+ * $Id: TDA.java,v 1.65 2007-04-30 14:17:11 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -843,7 +843,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     public static ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = TDA.class.getResource("icons/" + path);
-        System.out.println("imgURL" + imgURL);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
