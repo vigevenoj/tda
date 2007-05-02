@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.66 2007-04-30 20:11:39 irockel Exp $
+ * $Id: TDA.java,v 1.67 2007-05-02 09:40:11 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -700,13 +700,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     private void showInfo() {
         JOptionPane.showMessageDialog(this.getRootPane(),
-                "<html><body><p><b>" +
-                AppInfo.getAppInfo() +
-                "</b></p><br>" +
-                "<p>Version: " +
-                AppInfo.getVersion() +
-                "</p><br>" +
-                "<p>(c) by Ingo Rockel &lt;irockel@dev.java.net&gt;</p><br>" +
+                "<html><body>" +
+                /*"<p>Java Version: " + System.getProperty("java.version") + "</p><br>" +*/
                 "<p>Icons used are based on Benno System Icons by Benno Meyer.</p><br>" +
                 "<p>TDA is free software; you can redistribute it and/or modify<br>" +
                 "it under the terms of the Lesser GNU General Public License as published by<br>" +
@@ -719,7 +714,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "You should have received a copy of the Lesser GNU General Public License<br>" +
                 "along with TDA; if not, write to the Free Software<br>" +
                 "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA<p>",
-                "Copyright Notice", JOptionPane.INFORMATION_MESSAGE);
+                "About TDA", JOptionPane.INFORMATION_MESSAGE, TDA.createImageIcon("tda-logo.jpg"));
         
     }
     
