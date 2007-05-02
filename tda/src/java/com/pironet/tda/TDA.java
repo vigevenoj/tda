@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.67 2007-05-02 09:40:11 irockel Exp $
+ * $Id: TDA.java,v 1.68 2007-05-02 15:46:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -232,16 +232,17 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private String getInfoText() {
-        StringBuffer info = new StringBuffer("<html><body><font size=-1><b>");
+        StringBuffer info = new StringBuffer("<html><body><font face=\"System\" size=\"+1\"><b>");
+        info.append("<img border=0 src=\"" + TDA.class.getResource("icons/TDA.gif") + "\">  ");
         info.append(AppInfo.getAppInfo());
-        info.append("</b><p>");
+        info.append("</b></font><hr><font face=\"System\" size=-1><p>");
         info.append("(C)opyright ");
         info.append(AppInfo.getCopyright());
         info.append(" - Ingo Rockel<br>");
         info.append("Version: <b>");
         info.append(AppInfo.getVersion());
         info.append("</b><p>");
-        info.append("Select File/Open to open your log file with thread dumps (see Help/Overview for information how to obtain them) to start analyzing these thread dumps.<p></font></body></html>");
+        info.append("Select File/Open to open your log file with thread dumps to start analyzing these thread dumps.<p>See Help/Overview for information on how to obtain a thread dump from your VM.</p></font></body></html>");
         return(info.toString());
     }
     
