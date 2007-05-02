@@ -10,7 +10,6 @@
       <jar href="tda-1.2-beta.jar"/>
    </resources>
    <application-desc main-class="com.pironet.tda.TDA"/>
-   <icon href="tda.gif"/>
    <icon href="tda-logo.jpg" kind="splash"/>
    <security>
       <all-permissions/>
