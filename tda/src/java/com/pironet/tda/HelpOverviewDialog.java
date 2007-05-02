@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.2 2007-04-30 11:43:03 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.3 2007-05-02 16:00:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -73,7 +73,7 @@ public class HelpOverviewDialog extends JDialog {
         }
         JScrollPane scrollPane = new JScrollPane(htmlView);
         htmlView.setEditable(false);
-        htmlView.setPreferredSize(new Dimension(600, 600));
+        htmlView.setPreferredSize(new Dimension(780, 600));
         htmlView.setCaretPosition(0);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
         closeButton = new JButton("Close");
