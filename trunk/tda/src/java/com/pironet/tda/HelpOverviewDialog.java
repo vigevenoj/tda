@@ -17,11 +17,12 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.3 2007-05-02 16:00:08 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.4 2007-05-03 09:18:08 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.Browser;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -39,6 +40,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 /**
  *
@@ -71,6 +74,25 @@ public class HelpOverviewDialog extends JDialog {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        
+        htmlView.addHyperlinkListener(
+                new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent evt) {
+                // if a link was clicked
+                if(evt.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
+                    try {
+                        // launch a browser with the appropriate URL
+                        Browser.open(evt.getURL().toString());
+                    } catch(InterruptedException e) {
+                        System.out.println("Error launching external browser.");
+                    } catch(IOException e) {
+                        System.out.println("I/O error launching external browser." + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        
         JScrollPane scrollPane = new JScrollPane(htmlView);
         htmlView.setEditable(false);
         htmlView.setPreferredSize(new Dimension(780, 600));
