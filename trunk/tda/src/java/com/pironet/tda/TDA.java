@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.68 2007-05-02 15:46:45 irockel Exp $
+ * $Id: TDA.java,v 1.69 2007-05-03 13:19:25 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -649,7 +649,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     public void actionPerformed(ActionEvent e) {
         JMenuItem source = (JMenuItem)(e.getSource());
-        if(source.getText().startsWith(":\\") || source.getText().startsWith("/") ) {
+        if(source.getText().substring(1).startsWith(":\\") || source.getText().startsWith("/") ) {
             dumpFile = source.getText();
             openFiles(new File[] {new File(dumpFile)}, true);
         } else if("Open...".equals(source.getText())) {
