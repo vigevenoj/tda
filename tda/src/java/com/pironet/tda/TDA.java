@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.69 2007-05-03 13:19:25 irockel Exp $
+ * $Id: TDA.java,v 1.70 2007-05-03 20:29:32 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -353,7 +353,20 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         createPopupMenu();
         
     }
+
+    private boolean threadDisplay = false;
     
+    private void setThreadDisplay(boolean value) {
+        threadDisplay = value;
+        if(!value) {
+            // clear thread pane
+            topSplitPane.setRightComponent(null);
+        }
+    }
+    
+    private boolean isThreadDisplay() {
+        return(threadDisplay);
+    }
     
     /**
      * Required by TreeSelectionListener interface.
@@ -369,14 +382,19 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         Object nodeInfo = node.getUserObject();
         if (nodeInfo instanceof ThreadInfo) {
             displayThreadInfo(nodeInfo);
+            setThreadDisplay(true);
         } else if (nodeInfo instanceof HistogramInfo) {
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
             displayTable((HistogramTableModel) tdi.content);
+            setThreadDisplay(false);
         } else if (nodeInfo instanceof Logfile && ((String)((Logfile)nodeInfo).getContent()).startsWith("Thread Dumps")) {
             displayLogFile();
+            setThreadDisplay(false);
         } else if (nodeInfo instanceof Category) {
             displayCategory(nodeInfo);
+            setThreadDisplay(true);
         } else {
+            setThreadDisplay(false);
             displayContent(null);
         }
     }
@@ -833,6 +851,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
 
         this.getRootPane().revalidate();
+        displayContent(null);
     }
     
     /**
@@ -988,6 +1007,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                                 addThreadDumps(top, dumpFileStream);
                                 createTree();
                                 getRootPane().revalidate();
+                                displayContent(null);
                             } finally {
                                 if(loggcFileStream != null) {
                                     try {
@@ -1093,7 +1113,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         PrefManager.get().setSelectedPath(fc.getCurrentDirectory());
         PrefManager.get().setPreferredSize(frame.getRootPane().getSize());
         PrefManager.get().setWindowPos(frame.getX(), frame.getY());
-        if(isFileOpen()) {
+        if(isThreadDisplay()) {
             PrefManager.get().setTopDividerPos(topSplitPane.getDividerLocation());
             PrefManager.get().setDividerPos(splitPane.getDividerLocation());
         }
