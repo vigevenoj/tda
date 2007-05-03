@@ -5,12 +5,13 @@
       <title>TDA - Thread Dump Analyzer 1.2</title>
       <vendor>Ingo Rockel</vendor>
       <homepage href="http://tda.dev.java.net/"/>
+      <icon href="tda-logo.jpg" kind="splash"/>
+      <icon href="tda.gif" />
+      <offline-allowed/>
    </information>
    <resources>
       <j2se version="1.4+" href="http://java.sun.com/products/autodl/j2se"/>
       <jar href="tda-1.2-beta.jar"/>
-      <icon href="tda-logo.jpg" kind="splash"/>
-      <icon href="tda.gif" />
    </resources>
    <application-desc main-class="com.pironet.tda.TDA"/>
    <security>
