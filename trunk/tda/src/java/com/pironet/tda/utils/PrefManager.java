@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.15 2007-04-14 06:31:45 irockel Exp $
+ * $Id: PrefManager.java,v 1.16 2007-05-03 12:48:31 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -42,6 +42,10 @@ import javax.swing.ListModel;
  * @author irockel
  */
 public class PrefManager {
+    public static final String PARAM_DELIM = "\u00A7\u00A7\u00A7\u00A7";
+    
+    public static final String FILTER_SEP = "\u00ac\u00ac\u00ac\u00ac";
+
     
     private static PrefManager prefManager = null;
     
@@ -159,7 +163,7 @@ public class PrefManager {
         if(elems.equals("")) {
             elems = getDateParsingRegex();
         }
-        return(elems.split("§§§§"));
+        return(elems.split(PARAM_DELIM));
     }
     
     public void setDateParsingRegexs(ListModel regexs) {
@@ -171,7 +175,7 @@ public class PrefManager {
         for(int i = 0; i < regexs.getSize(); i++) {
             elems.append(regexs.getElementAt(i));
             if(i+1 < regexs.getSize()) {
-                elems.append("§§§§");
+                elems.append(PARAM_DELIM);
             }
         }
         return(elems.toString());
@@ -187,7 +191,7 @@ public class PrefManager {
             
             for(int i = start; i < currentFiles.length; i++) {
                 recentFiles.append(currentFiles[i]);
-                recentFiles.append("§§§§");
+                recentFiles.append(PARAM_DELIM);
             }
             
             // append new files
@@ -197,7 +201,7 @@ public class PrefManager {
     }
     
     public String[] getRecentFiles() {
-        return(toolPrefs.get("recentFiles", "").split("§§§§"));
+        return(toolPrefs.get("recentFiles", "").split(PARAM_DELIM));
     }
     
     public void setMillisTimeStamp(boolean value) {
@@ -221,20 +225,26 @@ public class PrefManager {
      */
     private DefaultListModel cachedFilters = null;
     
+    
     public ListModel getFilters() {
         DefaultListModel filters = null;
         if(cachedFilters == null) {
             String filterString = toolPrefs.get("filters", "");
             if(filterString.length() > 0) {
                 filters = new DefaultListModel();
-                String[] sFilters = filterString.split("§§§§");
+                String[] sFilters = filterString.split(PARAM_DELIM);
                 filters.ensureCapacity(sFilters.length);
-                for(int i = 0; i < sFilters.length; i++) {
-                    String[] filterData = sFilters[i].split("€€€€");
-                    Filter newFilter = new Filter(filterData[0],
-                            filterData[1], Integer.parseInt(filterData[2]),
-                            filterData[3].equals("true"), filterData[4].equals("true"), filterData[5].equals("true"));
-                    filters.add(i, newFilter);
+                try {
+                    for(int i = 0; i < sFilters.length; i++) {
+                        String[] filterData = sFilters[i].split(FILTER_SEP);
+                        Filter newFilter = new Filter(filterData[0],
+                                filterData[1], Integer.parseInt(filterData[2]),
+                                filterData[3].equals("true"), filterData[4].equals("true"), filterData[5].equals("true"));
+                        filters.add(i, newFilter);
+                    }
+                } catch (ArrayIndexOutOfBoundsException aioob) {
+                    // fall back to default filters
+                    filters = getPredefinedFilters();
                 }
             } else {
                 filters = getPredefinedFilters();
@@ -264,18 +274,18 @@ public class PrefManager {
         StringBuffer filterString = new StringBuffer();
         for(int i = 0; i < filters.getSize(); i++) {
             if(i > 0) {
-                filterString.append("§§§§");
+                filterString.append(PARAM_DELIM);
             }
             filterString.append(((Filter)filters.getElementAt(i)).getName());
-            filterString.append("€€€€");
+            filterString.append(FILTER_SEP);
             filterString.append(((Filter)filters.getElementAt(i)).getFilterExpression());
-            filterString.append("€€€€");
+            filterString.append(FILTER_SEP);
             filterString.append(((Filter)filters.getElementAt(i)).getFilterRule());
-            filterString.append("€€€€");
+            filterString.append(FILTER_SEP);
             filterString.append(((Filter)filters.getElementAt(i)).isGeneralFilter());
-            filterString.append("€€€€");
+            filterString.append(FILTER_SEP);
             filterString.append(((Filter)filters.getElementAt(i)).isExclusionFilter());
-            filterString.append("€€€€");
+            filterString.append(FILTER_SEP);
             filterString.append(((Filter)filters.getElementAt(i)).isEnabled());
         }
         toolPrefs.put("filters", filterString.toString());

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.5 2006-12-30 10:03:13 irockel Exp $
+ * $Id: Filter.java,v 1.6 2007-05-03 12:48:31 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -240,6 +240,7 @@ public class Filter {
     }
 
     public String toString() {
-        return (getName() + (isGeneralFilter() ? " (general) " : "") + (isEnabled() ? "" : " (disabled)"));
+        //  (general)  removed atm.
+        return (getName() + (isGeneralFilter() ? "" : "") + (isEnabled() ? "" : " (disabled)"));
     }
 }
