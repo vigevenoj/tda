@@ -17,11 +17,12 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.70 2007-05-03 20:29:32 irockel Exp $
+ * $Id: TDA.java,v 1.71 2007-05-03 20:38:44 irockel Exp $
  */
 package com.pironet.tda;
 
 import com.pironet.tda.utils.AppInfo;
+import com.pironet.tda.utils.Browser;
 import com.pironet.tda.utils.HistogramTableModel;
 import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.StatusBar;
@@ -685,6 +686,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             frame.dispose();
         } else if("Overview".equals(source.getText())) {
             showHelpOverview();
+        } else if("Forum".equals(source.getText())) {
+            try {
+                Browser.open("https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this.getRootPane(),
+                        "Error opening TDA Online Forum\nPlease open https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967 in your browser!",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } else if("About TDA".equals(source.getText())) {
             showInfo();
         } else if("Search...".equals(source.getText())) {
