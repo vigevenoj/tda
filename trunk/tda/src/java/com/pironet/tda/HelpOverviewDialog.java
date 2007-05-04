@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.4 2007-05-03 09:18:08 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.5 2007-05-04 09:00:40 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -55,11 +55,14 @@ public class HelpOverviewDialog extends JDialog {
     
     private String content;
     
+    private String file;
+    
     /** 
      * Creates a new instance of PreferencesDialog 
      */
-    public HelpOverviewDialog(JFrame owner) {
-        super(owner, "Overview");
+    public HelpOverviewDialog(JFrame owner, String title, String file) {
+        super(owner, title);
+        setFile(file);
         getContentPane().setLayout(new BorderLayout());
         initPanel();
         setLocationRelativeTo(owner);
@@ -67,7 +70,7 @@ public class HelpOverviewDialog extends JDialog {
         
     private void initPanel() {
         try {
-            URL tutURL = HelpOverviewDialog.class.getResource("doc/tutorial.html");
+            URL tutURL = HelpOverviewDialog.class.getResource(getFile());
             htmlView = new JEditorPane(tutURL);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
@@ -116,6 +119,11 @@ public class HelpOverviewDialog extends JDialog {
         //searchField.requestFocusInWindow();
     }
 
+    private String getFile() {
+        return(file);
+    }
     
-    
+    private void setFile(String value) {
+        file = value;
+    }    
 }
