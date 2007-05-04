@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.16 2007-05-03 12:48:31 irockel Exp $
+ * $Id: PrefManager.java,v 1.17 2007-05-04 08:15:40 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -202,6 +202,14 @@ public class PrefManager {
     
     public String[] getRecentFiles() {
         return(toolPrefs.get("recentFiles", "").split(PARAM_DELIM));
+    }
+    
+    public void setUseGTKLF(boolean value) {
+        toolPrefs.putBoolean("useGTKLF", value);
+    }
+    
+    public boolean isUseGTKLF() {
+        return(toolPrefs.getBoolean("useGTKLF", System.getProperty("java.version").startsWith("1.6") ? true : false));
     }
     
     public void setMillisTimeStamp(boolean value) {

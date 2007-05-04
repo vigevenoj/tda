@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.71 2007-05-03 20:38:44 irockel Exp $
+ * $Id: TDA.java,v 1.72 2007-05-04 08:15:40 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -40,6 +40,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
@@ -103,6 +104,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private static String dumpFile;
     
     private static String loggcFile;
+    
+    private static int fontSizeModifier = 0;
+
     
     private static TDA myTDA = null;
     
@@ -202,6 +206,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             
             // retrieve plaf param.
             String plaf = "Mac,Windows,Metal";
+            if(PrefManager.get().isUseGTKLF()) {
+                plaf = "GTK,Mac,Windows,Metal";
+            }
             
             // this line needs to be implemented in order to make L&F work properly
             UIManager.getLookAndFeelDefaults().put("ClassLoader", getClass().getClassLoader());
@@ -219,11 +226,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         if(currentLAFI.getName().startsWith(instPlafs[i])) {
                             UIManager.setLookAndFeel(currentLAFI.getClassName());
                             // setup font
-                            setUIFont(new javax.swing.plaf.FontUIResource("SansSerif",Font.PLAIN,11));
+                            setUIFont(new FontUIResource("SansSerif",Font.PLAIN,11));
                             break search;
                         }
                     }
                     }
+            }
+            
+            if(plaf.startsWith("GTK")) {
+                setFontSizeModifier(2);
             }
         } catch (Exception except) {
             System.out.println("[Info] Couldn't initialize L&F. Reason : " + except.getMessage());
@@ -233,10 +244,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private String getInfoText() {
-        StringBuffer info = new StringBuffer("<html><body><font face=\"System\" size=\"+1\"><b>");
+        StringBuffer info = new StringBuffer("<html><body bgcolor=\"ffffff\"><font face=\"System\" size=\""+ getFontSizeModifier(1) + "\"><b>");
         info.append("<img border=0 src=\"" + TDA.class.getResource("icons/TDA.gif") + "\">  ");
         info.append(AppInfo.getAppInfo());
-        info.append("</b></font><hr><font face=\"System\" size=-1><p>");
+        info.append("</b></font><hr><font face=\"System\" size=" + getFontSizeModifier(-1) + "><p>");
         info.append("(C)opyright ");
         info.append(AppInfo.getCopyright());
         info.append(" - Ingo Rockel<br>");
@@ -729,7 +740,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void showInfo() {
         JOptionPane.showMessageDialog(this.getRootPane(),
                 "<html><body>" +
-                /*"<p>Java Version: " + System.getProperty("java.version") + "</p><br>" +*/
+                "<p>Java Version: " + System.getProperty("java.version") + "</p><br>" +
                 "<p>Icons used are based on Benno System Icons by Benno Meyer.</p><br>" +
                 "<p>TDA is free software; you can redistribute it and/or modify<br>" +
                 "it under the terms of the Lesser GNU General Public License as published by<br>" +
@@ -1276,6 +1287,18 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
 
     public void menuCanceled(MenuEvent e) {
         // nothing to do
+    }
+
+    public static String getFontSizeModifier(int add) {
+        String result = String.valueOf(fontSizeModifier + add);
+        if((fontSizeModifier + add)> 0) {
+            result = "+" + (fontSizeModifier + add);
+        } 
+        return(result);
+    }
+    
+    public static void setFontSizeModifier(int value) {
+        fontSizeModifier = value;
     }
 
     

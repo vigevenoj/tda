@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.12 2007-01-18 09:35:32 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.13 2007-05-04 08:15:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -124,6 +124,7 @@ public class PreferencesDialog extends JDialog {
         PrefManager.get().setDateParsingRegex((String) regExPanel.dateParsingRegexs.getSelectedItem());
         PrefManager.get().setDateParsingRegexs(regExPanel.dateParsingRegexs.getModel());
         PrefManager.get().setMillisTimeStamp(regExPanel.isMillisTimeStamp.isSelected());
+        PrefManager.get().setUseGTKLF(generalPanel.useGTKLF.isSelected());
         dispose();
     }
     
@@ -132,6 +133,7 @@ public class PreferencesDialog extends JDialog {
         JTextField bufferField;
         JCheckBox forceLoggcLoading;
         JCheckBox showHotspotClasses;
+        JCheckBox useGTKLF;
         
         public GeneralPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -160,6 +162,12 @@ public class PreferencesDialog extends JDialog {
             layoutPanel.add(new JLabel("Show internal hotspot classes in class histograms"));
             showHotspotClasses = new JCheckBox();
             layoutPanel.add(showHotspotClasses);
+            add(layoutPanel);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            layoutPanel.add(new JLabel("Use GTK Look and Feel on Unix/Linux (only recommended with JDK 1.6)"));
+            useGTKLF = new JCheckBox();
+            layoutPanel.add(useGTKLF);
             add(layoutPanel);
         }
     }
