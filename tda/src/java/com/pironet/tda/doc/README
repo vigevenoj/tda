@@ -1,0 +1,16 @@
+<html><body bgcolor="ffffff"><pre>TDA - Thread Dump Analyzer -- Version 1.2
+
+Note: This is the 1.2 release of the software, for an usage overview see Help/Overview.
+
+Changes from 1.0 are:
+* Ability to open more than one logfile at a time.
+* History of recent opened files.
+* Multiple regex for date parsing in settings (but only one active).
+
+Changes from 1.1 are:
+* Ability to filter thread display to be able to ignore idle threads.
+* Improved gui layout for better navigation.
+* added 1.5 parsing of thread dumps.
+* Opened Logfiles can be closed now.
+* Reworked help.
+* Improved GUI.

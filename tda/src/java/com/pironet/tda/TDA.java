@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.72 2007-05-04 08:15:40 irockel Exp $
+ * $Id: TDA.java,v 1.73 2007-05-04 09:00:40 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -697,6 +697,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             frame.dispose();
         } else if("Overview".equals(source.getText())) {
             showHelpOverview();
+        } else if("Release Notes".equals(source.getText())) {
+            showReleaseNotes();
+        } else if("License".equals(source.getText())) {
+            showLicense();
         } else if("Forum".equals(source.getText())) {
             try {
                 Browser.open("https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967");
@@ -777,7 +781,29 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void showHelpOverview() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame);
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame, "Overview", "doc/tutorial.html");
+        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        
+        //Display the window.
+        tutDialog.pack();
+        tutDialog.setLocationRelativeTo(frame);
+        tutDialog.setVisible(true);
+        
+    }
+    
+    private void showReleaseNotes() {
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame, "Release Notes", "doc/README");
+        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        
+        //Display the window.
+        tutDialog.pack();
+        tutDialog.setLocationRelativeTo(frame);
+        tutDialog.setVisible(true);
+        
+    }
+    
+    private void showLicense() {
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame, "License Information", "doc/COPYING");
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.

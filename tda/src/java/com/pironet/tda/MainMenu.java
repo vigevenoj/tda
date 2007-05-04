@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.11 2007-05-03 20:38:44 irockel Exp $
+ * $Id: MainMenu.java,v 1.12 2007-05-04 09:00:40 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -228,6 +228,17 @@ public class MainMenu extends JMenuBar {
                 "About Thread Dump Analyzer");
         menuItem.addActionListener(listener);
         menu.add(menuItem);
+        menuItem = new JMenuItem("Release Notes",null);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Release Notes");
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+        menuItem = new JMenuItem("License",null);
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "TDA Distribution License");
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+        menu.addSeparator();
         menuItem = new JMenuItem("Forum",null);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Online TDA Forum");
