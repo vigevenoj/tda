@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.36 2007-05-03 16:52:27 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.37 2007-05-04 08:15:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -256,7 +256,7 @@ public class JDK14Parser implements DumpParser {
                         }
                         
                         title = line.trim();
-                        content = new StringBuffer("<pre><font size=-1>");
+                        content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
                         content.append(line);
                         content.append("\n");
                     } else if (line.trim().startsWith("at ")) {
@@ -266,7 +266,7 @@ public class JDK14Parser implements DumpParser {
                         String newLine = line.replaceAll("<", "&lt;");
                         content.append(newLine);
                         if(sContent == null) {
-                            sContent = new StringBuffer("<b>");
+                            sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                         }
                         sContent.append(newLine.trim());
                         monitorStack.push(line);
@@ -276,7 +276,7 @@ public class JDK14Parser implements DumpParser {
                         String newLine = line.replaceAll("<", "&lt;");
                         content.append(newLine);
                         if(wContent == null) {
-                            wContent = new StringBuffer("<b>");
+                            wContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                         }
                         wContent.append(newLine.trim());
                         monitorStack.push(line);
@@ -286,7 +286,7 @@ public class JDK14Parser implements DumpParser {
                         String newLine = line.replaceAll("<", "&lt;");
                         content.append(newLine);
                         if(lContent == null) {
-                            lContent = new StringBuffer("<b>");
+                            lContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                         }
                         lContent.append(newLine.trim());
                         monitorStack.push(line);
@@ -337,15 +337,21 @@ public class JDK14Parser implements DumpParser {
                 locking++;
             }
             
-            StringBuffer statData = new StringBuffer("<font face=System size=-1><table border=0><tr><td><font face=System size=-1>Overall Thread Count</td><td><b><font face=System size=-1>");
+            StringBuffer statData = new StringBuffer("<body bgcolor=\"ffffff\"><font face=System size=" +
+                    TDA.getFontSizeModifier(-1) + "><table border=0><tr><td><font face=System size="+ TDA.getFontSizeModifier(-1) + 
+                    ">Overall Thread Count</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(threadCount);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=-1>Number of threads waiting for a monitor</td><td><b><font face=System size=-1>");
+            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                    ">Number of threads waiting for a monitor</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(waiting);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=-1>Number of threads locking a monitor</td><td><b><font face=System size=-1>");
+            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                    ">Number of threads locking a monitor</td><td><b><font face=System size="+ TDA.getFontSizeModifier(-1) + ">");
             statData.append(locking);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=-1>Number of threads sleeping on a monitor</td><td><b><font face=System size=-1>");
+            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                    ">Number of threads sleeping on a monitor</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(sleeping);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=-1>Number of deadlocks</td><td><b><font face=System size=-1>");
+            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                    ">Number of deadlocks</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(deadlocks);
             statData.append("</b></td></tr></table>");
             overallTDI.content = statData.toString();
@@ -464,7 +470,7 @@ public class JDK14Parser implements DumpParser {
             if(!found && !line.trim().equals("")) {
                 if (line.startsWith("Found one Java-level deadlock")) {
                     found = true;
-                    dContent.append("<pre>");
+                    dContent.append("<body bgcolor=\"ffffff\"><pre>");
                     dContent.append(line);
                     dContent.append("\n");
                 } else if(lineCounter < maxCheckLines) {
@@ -534,13 +540,16 @@ public class JDK14Parser implements DumpParser {
                 createNode(monitorNode, "waiting " + thread[0], null, thread[1]);
                 waits++;
             }
-            StringBuffer statData = new StringBuffer ("<table border=0><tr><td><font face=System size=-1>Threads locking monitor</td><td><b><font face=System size=-1>");
+            StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0><tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                    ">Threads locking monitor</td><td><b><font face=System size=-1>");
             statData.append(locks);
             statData.append("</b></td></tr>\n\n<tr><td>");
-            statData.append("<font face=System size=-1>Threads sleeping on monitor</td><td><b><font face=System size=-1>");
+            statData.append("<font face=System size=" + TDA.getFontSizeModifier(-1) + ">Threads sleeping on monitor</td><td><b><font face=System size=" + 
+                    TDA.getFontSizeModifier(-1) +">");
             statData.append(sleeps);
             statData.append("</b></td></tr>\n\n<tr><td>");
-            statData.append("<font face=System size=-1>Threads waiting to lock monitor</td><td><b><font face=System size=-1>");
+            statData.append("<font face=System size=" + TDA.getFontSizeModifier(-1) + ">Threads waiting to lock monitor</td><td><b><font face=System size=" + 
+                    TDA.getFontSizeModifier(-1) + ">");
             statData.append(waits);
             statData.append("</b></td></tr></table>\n\n");
             mi.content = statData.toString();
@@ -681,7 +690,7 @@ public class JDK14Parser implements DumpParser {
                     }
                 
                     if(occurence >= (minOccurence-1)) {
-                        StringBuffer content = new StringBuffer("<pre><font size=-1>").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
+                        StringBuffer content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=").append(TDA.getFontSizeModifier(-1)).append(">").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
                         for(int i = 1; i < dumps.length; i++) {
                             if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
                                 content.append("\n\n---------------------------------\n\n");
