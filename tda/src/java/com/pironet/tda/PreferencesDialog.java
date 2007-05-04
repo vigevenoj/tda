@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.13 2007-05-04 08:15:39 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.14 2007-05-04 08:20:16 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -104,6 +104,7 @@ public class PreferencesDialog extends JDialog {
         generalPanel.maxLinesField.setText(String.valueOf(PrefManager.get().getMaxRows()));
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
         generalPanel.showHotspotClasses.setSelected(PrefManager.get().getShowHotspotClasses());
+        generalPanel.useGTKLF.setSelected(PrefManager.get().isUseGTKLF());
         
         DefaultComboBoxModel boxModel = new DefaultComboBoxModel();
         String[] regexs = PrefManager.get().getDateParsingRegexs();
