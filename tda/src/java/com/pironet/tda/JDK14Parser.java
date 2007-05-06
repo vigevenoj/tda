@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.37 2007-05-04 08:15:39 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.38 2007-05-06 08:12:34 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -181,7 +181,7 @@ public class JDK14Parser implements DumpParser {
                 String line = bis.readLine();
                 lineCounter++;
                 if(locked) {
-                    if(line.contains("Full thread dump")) {
+                    if(line.indexOf("Full thread dump") >= 0) {
                         locked = false;
                         overallTDI.threadName += " at line " + lineCounter;
                         if(startTime != 0) {
@@ -671,8 +671,9 @@ public class JDK14Parser implements DumpParser {
         for(int i = 0; i < dumps.length; i++) {
             keys.add(getDumpStringFromTreePath(dumps[i]));
         }
-                
-        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new Category(prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1), TDA.createImageIcon("DiffDumps.gif")));
+           
+        String info = prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1); 
+        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new Category(info, TDA.createImageIcon("DiffDumps.gif")));
         root.add(catMerge);
         
         if(dumpStore.get(keys.get(0)) != null) {
@@ -684,7 +685,9 @@ public class JDK14Parser implements DumpParser {
                 
                 if(regex == null || regex.equals("") || threadKey.matches(regex)) {
                     for(int i = 1; i < dumps.length; i++) {
-                        if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
+                        Map threads = (Map) dumpStore.get(keys.get(i));
+                        System.out.println("threadKey: " + threadKey);
+                        if(threads.containsKey(threadKey)) {
                             occurence++;
                         }
                     }
