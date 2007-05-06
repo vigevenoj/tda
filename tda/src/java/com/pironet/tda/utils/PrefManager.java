@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.18 2007-05-04 09:13:12 irockel Exp $
+ * $Id: PrefManager.java,v 1.19 2007-05-06 08:23:29 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -151,7 +151,7 @@ public class PrefManager {
     }
     
     public String getDateParsingRegex() {
-        return(toolPrefs.get("dateParsingRegex", ""));
+        return(toolPrefs.get("dateParsingRegex", "(\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d).*"));
     }
     
     public void setDateParsingRegex(String dateRegex) {
@@ -159,7 +159,7 @@ public class PrefManager {
     }
     
     public String[] getDateParsingRegexs() {
-        String elems = toolPrefs.get("dateParsingRegexs", "");
+        String elems = toolPrefs.get("dateParsingRegexs", "(\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d).*");
         if(elems.equals("")) {
             elems = getDateParsingRegex();
         }

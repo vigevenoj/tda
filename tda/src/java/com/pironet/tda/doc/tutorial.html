@@ -68,8 +68,8 @@ with the last loggc-logfile.
 you can use <b>Find long running threads</b> in the tools menu to extract long running threads from the 
 thread dumps. Currently this does also show waiting thread, so you need to search for threads actually doing something</p>
 
-<p><h3>Setting regular expression for timestamp parsing</h3>
-Because the Sun JDK doesn't provide any time information when dumping threads a regular expression time 
+<p><h3>Setting regular expression for time stamp parsing</h3>
+Because the Sun JDK (&lt;=1.5.x) doesn't provide any time information when dumping threads a regular expression time 
 stamp parsing for each line in the log file is included. TDA matches every line to the regular expression 
 given in the preferences and stores the first matching group if the regular expression matches the line. 
 It then takes the last match found as time stamp for the next thread dump to get a time stamp nearest to the 
@@ -77,7 +77,8 @@ thread dump. An example for such a regular expression is <i>(\d\d\/\d\d\/\d\d\s\
 expression matches lines like <i>06/02/14 14:54:04       at java.lang.Thread.run(Thread.java:534)</i>. TDA 
 then takes the first capturing group as time stamp. In this example the \d is for digits and the capturing 
 group is included in the brackets and matches <i>06/02/14 14:54:04</i>. This is then stored as timestamp 
-for the next thread dump. </p>
+for the next thread dump. Starting with JDK 1.6 the SUN JDKs print out a time stamp in the line before the dump. 
+The default regular expression recognizes this time stamp.</p>
 
 <p>If the timestamp is stored in milliseconds since 1970 there is a checkbox in the preferences <i>Parsed 
 timestamp is a long representing msecs since 1970</i> to tell TDA to convert the parsed time stamp from 
