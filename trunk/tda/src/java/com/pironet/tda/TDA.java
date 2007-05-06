@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.73 2007-05-04 09:00:40 irockel Exp $
+ * $Id: TDA.java,v 1.74 2007-05-06 08:12:34 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -237,9 +237,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 setFontSizeModifier(2);
             }
         } catch (Exception except) {
-            System.out.println("[Info] Couldn't initialize L&F. Reason : " + except.getMessage());
-            except.printStackTrace();
-            System.out.println("[Info] Will fallback to System L&F!");
+            // setup font
+            setUIFont(new FontUIResource("SansSerif",Font.PLAIN,11));
         }
     }
     
@@ -437,7 +436,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void displayCategory(Object nodeInfo) {
         Category cat = ((Category) nodeInfo);
         Dimension size = null;
-        topSplitPane.getLeftComponent().setPreferredSize(topSplitPane.getLeftComponent().getSize());
+        ((JScrollPane) topSplitPane.getLeftComponent()).setPreferredSize(topSplitPane.getLeftComponent().getSize());
         boolean needDividerPos = false;
         
         if(topSplitPane.getRightComponent() != null) {
