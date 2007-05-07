@@ -14,7 +14,7 @@ Changes from 1.0 are:
 Changes from 1.1 are:
 * Ability to filter the threads display to be able to ignore e.g. idle threads.
 * Improved gui layout for better navigation (three pane view instead of two).
-* added 1.5 and 1.6 parsing of thread dumps.
+* Added 1.5 and 1.6 parsing of thread dumps.
 * Opened Logfiles can be closed now.
 * Reworked help. 
 * Links in help now open in external browser.
