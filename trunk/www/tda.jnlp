@@ -12,8 +12,8 @@
          <desktop/> 
          <menu submenu="TDA - Thread Dump Analyzer"/> 
       </shortcut> 
+      <update check="background" policy="prompt-update" />
    </information>
-   <update check="background" policy="prompt-update" />
    <resources>
       <j2se version="1.4+" href="http://java.sun.com/products/autodl/j2se"/>
       <jar href="tda-1.2.jar"/>
