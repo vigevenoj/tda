@@ -15,7 +15,7 @@
       <update check="background" policy="prompt-update" />
    </information>
    <resources>
-      <j2se version="1.4+" href="http://java.sun.com/products/autodl/j2se"/>
+      <j2se version="1.4.2+" href="http://java.sun.com/products/autodl/j2se" max-heap-size="256m"/>
       <jar href="tda-1.2.jar"/>
    </resources>
    <application-desc main-class="com.pironet.tda.TDA"/>
