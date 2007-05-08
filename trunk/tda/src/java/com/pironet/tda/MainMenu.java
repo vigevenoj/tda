@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.12 2007-05-04 09:00:40 irockel Exp $
+ * $Id: MainMenu.java,v 1.13 2007-05-08 14:11:48 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -165,9 +165,9 @@ public class MainMenu extends JMenuBar {
         menu.addSeparator();
 
         menuItem = new JMenuItem("Exit TDA",
-                KeyEvent.VK_O);
+                KeyEvent.VK_X);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_E, ActionEvent.ALT_MASK));
+                KeyEvent.VK_X, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Exit TDA");
         menuItem.addActionListener(listener);
