@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.38 2007-05-06 08:12:34 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.39 2007-05-09 12:50:22 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -541,7 +541,7 @@ public class JDK14Parser implements DumpParser {
                 waits++;
             }
             StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0><tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Threads locking monitor</td><td><b><font face=System size=-1>");
+                    ">Threads locking monitor</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(locks);
             statData.append("</b></td></tr>\n\n<tr><td>");
             statData.append("<font face=System size=" + TDA.getFontSizeModifier(-1) + ">Threads sleeping on monitor</td><td><b><font face=System size=" + 
