@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.39 2007-05-09 12:50:22 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.40 2007-05-16 16:27:44 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -263,7 +263,7 @@ public class JDK14Parser implements DumpParser {
                         content.append(line);
                         content.append("\n");
                     } else if (line.trim().startsWith("- waiting on")) {
-                        String newLine = line.replaceAll("<", "&lt;");
+                        String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(sContent == null) {
                             sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
@@ -273,7 +273,7 @@ public class JDK14Parser implements DumpParser {
                         sContent.append("\n");
                         content.append("\n");
                     } else if (line.trim().startsWith("- waiting to")) {
-                        String newLine = line.replaceAll("<", "&lt;");
+                        String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(wContent == null) {
                             wContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
@@ -283,7 +283,7 @@ public class JDK14Parser implements DumpParser {
                         wContent.append("\n");
                         content.append("\n");
                     } else if (line.trim().startsWith("- locked")) {
-                        String newLine = line.replaceAll("<", "&lt;");
+                        String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(lContent == null) {
                             lContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
@@ -383,6 +383,19 @@ public class JDK14Parser implements DumpParser {
         }
         
         return(null);
+    }
+    
+    /**
+     * add a monitor link for monitor navigation
+     * @param line containing monitor
+     */
+    private String linkifyMonitor(String line) {
+        String begin = line.substring(0, line.indexOf('<'));
+        String monitor = line.substring(line.indexOf('<'),line.indexOf('>'));
+        String end = line.substring(line.indexOf('>')+1);
+        monitor = monitor.replaceAll("<", "<a href=\"monitor://"+ monitor + "\">&lt;");
+        monitor = monitor.substring(0, monitor.length()) + "&gt;</a>";
+        return(begin + monitor + end);
     }
     
     /**
