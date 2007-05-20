@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.42 2007-05-20 12:44:20 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.43 2007-05-20 12:47:53 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -409,7 +409,7 @@ public class JDK14Parser implements DumpParser {
             // check if a lot of threads are in state "waiting"
             if((threadCount > 0) && ((waiting / (threadCount / 100)) > 10)) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><p>More than 10% of all threads are waiting for a monitor become available again.</p><br>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><p>More than 10% of all threads are waiting for a monitor to become available again.</p><br>");
                 statData.append("This might indicate a congestion or even a deadlock. If a monitor doesn't have a locking thread, it might be hold<br>");
                 statData.append("by some external resource or system thread. You should check the waiting threads.<br></td></tr>");
             }
