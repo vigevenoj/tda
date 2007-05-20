@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.40 2007-05-16 16:27:44 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.41 2007-05-20 06:56:44 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -391,10 +391,11 @@ public class JDK14Parser implements DumpParser {
      */
     private String linkifyMonitor(String line) {
         String begin = line.substring(0, line.indexOf('<'));
-        String monitor = line.substring(line.indexOf('<'),line.indexOf('>'));
+        String monitor = line.substring(line.indexOf('<'),line.indexOf('>')+1);
         String end = line.substring(line.indexOf('>')+1);
         monitor = monitor.replaceAll("<", "<a href=\"monitor://"+ monitor + "\">&lt;");
-        monitor = monitor.substring(0, monitor.length()) + "&gt;</a>";
+        monitor = monitor.substring(0, monitor.length()-1) + "&gt;</a>";
+        //System.out.println("link="+ begin + monitor + end);
         return(begin + monitor + end);
     }
     
