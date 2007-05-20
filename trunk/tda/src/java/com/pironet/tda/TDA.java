@@ -8,7 +8,7 @@
  * the Free Software Foundation; either version 2.1 of the License, or
  * (at your option) any later version.
  *
- * TDA is distributed in the hope that it will be useful,
+ * TDA is distributed in the hope that it will be useful,h
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.74 2007-05-06 08:12:34 irockel Exp $
+ * $Id: TDA.java,v 1.75 2007-05-20 06:56:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -30,7 +30,9 @@ import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import com.pironet.tda.utils.TreeRenderer;
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.io.FileNotFoundException;
+import java.util.Enumeration;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -38,9 +40,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import javax.swing.JTree;
+import javax.swing.JViewport;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
@@ -166,6 +172,17 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         JEditorPane emptyPane = new JEditorPane("text/html", "");
         emptyPane.setEditable(false);
+        
+        htmlPane.addHyperlinkListener(
+                new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent evt) {
+                // if a link was clicked
+                if(evt.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
+                    navigateToMonitor(evt.getDescription());
+                }
+            }
+        });
+
         
         htmlView = new JScrollPane(htmlPane);
         JScrollPane emptyView = new JScrollPane(emptyPane);
@@ -591,6 +608,40 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                     ex.printStackTrace();
                 }
             }
+        }
+    }
+    
+    private void navigateToMonitor(String monitorLink) {
+        String monitor = monitorLink.substring(monitorLink.lastIndexOf('/')+1);
+        
+        // find monitor node for this thread info
+        DefaultMutableTreeNode dumpNode = getDumpRootNode((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
+        Enumeration childs = dumpNode.children();
+        DefaultMutableTreeNode monitorNode = null;
+        while((monitorNode == null) && childs.hasMoreElements()) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) childs.nextElement();
+            if(((Category) child.getUserObject()).getName().equals("Monitors")) {
+                monitorNode = child;
+            }
+        }
+        System.out.println("search monitor " + monitor);
+        
+        // highlight chosen monitor
+        JTree searchTree = ((Category) monitorNode.getUserObject()).getCatTree(this);
+        TreePath searchPath = searchTree.getNextMatch(monitor,0,Position.Bias.Forward);
+            
+        if(searchPath != null) {
+            TreePath monitorPath = new TreePath(monitorNode.getPath());
+            tree.setSelectionPath(monitorPath);
+            tree.scrollPathToVisible(monitorPath);
+            searchTree.setSelectionPath(searchPath);
+            displayCategory(monitorNode.getUserObject());
+            Rectangle view = searchTree.getPathBounds(searchPath);
+            ((JViewport) searchTree.getParent()).scrollRectToVisible(view);
+            //TreePath threadInMonitor = new TreePath(((DefaultMutableTreeNode)((DefaultMutableTreeNode) monitorPath.
+                    //getLastPathComponent()).getFirstChild()).getPath());
+            
+            //searchTree.expandPath(threadInMonitor);
         }
     }
     
