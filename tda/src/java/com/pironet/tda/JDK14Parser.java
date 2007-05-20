@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.41 2007-05-20 06:56:44 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.42 2007-05-20 12:44:20 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -129,6 +129,7 @@ public class JDK14Parser implements DumpParser {
         DefaultMutableTreeNode threadDump = null;
         ThreadInfo overallTDI = null;
         DefaultMutableTreeNode catMonitors = null;
+        DefaultMutableTreeNode catMonitorsLocks = null;
         DefaultMutableTreeNode catThreads = null;
         DefaultMutableTreeNode catLocking = null;
         DefaultMutableTreeNode catSleeping = null;
@@ -147,17 +148,14 @@ public class JDK14Parser implements DumpParser {
             threadDump.add(catThreads);
             
             catWaiting = new DefaultMutableTreeNode(new Category("Threads waiting for Monitors", TDA.createImageIcon("ThreadsWaiting.gif")));
-            threadDump.add(catWaiting);
             
             catSleeping = new DefaultMutableTreeNode(new Category("Threads sleeping on Monitors", TDA.createImageIcon("ThreadsSleeping.gif")));
-            threadDump.add(catSleeping);
 
             catLocking = new DefaultMutableTreeNode(new Category("Threads locking Monitors", TDA.createImageIcon("ThreadsLocking.gif")));
-            threadDump.add(catLocking);
             
             // create category for monitors with disabled filtering.
             catMonitors = new DefaultMutableTreeNode(new Category("Monitors", TDA.createImageIcon("Monitors.gif"), false));
-            threadDump.add(catMonitors);
+            catMonitorsLocks = new DefaultMutableTreeNode(new Category("Monitors without locking thread", TDA.createImageIcon("Monitors-nolocks.gif"), false));
             
             String title = null;
             String dumpKey = null;
@@ -337,41 +335,107 @@ public class JDK14Parser implements DumpParser {
                 locking++;
             }
             
-            StringBuffer statData = new StringBuffer("<body bgcolor=\"ffffff\"><font face=System size=" +
-                    TDA.getFontSizeModifier(-1) + "><table border=0><tr><td><font face=System size="+ TDA.getFontSizeModifier(-1) + 
+            int monitorCount = mmap.size();
+            StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System size=" +
+                    TDA.getFontSizeModifier(-1) + "><table border=0><tr bgcolor=\"#dddddd\"><td><font face=System size="+ TDA.getFontSizeModifier(-1) + 
                     ">Overall Thread Count</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(threadCount);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                    ">Overall Monitor Count</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            statData.append(monitorCount);
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
                     ">Number of threads waiting for a monitor</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(waiting);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
                     ">Number of threads locking a monitor</td><td><b><font face=System size="+ TDA.getFontSizeModifier(-1) + ">");
             statData.append(locking);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
                     ">Number of threads sleeping on a monitor</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(sleeping);
-            statData.append("</b></td></tr>\n\n<tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
                     ">Number of deadlocks</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(deadlocks);
-            statData.append("</b></td></tr></table>");
-            overallTDI.content = statData.toString();
             
             ((Category) catThreads.getUserObject()).setName(((Category) catThreads.getUserObject()) + " (" + threadCount + " Threads overall)");
             ((Category) catWaiting.getUserObject()).setName(((Category) catWaiting.getUserObject()) + " (" + waiting + " Threads waiting)");
             ((Category) catSleeping.getUserObject()).setName(((Category) catSleeping.getUserObject()) + " (" + sleeping + " Threads sleeping)");
             ((Category) catLocking.getUserObject()).setName(((Category) catLocking.getUserObject()) + " (" + locking + " Threads locking)");
+            ((Category) catMonitors.getUserObject()).setName(((Category) catMonitors.getUserObject()) + " (" + monitorCount + " Monitors)");
             
             
+            int monitorsWithoutLocksCount = 0;
+            int overallThreadsWaitingWithoutLocks = 0; 
             // dump monitors 
             if(mmap.size() > 0) {
-                dumpMonitors(catMonitors, mmap);
+                int[] result = dumpMonitors(catMonitors, catMonitorsLocks, mmap);
+                monitorsWithoutLocksCount = result[0];
+                overallThreadsWaitingWithoutLocks = result[1];
             }
             
+            // display nodes with stuff to display
+            if(waiting > 0) {
+                threadDump.add(catWaiting);
+            }
+            
+            if(sleeping > 0) {
+                threadDump.add(catSleeping);
+            }
+
+            if(locking > 0) {
+                threadDump.add(catLocking);
+            }
+            
+            if(monitorCount > 0) {
+                threadDump.add(catMonitors);
+            }
+            
+            if(monitorsWithoutLocksCount > 0) {
+                threadDump.add(catMonitorsLocks);
+            }
+            
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                    ">Number of Monitors without locking threads</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            statData.append(monitorsWithoutLocksCount);
+            statData.append("</b></td></tr>");
+            ((Category) catMonitorsLocks.getUserObject()).setName(((Category) catMonitorsLocks.getUserObject()) + " (" + monitorsWithoutLocksCount + 
+                    " Monitors)");
             // add thread dump to passed dump store.
             if((threadCount > 0) && (dumpKey != null)) {
-                //System.out.println("adding dump " + dumpKey);
                 threadStore.put(dumpKey.trim(), threads);
             }
+            
+            // check for possible hot spots concerning this thread dump
+            
+            // check if a lot of threads are in state "waiting"
+            if((threadCount > 0) && ((waiting / (threadCount / 100)) > 10)) {
+                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><p>More than 10% of all threads are waiting for a monitor become available again.</p><br>");
+                statData.append("This might indicate a congestion or even a deadlock. If a monitor doesn't have a locking thread, it might be hold<br>");
+                statData.append("by some external resource or system thread. You should check the waiting threads.<br></td></tr>");
+            }
+            
+            // display an info if there are monitors without locking threads
+            if(monitorsWithoutLocksCount > 0) {
+                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><p>This thread dump contains monitors without a locking thread information.<br>");
+                statData.append("This means, the monitor is hold by a system thread or some external resource.</p<br>");
+                statData.append("You should check the monitors without locking threads for more information.<br></td></tr>");
+            }
+            
+            // check for indications for running garbage collector
+            if((threadCount > 0) && (overallThreadsWaitingWithoutLocks / (threadCount / 100) > 50)) {
+                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><p>More than 50% of all threads are waiting for a monitor without a application");
+                statData.append("thread holding it.<br> This indicates a congestion. It is very likely the garbage collector is running and is");
+                statData.append(" blocking the monitors.</p<br>");
+                statData.append("You should check the monitors without locking threads for more information on the blocked threads.<br>");
+                statData.append("You also should analyze the garbage collector behaviour. Go to the ");
+                statData.append("<a href=\"http://www.tagtraum.com/gcviewer.html\">GCViewer-Homepage</a> for more<br>");
+                statData.append(" information on how to do this.</td></tr>");
+            }
+            statData.append("</table>");
+            
+            overallTDI.content = statData.toString();
             return(threadCount > 0? threadDump : null);
             
         } catch (FileNotFoundException e) {
@@ -519,8 +583,10 @@ public class JDK14Parser implements DumpParser {
         return(deadlocks);
     }
     
-    private void dumpMonitors(DefaultMutableTreeNode catMonitors, MonitorMap mmap) {
+    private int[] dumpMonitors(DefaultMutableTreeNode catMonitors, DefaultMutableTreeNode catMonitorsLocks, MonitorMap mmap) {
         Iterator iter = mmap.iterOfKeys();
+        int monitorsWithoutLocksCount = 0;
+        int overallThreadsWaiting = 0;
         while(iter.hasNext()) {
             String monitor = (String) iter.next();
             Set[] threads = mmap.getFromMonitorMap(monitor);
@@ -554,10 +620,10 @@ public class JDK14Parser implements DumpParser {
                 createNode(monitorNode, "waiting " + thread[0], null, thread[1]);
                 waits++;
             }
-            StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0><tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+            StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0 bgcolor=\"#dddddd\"><tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
                     ">Threads locking monitor</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
             statData.append(locks);
-            statData.append("</b></td></tr>\n\n<tr><td>");
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td>");
             statData.append("<font face=System size=" + TDA.getFontSizeModifier(-1) + ">Threads sleeping on monitor</td><td><b><font face=System size=" + 
                     TDA.getFontSizeModifier(-1) +">");
             statData.append(sleeps);
@@ -565,11 +631,31 @@ public class JDK14Parser implements DumpParser {
             statData.append("<font face=System size=" + TDA.getFontSizeModifier(-1) + ">Threads waiting to lock monitor</td><td><b><font face=System size=" + 
                     TDA.getFontSizeModifier(-1) + ">");
             statData.append(waits);
-            statData.append("</b></td></tr></table>\n\n");
+            statData.append("</b></td></tr>\n\n");
+            if(locks == 0) {
+                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><p>This monitor doesn't have a thread locking it. This means a VM Thread is holding it.</p><br>");
+                statData.append("If you see many monitors having no locking thread, this usually means, the garbage collector is running.<br>");
+                statData.append("In this case you should consider analyzing the Garbage Collector output. If the dump has many monitors with no locking thread<br>");
+                statData.append("a click on the <a href=\"dump://\">dump node</a> will give you additional information.<br></td></tr>");
+            }
+            if(waits > 5) {
+                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><p>A lot of threads are waiting for this monitor to become available again.</p><br>");
+                statData.append("This might indicate a congestion. You also should analyze other locks blocked by threads waiting<br>");
+                statData.append("for this monitor as there might be much more threads waiting for it.<br></td></tr>");                
+            }
+            statData.append("</table>");
             mi.content = statData.toString();
-            
+                        
             ((Category)catMonitors.getUserObject()).addToCatTree(monitorNode);
+            if(locks == 0) {
+                monitorsWithoutLocksCount++;
+                overallThreadsWaiting+=waits;
+                ((Category)catMonitorsLocks.getUserObject()).addToCatTree(monitorNode);
+            }
         }
+        return new int[]{monitorsWithoutLocksCount, overallThreadsWaiting};
     }
     
     /**

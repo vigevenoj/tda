@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.76 2007-05-20 09:43:19 irockel Exp $
+ * $Id: TDA.java,v 1.77 2007-05-20 12:44:20 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -178,7 +178,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             public void hyperlinkUpdate(HyperlinkEvent evt) {
                 // if a link was clicked
                 if(evt.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
-                    navigateToMonitor(evt.getDescription());
+                    if(evt.getDescription().startsWith("monitor")) {
+                        navigateToMonitor(evt.getDescription());
+                    } else if(evt.getDescription().startsWith("dump")) {
+                        navigateToDump();
+                    } else if(evt.getURL() != null) {
+                        try {
+                            // launch a browser with the appropriate URL
+                            Browser.open(evt.getURL().toString());
+                        } catch(InterruptedException e) {
+                            System.out.println("Error launching external browser.");
+                        } catch(IOException e) {
+                            System.out.println("I/O error launching external browser." + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         });
@@ -611,6 +625,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
+    /**
+     * navigate to monitor
+     * @param monitorLink the monitor link to navigate to
+     */
     private void navigateToMonitor(String monitorLink) {
         String monitor = monitorLink.substring(monitorLink.lastIndexOf('/')+1);
         
@@ -618,16 +636,25 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         DefaultMutableTreeNode dumpNode = getDumpRootNode((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
         Enumeration childs = dumpNode.children();
         DefaultMutableTreeNode monitorNode = null;
-        while((monitorNode == null) && childs.hasMoreElements()) {
+        DefaultMutableTreeNode monitorWithoutLocksNode = null;
+        while(childs.hasMoreElements()) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) childs.nextElement();
-            if(((Category) child.getUserObject()).getName().equals("Monitors")) {
+            if(((Category) child.getUserObject()).getName().startsWith("Monitors (")) {
                 monitorNode = child;
+            } else if(((Category) child.getUserObject()).getName().startsWith("Monitors without")) {
+                monitorWithoutLocksNode = child;
             }
         }
+        boolean foundInMonitorsWithoutLocks = false;
         
         // highlight chosen monitor
         JTree searchTree = ((Category) monitorNode.getUserObject()).getCatTree(this);
         TreePath searchPath = searchTree.getNextMatch(monitor,0,Position.Bias.Forward);
+        if((searchPath == null) && (monitorWithoutLocksNode != null)) {
+            searchTree = ((Category) monitorWithoutLocksNode.getUserObject()).getCatTree(this);
+            searchPath = searchTree.getNextMatch(monitor,0,Position.Bias.Forward);
+            monitorNode = monitorWithoutLocksNode;
+        }
             
         if(searchPath != null) {
             TreePath monitorPath = new TreePath(monitorNode.getPath());
@@ -642,6 +669,16 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             searchTree.setSelectionPath(searchPath);
         }
     }
+    
+    /**
+     * navigate to root node of currently active dump
+     */
+    private void navigateToDump() {
+        TreePath currentPath = tree.getSelectionPath();
+        tree.setSelectionPath(currentPath.getParentPath());
+        tree.scrollPathToVisible(currentPath.getParentPath());
+    }
+
     
     protected MainMenu getMainMenu() {
         return((MainMenu) frame.getJMenuBar());
