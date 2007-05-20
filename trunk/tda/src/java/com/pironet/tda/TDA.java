@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.75 2007-05-20 06:56:45 irockel Exp $
+ * $Id: TDA.java,v 1.76 2007-05-20 09:43:19 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -624,7 +624,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 monitorNode = child;
             }
         }
-        System.out.println("search monitor " + monitor);
         
         // highlight chosen monitor
         JTree searchTree = ((Category) monitorNode.getUserObject()).getCatTree(this);
@@ -634,14 +633,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             TreePath monitorPath = new TreePath(monitorNode.getPath());
             tree.setSelectionPath(monitorPath);
             tree.scrollPathToVisible(monitorPath);
-            searchTree.setSelectionPath(searchPath);
-            displayCategory(monitorNode.getUserObject());
-            Rectangle view = searchTree.getPathBounds(searchPath);
-            ((JViewport) searchTree.getParent()).scrollRectToVisible(view);
-            //TreePath threadInMonitor = new TreePath(((DefaultMutableTreeNode)((DefaultMutableTreeNode) monitorPath.
-                    //getLastPathComponent()).getFirstChild()).getPath());
             
-            //searchTree.expandPath(threadInMonitor);
+            displayCategory(monitorNode.getUserObject());
+            
+            TreePath threadInMonitor = searchPath.pathByAddingChild(((DefaultMutableTreeNode)searchPath.getLastPathComponent()).getLastChild());
+            searchTree.setSelectionPath(threadInMonitor);
+            searchTree.scrollPathToVisible(searchPath);
+            searchTree.setSelectionPath(searchPath);
         }
     }
     
