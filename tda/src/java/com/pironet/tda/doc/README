@@ -21,7 +21,12 @@ Changes from 1.1 are:
 * Added Forum link to help menu.
 * Improved GUI with better native Integration.
 * Added Webstart Deployment for easy installation.
-* Some font hacks to use GTK as native L&F on Linux and JDK 1.6
+* Some font hacks to use GTK as native L&F on Linux and JDK 1.6.
+* Bugfixing.
+
+Changes from 1.2 are:
+* Improved Dump navigation.
+* Added context sensitive information about dumps.
 * Bugfixing.
 
 Report problems, ask questions and submit suggestions in the forum.
