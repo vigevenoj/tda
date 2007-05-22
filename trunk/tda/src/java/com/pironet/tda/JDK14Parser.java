@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.43 2007-05-20 12:47:53 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.44 2007-05-22 15:01:45 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -407,9 +407,10 @@ public class JDK14Parser implements DumpParser {
             // check for possible hot spots concerning this thread dump
             
             // check if a lot of threads are in state "waiting"
-            if((threadCount > 0) && ((waiting / (threadCount / 100)) > 10)) {
+            if((threadCount > 0) && ((waiting / (threadCount / 100.0)) > 10.0)) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><p>More than 10% of all threads are waiting for a monitor to become available again.</p><br>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) +
+                        "><p>More than 10% of all threads are waiting for a monitor to become available again.</p><br>");
                 statData.append("This might indicate a congestion or even a deadlock. If a monitor doesn't have a locking thread, it might be hold<br>");
                 statData.append("by some external resource or system thread. You should check the waiting threads.<br></td></tr>");
             }
@@ -417,15 +418,17 @@ public class JDK14Parser implements DumpParser {
             // display an info if there are monitors without locking threads
             if(monitorsWithoutLocksCount > 0) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><p>This thread dump contains monitors without a locking thread information.<br>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) +
+                        "><p>This thread dump contains monitors without a locking thread information.<br>");
                 statData.append("This means, the monitor is hold by a system thread or some external resource.</p<br>");
                 statData.append("You should check the monitors without locking threads for more information.<br></td></tr>");
             }
             
             // check for indications for running garbage collector
-            if((threadCount > 0) && (overallThreadsWaitingWithoutLocks / (threadCount / 100) > 50)) {
+            if((threadCount > 0) && (overallThreadsWaitingWithoutLocks / (threadCount / 100.0) > 50.0)) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><p>More than 50% of all threads are waiting for a monitor without a application");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                        "<p>More than 50% of all threads are waiting for a monitor without a application");
                 statData.append("thread holding it.<br> This indicates a congestion. It is very likely the garbage collector is running and is");
                 statData.append(" blocking the monitors.</p<br>");
                 statData.append("You should check the monitors without locking threads for more information on the blocked threads.<br>");
@@ -634,14 +637,16 @@ public class JDK14Parser implements DumpParser {
             statData.append("</b></td></tr>\n\n");
             if(locks == 0) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><p>This monitor doesn't have a thread locking it. This means a VM Thread is holding it.</p><br>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                        "<p>This monitor doesn't have a thread locking it. This means a VM Thread is holding it.</p><br>");
                 statData.append("If you see many monitors having no locking thread, this usually means, the garbage collector is running.<br>");
                 statData.append("In this case you should consider analyzing the Garbage Collector output. If the dump has many monitors with no locking thread<br>");
                 statData.append("a click on the <a href=\"dump://\">dump node</a> will give you additional information.<br></td></tr>");
             }
             if(waits > 5) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><p>A lot of threads are waiting for this monitor to become available again.</p><br>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                        "<p>A lot of threads are waiting for this monitor to become available again.</p><br>");
                 statData.append("This might indicate a congestion. You also should analyze other locks blocked by threads waiting<br>");
                 statData.append("for this monitor as there might be much more threads waiting for it.<br></td></tr>");                
             }
