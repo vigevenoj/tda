@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.77 2007-05-20 12:44:20 irockel Exp $
+ * $Id: TDA.java,v 1.78 2007-06-02 07:11:53 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -329,37 +329,45 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     /**
+     * sync object is needed to synchronize opening of multiple files.
+     */
+    private static Object syncObject = new Object();
+    
+    /**
      * add the set dumpFileStream to the tree
      */
     private void addDumpFiles(String[] files) {
-        try {
-            dumpFileStream = new ProgressMonitorInputStream(
-                    this,
-                    "Parsing " + dumpFile,
-                    new FileInputStream(dumpFile));
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        
-        //Create the nodes.
-        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile(dumpFile));
-        topNodes.add(top);
-        
-        final SwingWorker worker = new SwingWorker() {
-            public Object construct() {
-                int divider = splitPane.getDividerLocation();
-                addThreadDumps(top, dumpFileStream);
-                createTree();
-                tree.expandRow(1);
-                splitPane.setDividerLocation(divider);
+        for(int i = 0; i < files.length; i++) {
+            try {
+                final InputStream dumpFileStream = new ProgressMonitorInputStream(
+                        this, "Parsing " + files[i], new FileInputStream(files[i]));
+            
+                //Create the nodes.
+                final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile(files[i]));
+                topNodes.add(top);
                 
-                return null;
+                final SwingWorker worker = new SwingWorker() {
+                    
+                    public Object construct() {
+                        synchronized(syncObject) {
+                            int divider = splitPane.getDividerLocation();
+                            addThreadDumps(top, dumpFileStream);
+                            createTree();
+                            tree.expandRow(1);
+                            splitPane.setDividerLocation(divider);
+                        }
+                        
+                        return null;
+                    }
+                    
+                };
+                worker.start();
+            } catch (FileNotFoundException ex) {
+                
             }
-        };
-        worker.start();
-        
+        }
     }
-    
+        
     protected void createTree() {
         //Create a tree that allows multiple selection at a time.
         if(topNodes.size() == 1) {
