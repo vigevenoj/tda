@@ -52,28 +52,28 @@ It provides statistic informations about the found thread dumps, gives informati
 <p>
 Features are in detail:
 <ul>
-<li>parsing all thread dumps of a log file, using a specified regular expression for log file time stamps (thread dumps don't have any date information by default), displaying them in a tree.
+<li>Parsing all thread dumps of a log file, using a specified regular expression for log file time stamps (thread dumps don't have any date information by default), displaying them in a tree.
 <li>Display of statistic data about the found thread dumps, display of monitors, waiting, sleeping and locking threads,
+<li>dumps provide links in context for easy dump navigation,
 <li>integrated class histogram analysis for a specific thread dump (using the -XX:+PrintClassHistogram option of the VM), can also be parsed from a second file, if loggc-Option was used (to log garbage collections to a different log file).
-<li>parser interface for integrating dump parser for other VMs
-<li>displays deadlock information from the thread dump.
-<li>Add additional logfiles (useful if logfiles are rotated).
+<li>displays deadlock information from the thread dump,
+<li>displays hints about possible problems in the analyzed dumps and
+<li>ability to add additional logfiles (useful if logfiles are rotated) or open many at once.
 </ul>
 </p>
 <p>Features planned:
 <ul>
-<li>Storing of current session, to not to have to load all the log files again.
-<li>Better Dump navigation with context sensitive dump information.
-<li>More Parsers, including jmap (from JDK 1.5)
-<li>request thread dumps remotely using jmx (for JDK's >= 1.5) <i>in progress but postponed</i>.
-<li>If possible provide plugins for Eclipse and Netbeans.
+<li>Analysis of selected thread dumps to provide information about possible problems (like the already available "long running thread" detection).</li>
+<li>Session handling to be able to reopen a tda session.
+<li>Provide netbeans or eclipse integration if possible.
+<li>
 </ul></p>
 <p>
-The emphasis of the TDA is to provide analysis of offline information for production environment to get a first idea what is happening on the system, if it has problems. Then do further analysis with tools like <a href= "http://www.glassbox.com/">Glassbox</a> or the (commercial) <a href="http://www.yourkit.com">YourKit Profiler</A> if you need to analyse the productions environment with low impact on the performance and load.</p>
+The emphasis of the TDA is to provide analysis support of offline information gathered from production environments.</p>
 
-<p> In addition to TDA you might find the <a href="http://www.tagtraum.com/gcviewer.html">GCViewer</a> helpful. It parses the output of the garbage collector from a loggc file and displays it graphically, so you can analyse the memory usage over the time.</p>
+<p>In addition to TDA you might find the <a href="http://www.tagtraum.com/gcviewer.html">GCViewer</a> helpful. It parses the output of the garbage collector from a loggc file and displays it graphically, so you can analyse the memory usage over the time.</p>
 
-<p>TDA includes a short tutorial showing how to use the tool.</p>
+<p>TDA includes a help overview giving detailed information on how to use the tool.</p>
 
 <h2>Screenshots</h2>
 <p><b>1.2 Final</b><br>
@@ -89,6 +89,6 @@ You can either download the 1.2 Final release in the <a href="/servlets/ProjectD
 <h2>Participation</h2>
 <p>Please reports problems, make suggestions and ask questions in the <a href="/servlets/ForumMessageList?forumID=1967">discussion forum</a>.</p>
 
-<p><i>Last Change: $Id: index.html,v 1.42 2007-05-08 12:49:41 irockel Exp $</i></p>
+<p><i>Last Change: $Id: index.html,v 1.43 2007-06-02 09:28:42 irockel Exp $</i></p>
 </body>
 </html>
