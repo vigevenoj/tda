@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.44 2007-05-22 15:01:45 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.45 2007-06-02 09:16:17 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -260,6 +260,12 @@ public class JDK14Parser implements DumpParser {
                     } else if (line.trim().startsWith("at ")) {
                         content.append(line);
                         content.append("\n");
+                    } else if (line.trim().startsWith("java.lang.Thread.State")) {
+                        content.append(line);
+                        content.append("\n");
+                    } else if (line.trim().startsWith("Locked ownable synchronizers:")) {
+                        content.append(line);
+                        content.append("\n");
                     } else if (line.trim().startsWith("- waiting on")) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
@@ -289,6 +295,9 @@ public class JDK14Parser implements DumpParser {
                         lContent.append(newLine.trim());
                         monitorStack.push(line);
                         lContent.append("\n");
+                        content.append("\n");
+                    } else if (line.trim().startsWith("- ")) {
+                        content.append(line);
                         content.append("\n");
                     }
                     
