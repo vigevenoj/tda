@@ -27,6 +27,7 @@ Changes from 1.1 are:
 Changes from 1.2 are:
 * Improved Dump navigation.
 * Added context sensitive information about dumps.
+* Added jstack support.
 * Bugfixing.
 
 Report problems, ask questions and submit suggestions in the forum.

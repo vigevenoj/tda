@@ -28,6 +28,14 @@ otherwise you won't have sufficient rights to use the tool. The JDK will then wr
 to std-out. E.g. if your application is running in a tomcat, this would be catalina.out in a 
 default tomcat installation.</p>
 
+<p>Starting with Sun's JDK 1.5 you can also request a thread dump using th JVM utility <b>jstack</b>. jstack 
+prints the thread dump into the shell window where you called it. To use the dump in the TDA, pipe the output
+into a log file and open this file. To analyze multiple dumps just append them to the log file. jstack also 
+allows you to get thread dumps from javacore-files, either dumped on an OutOfMemoryError or using the
+JVM tool jmap.
+Note: On the windows platform this tool is available starting with JDK 1.6. 
+</p>
+
 <p><h3>Sample Parsing Session</h3>
 Open the log file you want to analyse, TDA will search for all thread dumps in this log file 
 and displays them in a tree. As the Sun JVM thread dump doesn't log any date information when the dump 
@@ -35,15 +43,20 @@ was requested, you can provide a regular expression in the <b>Preferences</b> wh
 for parsing the lines before the thread dump to get a time stamp (see below for an example).</p>
 
 <p>For each thread dump TDA sums up all found threads and all monitors found in the threads, it 
-also groups threads waiting on, for and locking monitors.</p> 
+also groups threads waiting on, for and locking monitors. Clicking on the dump nodes itself will
+provide you with information about the dump. If there is something special about it, TDA will give
+you some hints what to do next.</p> 
 
 <p><center><img src="threaddumps.png" border=0>
 <br><i>Thread Dump View</i></center></p>
 
-<p>If you want to focus on a lock found in a thread you can just mark it, expand the <b>Monitor</b> 
-node of the thread dump and right-click on right pane with the monitors and select the search. Paste the marked monitor 
-into the search dialog to go to the information about this monitor (don't forget the trailing &gt;. You will get all waiting and all 
-locking threads of this monitor. Starting here you can easily see if a thread is hanging and holding lock which a lot 
+<p>If you want to focus on a lock found in a thread you can just click on the monitor,  TDA will then 
+expand the <b>Monitor</b> node of the thread dump and focus the clicked monitor. It will also give you
+information about the monitor if there is something special about, e.g. it has no obvious thread locking
+the monitor but others waiting for it.</p>
+<p><center><img src="info.png" border=0>
+<br><i>Information about the selected dump</i></center></p>
+<p>Starting here you can easily see if a thread is hanging and holding lock which a lot 
 of other threads are waiting for. If there aren't any locking threads but only waiting threads it is
 very likely the garbage collector is locking the monitor currently.</p>
 <p><center><img src="monitor.png" border=0>
