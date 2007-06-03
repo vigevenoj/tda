@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.79 2007-06-02 07:23:35 irockel Exp $
+ * $Id: TDA.java,v 1.80 2007-06-03 20:29:47 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -297,28 +297,28 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         getMainMenu().getCloseMenuItem().setEnabled(true);
         getMainMenu().getCloseAllMenuItem().setEnabled(true);
         
-        addDumpFile();        
-        if(topSplitPane.getDividerLocation() <= 0) {
-            topSplitPane.setDividerLocation(200);
+        addDumpFile();
+        if(isFileOpen()) {
+            if(topSplitPane.getDividerLocation() <= 0) {
+                topSplitPane.setDividerLocation(200);
+            }
+            
+            // change from html view to split pane
+            remove(0);
+            revalidate();
+            htmlPane.setText("");
+            splitPane.setBottomComponent(htmlView);
+            add(splitPane, BorderLayout.CENTER);
+            if(PrefManager.get().getDividerPos() > 0) {
+                splitPane.setDividerLocation(PrefManager.get().getDividerPos());
+            } else {
+                // set default divider location
+                splitPane.setDividerLocation(100);
+            }
+            revalidate();
         }
-        
-        // change from html view to split pane
-        remove(0);
-        revalidate();
-        htmlPane.setText("");
-        splitPane.setBottomComponent(htmlView);
-        add(splitPane, BorderLayout.CENTER);
-        if(PrefManager.get().getDividerPos() > 0) {
-            splitPane.setDividerLocation(PrefManager.get().getDividerPos());
-        } else {
-            // set default divider location
-            splitPane.setDividerLocation(100);
-        }
-        revalidate();
     }
-    
-    private boolean openFileActionRunning = false;
-    
+
     /**
      * add the set dumpFileStream to the tree
      */
@@ -345,6 +345,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 //Create the nodes.
                 final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile(files[i]));
                 topNodes.add(top);
+                setFileOpen(true);
                 
                 final SwingWorker worker = new SwingWorker() {
                     
@@ -354,6 +355,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                             addThreadDumps(top, dumpFileStream);
                             createTree();
                             tree.expandRow(1);
+                            
                             splitPane.setDividerLocation(divider);
                         }
                         
@@ -363,9 +365,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 };
                 worker.start();
             } catch (FileNotFoundException ex) {
-                
+                JOptionPane.showMessageDialog(this.getRootPane(),
+                        "Error opening "  + ex.getMessage() + ".",
+                        "Error opening file", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        }        
     }
         
     protected void createTree() {
@@ -982,8 +986,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                     addDumpFile();
                 } else {
                     initDumpDisplay();
-                    firstFile = false;
-                    setFileOpen(true);
+                    if(isFileOpen()) {
+                       firstFile = false;
+                    }
                 }
             }
             
@@ -1096,16 +1101,23 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             topNodes = new Vector();
             
             // simply do a reinit, as there is anything to display
-            removeAll();
-            revalidate();
-            
-            init();
-            revalidate();
-            
-            getMainMenu().getLongMenuItem().setEnabled(false);
-            getMainMenu().getCloseMenuItem().setEnabled(false);
-            getMainMenu().getCloseAllMenuItem().setEnabled(false);
+            resetMainPanel();
         }        
+    }
+    
+    /**
+     * reset the main panel to start up
+     */
+    private void resetMainPanel() {
+        removeAll();
+        revalidate();
+        
+        init();
+        revalidate();
+        
+        getMainMenu().getLongMenuItem().setEnabled(false);
+        getMainMenu().getCloseMenuItem().setEnabled(false);
+        getMainMenu().getCloseAllMenuItem().setEnabled(false);
     }
     
     /**
