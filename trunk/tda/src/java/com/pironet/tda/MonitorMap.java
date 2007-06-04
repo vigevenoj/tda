@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MonitorMap.java,v 1.3 2006-03-01 11:32:43 irockel Exp $
+ * $Id: MonitorMap.java,v 1.4 2007-06-04 16:03:14 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -47,7 +47,7 @@ public class MonitorMap {
     public MonitorMap() {
     }
     
-    public void addToMonitorMap(String key, Set[] objectSet) {
+    public void addToMonitorMap(String key, Map[] objectSet) {
         if(monitorMap == null) {
             monitorMap = new HashMap();
         }
@@ -59,46 +59,46 @@ public class MonitorMap {
         return(monitorMap != null && monitorMap.containsKey(key));
     }
     
-    public Set[] getFromMonitorMap(String key) {
-        return(monitorMap != null && hasInMonitorMap(key)? (Set[])monitorMap.get(key) : null);
+    public Map[] getFromMonitorMap(String key) {
+        return(monitorMap != null && hasInMonitorMap(key)? (Map[])monitorMap.get(key) : null);
     }
     
-    public void addWaitToMonitor(String key, String[] waitThread) {
-        addToMonitorValue(key, WAIT_THREAD_POS, waitThread);
+    public void addWaitToMonitor(String key, String waitThread, String threadContent) {
+        addToMonitorValue(key, WAIT_THREAD_POS, waitThread, threadContent);
     }
     
-    public void addLockToMonitor(String key, String[] lockThread) {
-        addToMonitorValue(key, LOCK_THREAD_POS, lockThread);
+    public void addLockToMonitor(String key, String lockThread, String threadContent) {
+        addToMonitorValue(key, LOCK_THREAD_POS, lockThread, threadContent);
     }
     
-    public void addSleepToMonitor(String key, String[] sleepThread) {
-        addToMonitorValue(key, SLEEP_THREAD_POS, sleepThread);
+    public void addSleepToMonitor(String key, String sleepThread, String threadContent) {
+        addToMonitorValue(key, SLEEP_THREAD_POS, sleepThread, threadContent);
     }
     
-    private void addToMonitorValue(String key, int pos, String[] thread) {
-        Set[] objectSet = null;
+    private void addToMonitorValue(String key, int pos, String threadTitle, String thread) {
+        Map[] objectSet = null;
 
         if(hasInMonitorMap(key)) {
             objectSet = getFromMonitorMap(key);
         } else {
-            objectSet = new HashSet[3];
-            objectSet[0] = new HashSet();
-            objectSet[1] = new HashSet();
-            objectSet[2] = new HashSet();
+            objectSet = new HashMap[3];
+            objectSet[0] = new HashMap();
+            objectSet[1] = new HashMap();
+            objectSet[2] = new HashMap();
         }
         
-        objectSet[pos].add(thread);
+        objectSet[pos].put(threadTitle, thread);
         addToMonitorMap(key, objectSet);
     }
     
     public void parseAndAddThread(String line, String threadTitle, String currentThread) {
         String monitor = line.substring(line.indexOf('<'));
         if(line.trim().startsWith("- waiting to lock")) {
-            addWaitToMonitor(monitor, new String[] {threadTitle, currentThread});
+            addWaitToMonitor(monitor, threadTitle, currentThread);
         } else if (line.trim().startsWith("- waiting on")) {
-            addSleepToMonitor(monitor, new String[] {threadTitle, currentThread});
+            addSleepToMonitor(monitor, threadTitle, currentThread);
         } else {
-            addLockToMonitor(monitor, new String[] {threadTitle, currentThread});
+            addLockToMonitor(monitor, threadTitle, currentThread);
         }
     }
     

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.80 2007-06-03 20:29:47 irockel Exp $
+ * $Id: TDA.java,v 1.81 2007-06-04 16:03:14 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -182,6 +182,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         navigateToMonitor(evt.getDescription());
                     } else if(evt.getDescription().startsWith("dump")) {
                         navigateToDump();
+                    } else if(evt.getDescription().startsWith("wait")) {
+                        navigateToChild("Threads waiting");
+                    } else if(evt.getDescription().startsWith("sleep")) {
+                        navigateToChild("Threads sleeping");
                     } else if(evt.getURL() != null) {
                         try {
                             // launch a browser with the appropriate URL
@@ -691,6 +695,30 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         tree.scrollPathToVisible(currentPath.getParentPath());
     }
 
+    /**
+     * navigate to child of currently selected node with the given prefix in name
+     * @param startsWith node name prefix (e.g. "Threads waiting")
+     */
+    private void navigateToChild(String startsWith) {
+        TreePath currentPath = tree.getSelectionPath();
+        DefaultMutableTreeNode dumpNode = (DefaultMutableTreeNode) currentPath.getLastPathComponent();
+        Enumeration childs = dumpNode.children();
+        
+        TreePath searchPath = null;
+        while((searchPath == null) && childs.hasMoreElements()) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) childs.nextElement();
+            String name = child.toString();
+            if(name != null && name.startsWith(startsWith)) {
+                searchPath = new TreePath(child.getPath());
+            }
+        }
+        
+        if(searchPath != null) {
+            tree.makeVisible(searchPath);
+            tree.setSelectionPath(searchPath);
+            tree.scrollPathToVisible(searchPath);
+        }
+    }
     
     protected MainMenu getMainMenu() {
         return((MainMenu) frame.getJMenuBar());
