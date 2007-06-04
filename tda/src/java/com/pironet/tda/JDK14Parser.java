@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.46 2007-06-02 09:45:27 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.47 2007-06-04 10:10:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -83,7 +83,7 @@ public class JDK14Parser implements DumpParser {
         
         if((PrefManager.get().getDateParsingRegex() != null) && !PrefManager.get().getDateParsingRegex().trim().equals("")) {
             try {
-                regexPattern = Pattern.compile(PrefManager.get().getDateParsingRegex());
+                regexPattern = Pattern.compile(PrefManager.get().getDateParsingRegex().trim());
                 patternError = false;
             } catch (PatternSyntaxException pe) {
                 JOptionPane.showMessageDialog(null,
