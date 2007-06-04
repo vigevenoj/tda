@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.48 2007-06-04 16:03:14 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.49 2007-06-04 16:31:03 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -633,6 +633,15 @@ public class JDK14Parser implements DumpParser {
                     createNode(monitorNode, "locked by " + thread, null, (String) threads[0].get(thread));
                 }
                 locks++;
+            }
+            
+            Iterator iterWaits = threads[1].keySet().iterator();
+            while(iterWaits.hasNext()) {
+                String thread = (String) iterWaits.next();
+                if(!threads[0].containsKey(thread)) {
+                    createNode(monitorNode, "waits on monitor: " + thread, null, (String) threads[1].get(thread));
+                    waits++;
+                }
             }
             
             StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0 bgcolor=\"#dddddd\"><tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
