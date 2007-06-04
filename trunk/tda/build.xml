@@ -81,10 +81,6 @@
 	    <fileset dir=".">
 	        <include name="bin/tda.sh"/>
 		<include name="bin/tda.bat"/>
-		<include name="doc/*"/>
-	    </fileset>
-	    <fileset dir="src/none/resources/">
-	        <include name="**" />
 	    </fileset>
         </copy>
         <exec dir="${dist.temp.dir}" executable="zip">
