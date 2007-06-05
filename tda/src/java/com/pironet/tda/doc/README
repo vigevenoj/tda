@@ -28,6 +28,7 @@ Changes from 1.2 are:
 * Improved Dump navigation.
 * Added context sensitive information about dumps.
 * Added jstack support.
+* Refactored Monitor-Display (threads now are only display once).
 * Bugfixing.
 
 Report problems, ask questions and submit suggestions in the forum.
