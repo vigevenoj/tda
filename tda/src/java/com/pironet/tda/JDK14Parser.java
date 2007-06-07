@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.49 2007-06-04 16:31:03 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.50 2007-06-07 12:15:42 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -812,7 +812,6 @@ public class JDK14Parser implements DumpParser {
                 if(regex == null || regex.equals("") || threadKey.matches(regex)) {
                     for(int i = 1; i < dumps.length; i++) {
                         Map threads = (Map) dumpStore.get(keys.get(i));
-                        System.out.println("threadKey: " + threadKey);
                         if(threads.containsKey(threadKey)) {
                             occurence++;
                         }
