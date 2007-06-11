@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.81 2007-06-04 16:03:14 irockel Exp $
+ * $Id: TDA.java,v 1.82 2007-06-11 20:14:43 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -349,6 +349,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 //Create the nodes.
                 final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile(files[i]));
                 topNodes.add(top);
+                DefaultMutableTreeNode logFile = new DefaultMutableTreeNode(new LogFileContent(files[i]));
+                top.add(logFile);
                 setFileOpen(true);
                 
                 final SwingWorker worker = new SwingWorker() {
@@ -445,6 +447,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
             displayTable((HistogramTableModel) tdi.content);
             setThreadDisplay(false);
+        } else if(nodeInfo instanceof LogFileContent) {
+            displayLogFileContent(nodeInfo);
         } else if (nodeInfo instanceof Logfile && ((String)((Logfile)nodeInfo).getContent()).startsWith("Thread Dumps")) {
             displayLogFile();
             setThreadDisplay(false);
@@ -475,6 +479,16 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         htmlPane.setText("");
         htmlPane.setCaretPosition(0);
         topSplitPane.setRightComponent(null);
+    }
+    
+    private void displayLogFileContent(Object nodeInfo) {
+        LogFileContent lfc = (LogFileContent) nodeInfo;
+        try {
+            htmlPane.setContentType("text/plain");
+            htmlPane.setPage(lfc.getLogfile());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
     
     /**
