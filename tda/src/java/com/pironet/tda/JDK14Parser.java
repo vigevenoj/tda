@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.50 2007-06-07 12:15:42 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.51 2007-09-06 19:14:40 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -563,7 +563,8 @@ public class JDK14Parser implements DumpParser {
         int deadlocks = 0;
         int lineCounter = 0;
         StringBuffer dContent = new StringBuffer();
-        DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(new Category("Deadlocks", TDA.createImageIcon("Deadlock.gif")));
+        Category deadlockCat = new Category("Deadlocks", TDA.createImageIcon("Deadlock.gif"));
+        DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(deadlockCat);
         
         while(bis.ready() && !finished) {            
             String line = bis.readLine();
@@ -573,7 +574,7 @@ public class JDK14Parser implements DumpParser {
                     dContent.append("<body bgcolor=\"ffffff\"><pre>");
                     dContent.append(line);
                     dContent.append("\n");
-                } else if(lineCounter < maxCheckLines) {
+                } else if(lineCounter >= maxCheckLines) {
                     finished = true;
                 } else {
                     lineCounter++;
@@ -600,6 +601,7 @@ public class JDK14Parser implements DumpParser {
         
         if(deadlocks > 0) {
             threadDump.add(catDeadlocks);
+            deadlockCat.setName("Deadlocks (" + deadlocks + (deadlocks == 1 ? " deadlock)" : " deadlocks)"));
         }
         
         return(deadlocks);
