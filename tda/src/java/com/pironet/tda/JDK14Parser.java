@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.51 2007-09-06 19:14:40 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.52 2007-09-18 09:13:01 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -75,8 +75,6 @@ public class JDK14Parser implements DumpParser {
     public JDK14Parser(InputStream dumpFileStream, Map threadStore) {
         this.dumpFileStream = dumpFileStream;
         this.threadStore = threadStore;
-        this.regexPattern = regexPattern;
-        this.millisTimeStamp = millisTimeStamp;
         maxCheckLines = PrefManager.get().getMaxRows();
         markSize = PrefManager.get().getStreamResetBuffer();
         millisTimeStamp = PrefManager.get().getMillisTimeStamp();

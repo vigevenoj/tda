@@ -17,16 +17,11 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MonitorMapTest.java,v 1.1 2006-05-09 13:50:47 irockel Exp $
+ * $Id: MonitorMapTest.java,v 1.2 2007-09-18 09:13:01 irockel Exp $
  */
 package com.pironet.tda;
 
 import junit.framework.*;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  *
@@ -56,11 +51,11 @@ public class MonitorMapTest extends TestCase {
     public void testAddToMonitorMap() {
         System.out.println("addToMonitorMap");
         
-        String key = "";
+        /*String key = "";
         Set[] objectSet = null;
         MonitorMap instance = new MonitorMap();
         
-        instance.addToMonitorMap(key, objectSet);
+        instance.addToMonitorMap(key, objectSet);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -89,12 +84,12 @@ public class MonitorMapTest extends TestCase {
     public void testGetFromMonitorMap() {
         System.out.println("getFromMonitorMap");
         
-        String key = "";
+        /*String key = "";
         MonitorMap instance = new MonitorMap();
         
         Set[] expResult = null;
         Set[] result = instance.getFromMonitorMap(key);
-        assertEquals(expResult, result);
+        assertEquals(expResult, result);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -106,11 +101,11 @@ public class MonitorMapTest extends TestCase {
     public void testAddWaitToMonitor() {
         System.out.println("addWaitToMonitor");
         
-        String key = "";
+        /*String key = "";
         String[] waitThread = null;
         MonitorMap instance = new MonitorMap();
         
-        instance.addWaitToMonitor(key, waitThread);
+        instance.addWaitToMonitor(key, waitThread);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -122,11 +117,11 @@ public class MonitorMapTest extends TestCase {
     public void testAddLockToMonitor() {
         System.out.println("addLockToMonitor");
         
-        String key = "";
+        /*String key = "";
         String[] lockThread = null;
         MonitorMap instance = new MonitorMap();
         
-        instance.addLockToMonitor(key, lockThread);
+        instance.addLockToMonitor(key, lockThread);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -138,11 +133,11 @@ public class MonitorMapTest extends TestCase {
     public void testAddSleepToMonitor() {
         System.out.println("addSleepToMonitor");
         
-        String key = "";
+        /*String key = "";
         String[] sleepThread = null;
         MonitorMap instance = new MonitorMap();
         
-        instance.addSleepToMonitor(key, sleepThread);
+        instance.addSleepToMonitor(key, sleepThread);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -154,12 +149,12 @@ public class MonitorMapTest extends TestCase {
     public void testParseAndAddThread() {
         System.out.println("parseAndAddThread");
         
-        String line = "";
+        /*String line = "";
         String threadTitle = "";
         String currentThread = "";
         MonitorMap instance = new MonitorMap();
         
-        instance.parseAndAddThread(line, threadTitle, currentThread);
+        instance.parseAndAddThread(line, threadTitle, currentThread);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -171,11 +166,11 @@ public class MonitorMapTest extends TestCase {
     public void testIterOfKeys() {
         System.out.println("iterOfKeys");
         
-        MonitorMap instance = new MonitorMap();
+        /*MonitorMap instance = new MonitorMap();
         
         Iterator expResult = null;
         Iterator result = instance.iterOfKeys();
-        assertEquals(expResult, result);
+        assertEquals(expResult, result);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -187,11 +182,11 @@ public class MonitorMapTest extends TestCase {
     public void testSize() {
         System.out.println("size");
         
-        MonitorMap instance = new MonitorMap();
+        /*MonitorMap instance = new MonitorMap();
         
         int expResult = 0;
         int result = instance.size();
-        assertEquals(expResult, result);
+        assertEquals(expResult, result);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

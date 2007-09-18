@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.82 2007-06-11 20:14:43 irockel Exp $
+ * $Id: TDA.java,v 1.83 2007-09-18 09:13:01 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -30,7 +30,6 @@ import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import com.pironet.tda.utils.TreeRenderer;
 import java.awt.BorderLayout;
-import java.awt.Rectangle;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import javax.swing.JEditorPane;
@@ -40,7 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import javax.swing.JTree;
-import javax.swing.JViewport;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MenuEvent;
@@ -51,19 +49,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.Icon;
 import java.io.IOException;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -81,13 +73,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
@@ -269,7 +259,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             
             if(plaf.startsWith("GTK")) {
-                setFontSizeModifier(2);
+                //setFontSizeModifier(2);
             }
         } catch (Exception except) {
             // setup font
