@@ -17,29 +17,12 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14ParserTest.java,v 1.1 2006-05-09 13:50:47 irockel Exp $
+ * $Id: JDK14ParserTest.java,v 1.2 2007-09-18 09:13:01 irockel Exp $
  */
 package com.pironet.tda;
 
 import junit.framework.*;
-import com.pironet.tda.utils.HistogramTableModel;
-import com.pironet.tda.utils.PrefManager;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -120,12 +103,12 @@ public class JDK14ParserTest extends TestCase {
     public void testParseLoggcFile() {
         System.out.println("parseLoggcFile");
         
-        InputStream loggcFileStream = null;
+        /*InputStream loggcFileStream = null;
         DefaultMutableTreeNode root = null;
         Map dumpStore = null;
         JDK14Parser instance = null;
         
-        instance.parseLoggcFile(loggcFileStream, root, dumpStore);
+        instance.parseLoggcFile(loggcFileStream, root, dumpStore);*/
         
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
