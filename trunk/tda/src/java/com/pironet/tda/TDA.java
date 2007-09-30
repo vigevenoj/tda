@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.84 2007-09-30 10:37:31 irockel Exp $
+ * $Id: TDA.java,v 1.85 2007-09-30 12:23:22 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -179,6 +179,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         navigateToChild("Threads waiting");
                     } else if(evt.getDescription().startsWith("sleep")) {
                         navigateToChild("Threads sleeping");
+                    } else if(evt.getDescription().startsWith("dead")) {
+                        navigateToChild("Deadlocks");
                     } else if(evt.getURL() != null) {
                         try {
                             // launch a browser with the appropriate URL

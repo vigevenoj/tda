@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.52 2007-09-18 09:13:01 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.53 2007-09-30 12:23:22 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -414,12 +414,16 @@ public class JDK14Parser implements DumpParser {
             // check for possible hot spots concerning this thread dump
             
             // check if a lot of threads are in state "waiting"
-            if((threadCount > 0) && ((waiting / (threadCount / 100.0)) > 10.0)) {
+            if((deadlocks == 0) && (threadCount > 0) && ((waiting / (threadCount / 100.0)) > 10.0)) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
                 statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) +
                         "><p>" + (int)(waiting / (threadCount / 100.0)) + "% of all threads are waiting for a monitor to become available again.</p><br>");
                 statData.append("This might indicate a congestion or even a deadlock. If a monitor doesn't have a locking thread, it might be<br>");
                 statData.append("hold by some external resource or system thread. You should check the <a href=\"wait://\">waiting threads</a>.<br></td></tr>");
+            } else if(deadlocks > 0) {
+                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
+                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) +
+                        "><p>The JVM has detected + " + deadlocks + " dealock(s) in the thread dump. You should check the <br><a href=\"dead://\">deadlocks</a> for further information.</p><br>");                
             }
             
             // check if a lot of threads are in state "waiting"
