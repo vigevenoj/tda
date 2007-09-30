@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.85 2007-09-30 12:23:22 irockel Exp $
+ * $Id: TDA.java,v 1.86 2007-09-30 19:21:39 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -264,7 +264,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             
             if(plaf.startsWith("GTK")) {
-                //setFontSizeModifier(2);
+                setFontSizeModifier(2);
             }
         } catch (Exception except) {
             // setup font
