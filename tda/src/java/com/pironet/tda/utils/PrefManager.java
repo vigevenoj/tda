@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.19 2007-05-06 08:23:29 irockel Exp $
+ * $Id: PrefManager.java,v 1.20 2007-09-30 10:37:32 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -62,6 +62,10 @@ public class PrefManager {
         }
         return(prefManager);
     }
+
+    public long getMaxLogfileSize() {
+        return(toolPrefs.getInt("maxlogfilesize", 1024));
+    }
     
     public int getWindowState() {
         return(toolPrefs.getInt("windowState", -1));
@@ -97,6 +101,10 @@ public class PrefManager {
     public void setPreferredSizeFileChooser(Dimension size) {
         toolPrefs.putInt("fileChooser.windowHeight", size.height);
         toolPrefs.putInt("fileChooser.windowWidth", size.width);
+    }
+    
+    public void setMaxLogfileSize(int size) {
+        toolPrefs.putInt("maxlogfilesize", size);
     }
     
     public Point getWindowPos() {
