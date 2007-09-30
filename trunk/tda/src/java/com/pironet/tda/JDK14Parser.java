@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.53 2007-09-30 12:23:22 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.54 2007-09-30 19:21:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -488,6 +488,23 @@ public class JDK14Parser implements DumpParser {
     }
     
     /**
+     * add a monitor link for monitor navigation
+     * @param line containing monitor
+     */
+    private String linkifyDeadlockInfo(String line) {
+        String begin = line.substring(0, line.indexOf("0x"));
+        int objectBegin = line.lastIndexOf("0x");
+        int monitorBegin = line.indexOf("0x");
+        String monitorHex = line.substring(monitorBegin, monitorBegin + 10);
+        
+        String monitor = line.substring(objectBegin, objectBegin + 10);
+        String end = line.substring(line.indexOf("0x")+10);
+        
+        monitor = "<a href=\"monitor://<"+ monitor + ">\">" + monitorHex + "</a>";
+        return(begin + monitor + end);
+    }
+    
+    /**
      * checks for the next class histogram and adds it to the tree node passed
      * @param threadDump which tree node to add the histogram.
      */
@@ -567,15 +584,16 @@ public class JDK14Parser implements DumpParser {
         StringBuffer dContent = new StringBuffer();
         Category deadlockCat = new Category("Deadlocks", TDA.createImageIcon("Deadlock.gif"));
         DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(deadlockCat);
+        boolean first = true;
         
         while(bis.ready() && !finished) {            
             String line = bis.readLine();
             if(!found && !line.trim().equals("")) {
                 if (line.startsWith("Found one Java-level deadlock")) {
                     found = true;
-                    dContent.append("<body bgcolor=\"ffffff\"><pre>");
-                    dContent.append(line);
-                    dContent.append("\n");
+                    dContent.append("<body bgcolor=\"ffffff\"><b>");
+                    dContent.append("Found one Java-level deadlock");
+                    dContent.append("</b><hr><pre>\n");
                 } else if(lineCounter >= maxCheckLines) {
                     finished = true;
                 } else {
@@ -588,8 +606,39 @@ public class JDK14Parser implements DumpParser {
                         createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent);
                     }
                     dContent = new StringBuffer();
+                    dContent.append("</pre><b>");
+                    dContent.append("Found one Java-level deadlock");
+                    dContent.append("</b><hr><pre>\n");
+                    first = true;
                 } else if(line.startsWith("Found") && (line.trim().endsWith("deadlocks.") || line.trim().endsWith("deadlock."))) {
                     finished = true;
+                } else if(line.startsWith("=======")) {                    
+                    // ignore this line
+                } else if(line.contains(" monitor 0x")) {
+                    dContent.append(linkifyDeadlockInfo(line));
+                    dContent.append("\n");
+                } else if(line.startsWith("Java stack information for the threads listed above")) {
+                    dContent.append("</pre><br><b>");
+                    dContent.append("Java stack information for the threads listed above");
+                    dContent.append("</b><hr><pre>");
+                    first = true;
+                } else if (line.trim().startsWith("- waiting on") ||
+                           line.trim().startsWith("- waiting to") ||
+                           line.trim().startsWith("- locked")) {
+                    
+                    dContent.append(linkifyMonitor(line));
+                    dContent.append("\n");
+                    
+                } else if(line.startsWith("\"")) {
+                    dContent.append("</pre>");
+                    if(first) {
+                        first = false;
+                    } else {
+                        dContent.append("<br>");
+                    }
+                    dContent.append("<b><code>");
+                    dContent.append(line);
+                    dContent.append("</code></b><pre>");                    
                 } else {
                     dContent.append(line);
                     dContent.append("\n");
