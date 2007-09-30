@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.86 2007-09-30 19:21:39 irockel Exp $
+ * $Id: TDA.java,v 1.87 2007-09-30 19:30:29 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -124,6 +124,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private LongThreadDialog longThreadDialog;
     private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
+    private JMenuItem showDumpMenuItem;
     
     private static Font HTML_DEFAULT_FONT = new Font("SansSerif", Font.PLAIN, 10);
     private static Font PLAIN_DEFAULT_FONT = new Font("Courier", Font.PLAIN, 11);
@@ -766,12 +767,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Find long running threads...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        menuItem = new JMenuItem("Close...");
+        menuItem = new JMenuItem("Close logfile...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        /*menuItem = new JMenuItem("Apply Filter...");
-        menuItem.addActionListener(this);
-        popup.add(menuItem);*/
+        showDumpMenuItem = new JMenuItem("Show Dump in logfile");
+        showDumpMenuItem.addActionListener(this);
+        showDumpMenuItem.setEnabled(false);
+        popup.add(showDumpMenuItem);
         
         //Add listener to the text area so the popup menu can come up.
         MouseListener popupListener = new PopupListener(popup);
@@ -869,7 +871,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             parseLoggcLogfile();
         } else if("Find long running threads...".equals(source.getText())) {
             findLongRunningThreads();
-        } else if("Close...".equals(source.getText())) {
+        } else if("Close logfile...".equals(source.getText())) {
             closeCurrentDump();
         } else if("Close all...".equals(source.getText())) {
             closeAllDumps();
