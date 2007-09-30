@@ -17,13 +17,14 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TreeRenderer.java,v 1.5 2007-05-22 15:08:48 irockel Exp $
+ * $Id: TreeRenderer.java,v 1.6 2007-09-30 10:37:32 irockel Exp $
  */
 
 package com.pironet.tda.utils;
 
 import com.pironet.tda.Category;
 import com.pironet.tda.HistogramInfo;
+import com.pironet.tda.LogFileContent;
 import com.pironet.tda.Logfile;
 import com.pironet.tda.TDA;
 import com.pironet.tda.ThreadInfo;
@@ -55,6 +56,8 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
             setIcon(TDA.createImageIcon("Histogram.gif"));
         } else if (leaf && isLogfile(value)) {
             setIcon(TDA.createImageIcon("Root.gif"));
+        } else if (leaf && isLogFileContent(value)) {
+            setIcon(TDA.createImageIcon("LogfileContent.gif"));
         } else if(!leaf) {
             if(((DefaultMutableTreeNode) value).isRoot() || isLogfile(value)) {
                 setIcon(TDA.createImageIcon("Root.gif"));
@@ -94,5 +97,10 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
     private boolean isLogfile(Object value) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         return(node.getUserObject() instanceof Logfile);
+    }
+
+    private boolean isLogFileContent(Object value) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        return(node.getUserObject() instanceof LogFileContent);
     }
 }

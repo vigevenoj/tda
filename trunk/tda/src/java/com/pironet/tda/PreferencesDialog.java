@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.14 2007-05-04 08:20:16 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.15 2007-09-30 10:37:31 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -105,6 +105,7 @@ public class PreferencesDialog extends JDialog {
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
         generalPanel.showHotspotClasses.setSelected(PrefManager.get().getShowHotspotClasses());
         generalPanel.useGTKLF.setSelected(PrefManager.get().isUseGTKLF());
+        generalPanel.maxLogfileSizeField.setText(String.valueOf(PrefManager.get().getMaxLogfileSize()));
         
         DefaultComboBoxModel boxModel = new DefaultComboBoxModel();
         String[] regexs = PrefManager.get().getDateParsingRegexs();
@@ -126,12 +127,14 @@ public class PreferencesDialog extends JDialog {
         PrefManager.get().setDateParsingRegexs(regExPanel.dateParsingRegexs.getModel());
         PrefManager.get().setMillisTimeStamp(regExPanel.isMillisTimeStamp.isSelected());
         PrefManager.get().setUseGTKLF(generalPanel.useGTKLF.isSelected());
+        PrefManager.get().setMaxLogfileSize(Integer.parseInt(generalPanel.maxLogfileSizeField.getText()));
         dispose();
     }
     
     class GeneralPanel extends JPanel {
         JTextField maxLinesField;
         JTextField bufferField;
+        JTextField maxLogfileSizeField;
         JCheckBox forceLoggcLoading;
         JCheckBox showHotspotClasses;
         JCheckBox useGTKLF;
@@ -150,12 +153,20 @@ public class PreferencesDialog extends JDialog {
             layoutPanel.add(new JLabel("Stream Reset Buffer Size (in bytes)"));
             bufferField = new JTextField(10);
             layoutPanel.add(bufferField);
+            bufferField.setHorizontalAlignment(JTextField.RIGHT);
             add(layoutPanel);
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Force Open Loggc Option even if class histograms were found in general logfile"));
             forceLoggcLoading = new JCheckBox();
             layoutPanel.add(forceLoggcLoading);
+            add(layoutPanel);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            layoutPanel.add(new JLabel("Maximum logfile size in kbytes to display\n full logfile (set to 0 for unlimited size)"));
+            maxLogfileSizeField = new JTextField(10);
+            maxLogfileSizeField.setHorizontalAlignment(JTextField.RIGHT);
+            layoutPanel.add(maxLogfileSizeField);
             add(layoutPanel);
             
             

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.83 2007-09-18 09:13:01 irockel Exp $
+ * $Id: TDA.java,v 1.84 2007-09-30 10:37:31 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -124,6 +124,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private LongThreadDialog longThreadDialog;
     private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
+    
+    private static Font HTML_DEFAULT_FONT = new Font("SansSerif", Font.PLAIN, 10);
+    private static Font PLAIN_DEFAULT_FONT = new Font("Courier", Font.PLAIN, 11);
     
     private StatusBar statusBar;
     
@@ -321,6 +324,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         file[0] = dumpFile;
         addDumpFiles(file);
     }
+
+    private boolean isLogfileSizeOk(String fileName) {
+        File logFile = new File(fileName);
+        return(logFile.isFile() && ((PrefManager.get().getMaxLogfileSize() == 0) || 
+                (logFile.length() <= (PrefManager.get().getMaxLogfileSize() * 1024))));
+    }
     
     /**
      * sync object is needed to synchronize opening of multiple files.
@@ -339,8 +348,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 //Create the nodes.
                 final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile(files[i]));
                 topNodes.add(top);
-                DefaultMutableTreeNode logFile = new DefaultMutableTreeNode(new LogFileContent(files[i]));
-                top.add(logFile);
+                if(isLogfileSizeOk(files[i])) {
+                    DefaultMutableTreeNode logFile = new DefaultMutableTreeNode(new LogFileContent(files[i]));                    
+                    top.add(logFile);
+                }
                 setFileOpen(true);
                 
                 final SwingWorker worker = new SwingWorker() {
@@ -466,6 +477,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         if(splitPane.getBottomComponent() != htmlView) {
             splitPane.setBottomComponent(htmlView);
         }
+        htmlPane.setContentType("text/html");
+        htmlPane.setFont(HTML_DEFAULT_FONT);
         htmlPane.setText("");
         htmlPane.setCaretPosition(0);
         topSplitPane.setRightComponent(null);
@@ -475,6 +488,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         LogFileContent lfc = (LogFileContent) nodeInfo;
         try {
             htmlPane.setContentType("text/plain");
+            htmlPane.setFont(PLAIN_DEFAULT_FONT);
             htmlPane.setPage(lfc.getLogfile());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -531,6 +545,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             splitPane.setBottomComponent(htmlView);
         }
         if (text != null) {
+            htmlPane.setContentType("text/html");
+            htmlPane.setFont(HTML_DEFAULT_FONT);
             htmlPane.setText(text);
             htmlPane.setCaretPosition(0);
         } else {
@@ -765,7 +781,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     /**
      * create a instance of this menu for a category
      */
-    public PopupListener getCatPopupMenu() {
+    private PopupListener getCatPopupMenu() {
         if(catPopupListener == null) {
             JMenuItem menuItem;
             
