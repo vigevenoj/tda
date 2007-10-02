@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.89 2007-10-02 08:26:34 irockel Exp $
+ * $Id: TDA.java,v 1.90 2007-10-02 09:12:20 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -30,6 +30,7 @@ import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import com.pironet.tda.utils.TreeRenderer;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import javax.swing.JEditorPane;
@@ -157,6 +158,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void init() {
+        UIManager.put("Tree.textBackground", new javax.swing.plaf.ColorUIResource(Color.WHITE));
         // init everything
         tree = new JTree();
         
