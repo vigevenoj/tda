@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.91 2007-10-02 09:19:28 irockel Exp $
+ * $Id: TDA.java,v 1.92 2007-10-02 11:36:07 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -55,6 +55,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -85,6 +86,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.Caret;
 import javax.swing.tree.TreePath;
 
 /**
@@ -490,9 +492,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     private void displayLogFileContent(Object nodeInfo) {
         LogFileContent lfc = (LogFileContent) nodeInfo;
-        try {
+        try {            
             htmlPane.setContentType("text/plain");
             htmlPane.setFont(PLAIN_DEFAULT_FONT);
+            htmlPane.setBackground(Color.WHITE);
             htmlPane.setPage(lfc.getLogfile());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -666,6 +669,44 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     /**
+     * navigate to the currently selected dump in logfile
+     */
+    private void navigateToDumpInLogfile() {
+        Object userObject = ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).getUserObject();
+        if(userObject instanceof ThreadInfo) {
+            ThreadInfo ti = (ThreadInfo) userObject;
+            int lineNumber = Integer.parseInt(ti.threadName.substring(ti.threadName.lastIndexOf(' ')+1));
+            
+            // find log file node.
+            TreePath selPath = tree.getSelectionPath();
+            while (selPath != null && !checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), File.separator)) {
+
+                selPath = selPath.getParentPath();
+            }
+            
+            tree.setSelectionPath(selPath);
+            tree.scrollPathToVisible(selPath);
+
+            Enumeration childs = ((DefaultMutableTreeNode) selPath.getLastPathComponent()).children();
+            boolean found = false;
+            DefaultMutableTreeNode logfileContent = null;
+            while(!found && childs.hasMoreElements()) {
+                logfileContent = (DefaultMutableTreeNode) childs.nextElement();
+                found = logfileContent.getUserObject() instanceof LogFileContent;
+            }
+            
+            if(found) {
+                TreePath monitorPath = new TreePath(logfileContent.getPath());
+                tree.setSelectionPath(monitorPath);
+                tree.scrollPathToVisible(monitorPath);
+                htmlPane.scrollRectToVisible(new Rectangle(0,1000,1,1));
+            }
+           
+            System.out.println("lineNumber " + lineNumber);
+        }
+    }
+    
+    /**
      * navigate to monitor
      * @param monitorLink the monitor link to navigate to
      */
@@ -685,7 +726,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 monitorWithoutLocksNode = child;
             }
         }
-        boolean foundInMonitorsWithoutLocks = false;
         
         // highlight chosen monitor
         JTree searchTree = ((Category) monitorNode.getUserObject()).getCatTree(this);
@@ -762,16 +802,18 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Diff Selection");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        menuItem = new JMenuItem("Parse loggc-logfile...");
+        menuItem = new JMenuItem("Find long running threads...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        menuItem = new JMenuItem("Find long running threads...");
+        popup.addSeparator();
+        menuItem = new JMenuItem("Parse loggc-logfile...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
         menuItem = new JMenuItem("Close logfile...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        showDumpMenuItem = new JMenuItem("Show Dump in logfile");
+        popup.addSeparator();
+        showDumpMenuItem = new JMenuItem("Show selected Dump in logfile");
         showDumpMenuItem.addActionListener(this);
         showDumpMenuItem.setEnabled(false);
         popup.add(showDumpMenuItem);
@@ -823,10 +865,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             if (e.isPopupTrigger()) {
                 popup.show(e.getComponent(),
                         e.getX(), e.getY());
+                showDumpMenuItem.setEnabled(((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).
+                        getUserObject() instanceof ThreadInfo);
             }
         }
     }
-    
+        
     /**
      * check menu events
      */
@@ -891,6 +935,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 createTree();
                 this.getRootPane().revalidate();
             }
+        } else if("Show selected Dump in logfile".equals(source.getText())) {
+            navigateToDumpInLogfile();
         }
     }
     
@@ -1080,7 +1126,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         return(node);
     }
-    
+        
     /**
      * load a loggc log file based on the current selected thread dump
      */
