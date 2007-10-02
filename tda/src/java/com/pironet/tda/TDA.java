@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.88 2007-10-02 07:59:06 irockel Exp $
+ * $Id: TDA.java,v 1.89 2007-10-02 08:26:34 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -265,7 +265,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             
             if(plaf.startsWith("GTK")) {
-                setFontSizeModifier(2);
+                setFontSizeModifier(1);
             }
         } catch (Exception except) {
             // setup font
@@ -274,7 +274,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private String getInfoText() {
-        StringBuffer info = new StringBuffer("<html><body bgcolor=\"ffffff\"><font face=\"System\" size=\""+ getFontSizeModifier(0) + "\"><b>");
+        StringBuffer info = new StringBuffer("<html><body bgcolor=\"ffffff\"><font face=\"System\" size=\""+ getFontSizeModifier(1) + "\"><b>");
         info.append("<img border=0 src=\"" + TDA.class.getResource("icons/TDA.gif") + "\">  ");
         info.append(AppInfo.getAppInfo());
         info.append("</b></font><hr><font face=\"System\"><p>");
