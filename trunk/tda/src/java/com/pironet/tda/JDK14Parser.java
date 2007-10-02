@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.54 2007-09-30 19:21:39 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.55 2007-10-02 07:59:06 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -782,7 +782,6 @@ public class JDK14Parser implements DumpParser {
      */
     public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root) {
         BufferedReader bis = new BufferedReader(new InputStreamReader(loggcFileStream));
-        boolean found = true;
         Vector histograms = new Vector();
         
         try {
