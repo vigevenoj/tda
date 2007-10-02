@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TreeRenderer.java,v 1.6 2007-09-30 10:37:32 irockel Exp $
+ * $Id: TreeRenderer.java,v 1.7 2007-10-02 09:19:28 irockel Exp $
  */
 
 package com.pironet.tda.utils;
@@ -28,6 +28,7 @@ import com.pironet.tda.LogFileContent;
 import com.pironet.tda.Logfile;
 import com.pironet.tda.TDA;
 import com.pironet.tda.ThreadInfo;
+import java.awt.Color;
 import java.awt.Component;
 import javax.swing.Icon;
 import javax.swing.JTree;
@@ -67,7 +68,8 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
                 setIcon(TDA.createImageIcon("ThreadDump.gif"));
             }
         }
-
+        this.setBackgroundNonSelectionColor(new Color(0,0,0,0));
+        
         return this;
     }
 

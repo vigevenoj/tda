@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.90 2007-10-02 09:12:20 irockel Exp $
+ * $Id: TDA.java,v 1.91 2007-10-02 09:19:28 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -158,7 +158,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void init() {
-        UIManager.put("Tree.textBackground", new javax.swing.plaf.ColorUIResource(Color.WHITE));
         // init everything
         tree = new JTree();
         
@@ -267,7 +266,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             
             if(plaf.startsWith("GTK")) {
-                setFontSizeModifier(1);
+                setFontSizeModifier(2);
             }
         } catch (Exception except) {
             // setup font
