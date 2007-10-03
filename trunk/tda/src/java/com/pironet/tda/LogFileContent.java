@@ -17,10 +17,16 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogFileContent.java,v 1.1 2007-06-11 20:14:43 irockel Exp $
+ * $Id: LogFileContent.java,v 1.2 2007-10-03 12:50:27 irockel Exp $
  */
 
 package com.pironet.tda;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.ref.SoftReference;
 
 /**
  * logfile content info object of log file thread dump information.
@@ -30,13 +36,15 @@ public class LogFileContent {
     
     private String logFile;
     
+    /**
+     * stored as soft reference, as this content might get quite big.
+     */
+    private SoftReference content;
+    
     /** 
      * Creates a new instance of LogFileContent 
      */
     public LogFileContent(String logFile) {
-        if(!logFile.startsWith("file://")) {
-            logFile = "file://" + logFile; 
-        }
         setLogFile(logFile);
     }
     
@@ -50,6 +58,48 @@ public class LogFileContent {
     
     public String toString() {
         return("Logfile");
+    }
+    
+    /**
+     * get the content as string, it is stored as soft reference,
+     * so it might be loaded from disk again, as the vm needed memory
+     * after the last access to it.
+     */
+    public String getContent() {
+        if(content == null || content.get() == null) {
+            readContent();
+        }
+        
+        return((String) content.get());
+    }
+
+    /**
+     * read the content in the soft reference object, currently used
+     * StringBuffer to maintain 1.4 compability. Should be switched 
+     * to StringReader if switched to 1.5 for better performance as 
+     * synchronization is not needed here.
+     */
+    private void readContent() {
+
+        BufferedReader br = null;
+        try {
+            File contentFile = new File(getLogfile());
+            br = new BufferedReader(new FileReader(getLogfile()));
+            StringBuffer contentReader = new StringBuffer();
+            while(br.ready()) {
+                contentReader.append(br.readLine());
+                contentReader.append("\n");
+            }
+            content = new SoftReference(contentReader.toString());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
     
 }
