@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.93 2007-10-03 12:50:27 irockel Exp $
+ * $Id: TDA.java,v 1.94 2007-10-03 16:49:20 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -240,9 +240,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             UIManager.LookAndFeelInfo currentLAFI = null;
             
             // retrieve plaf param.
-            String plaf = "Mac,Windows,Metal";
+            String plaf = "Mac,Nimbus,Windows,Metal";
             if(PrefManager.get().isUseGTKLF()) {
-                plaf = "GTK,Mac,Windows,Metal";
+                plaf = "Nimbus,GTK,Mac,Windows,Metal";
             }
             
             // this line needs to be implemented in order to make L&F work properly
@@ -516,7 +516,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         jeditPane.setEditable(false);
         jeditPane.setCaretVisible(false);
         jeditPane.setCaretBlinkEnabled(false);
-        jeditPane.setRightClickPopup(new PopupMenu());
+        jeditPane.setRightClickPopup(new PopupMenu(jeditPane, this));
     }
     
     /**

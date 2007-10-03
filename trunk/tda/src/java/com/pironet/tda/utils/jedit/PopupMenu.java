@@ -17,14 +17,17 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PopupMenu.java,v 1.1 2007-10-03 12:50:26 irockel Exp $
+ * $Id: PopupMenu.java,v 1.2 2007-10-03 16:49:19 irockel Exp $
  */
 
 package com.pironet.tda.utils.jedit;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 /**
@@ -32,20 +35,81 @@ import javax.swing.JPopupMenu;
  * @author irockel
  */
 public class PopupMenu extends JPopupMenu implements ActionListener {
+    private JEditTextArea ref;
+    private JPanel parent;
+    private JMenuItem againMenuItem;
     
-    public PopupMenu() {
+    private String searchString;
+    
+    public PopupMenu(JEditTextArea ref, JPanel parent) {
         JMenuItem menuItem;
         
-        menuItem = new JMenuItem("Goto Line");
+        menuItem = new JMenuItem("Goto Line...");
         menuItem.addActionListener(this);
         add(menuItem);
         this.addSeparator();
         menuItem = new JMenuItem("Search...");
         menuItem.addActionListener(this);
         add(menuItem);
+        againMenuItem = new JMenuItem("Search again");
+        againMenuItem.addActionListener(this);
+        //againMenuItem.setAccelerator(KeyStroke.)
+        add(againMenuItem);
+        
+        this.ref = ref;
+        this.parent = parent;
     }
 
     public void actionPerformed(ActionEvent e) {
+        JMenuItem source = (JMenuItem)(e.getSource());
+        if(source.getText().equals("Goto Line...")) {
+            gotoLine();
+        } else if(source.getText().equals("Search...")) {
+            search();
+        } else if(source.getText().equals("Search again")) {
+            search(searchString, ref.getCaretPosition() +1);
+        }
+    }
+    
+    private void search(String searchString, int offSet) {
+        int searchIndex = ref.getText().indexOf(searchString, offSet);
+        if (searchIndex < 0) {
+            JOptionPane.showMessageDialog(parent, "Error", "Search string not found", JOptionPane.ERROR_MESSAGE);
+        } else {
+            ref.setCaretPosition(searchIndex);
+        }
+    }
+    
+    private void gotoLine() {        
+        String result = JOptionPane.showInputDialog(parent, "Type in line number (between 1-" + ref.getLineCount() + ")"); 
+        
+        if (result != null) {
+            int lineNumber = 0;
+            try {
+                lineNumber = Integer.parseInt(result);
+            } catch (NumberFormatException ne) {
+                JOptionPane.showMessageDialog(parent, "Error", "Invalid line number entered", JOptionPane.ERROR_MESSAGE);
+            }
+            if ((lineNumber > 0) && (lineNumber <= ref.getLineCount())) {
+                ref.setFirstLine(lineNumber);
+            }
+        }
     }
 
+    private void search() {        
+        String result = JOptionPane.showInputDialog(parent, "Type in search string"); 
+        
+        if (result != null) {
+            search(result, ref.getCaretPosition());
+            searchString = result;
+        }
+    }
+    
+    /**
+     * overrides default implementation for "Search Again" enable check.
+     */
+    public void show(Component invoker, int x, int y) {
+        super.show(invoker, x, y);
+        againMenuItem.setEnabled(searchString != null);
+    }
 }
