@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.55 2007-10-02 07:59:06 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.56 2007-10-03 12:50:27 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -33,7 +33,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Matcher;

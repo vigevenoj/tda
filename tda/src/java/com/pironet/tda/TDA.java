@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.92 2007-10-02 11:36:07 irockel Exp $
+ * $Id: TDA.java,v 1.93 2007-10-03 12:50:27 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -29,8 +29,9 @@ import com.pironet.tda.utils.StatusBar;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import com.pironet.tda.utils.TreeRenderer;
+import com.pironet.tda.utils.jedit.JEditTextArea;
+import com.pironet.tda.utils.jedit.PopupMenu;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import javax.swing.JEditorPane;
@@ -86,7 +87,6 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.Caret;
 import javax.swing.tree.TreePath;
 
 /**
@@ -110,6 +110,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private static TDA myTDA = null;
     
     private JEditorPane htmlPane;
+    private JEditTextArea jeditPane;
     private JTree tree;
     private JSplitPane splitPane;
     private JSplitPane topSplitPane;
@@ -491,15 +492,31 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void displayLogFileContent(Object nodeInfo) {
-        LogFileContent lfc = (LogFileContent) nodeInfo;
-        try {            
-            htmlPane.setContentType("text/plain");
-            htmlPane.setFont(PLAIN_DEFAULT_FONT);
-            htmlPane.setBackground(Color.WHITE);
-            htmlPane.setPage(lfc.getLogfile());
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        int dividerLocation = splitPane.getDividerLocation();
+        if(splitPane.getBottomComponent() != jeditPane) {
+            if(jeditPane == null) {
+                initJeditView();
+            }
+            splitPane.setBottomComponent(jeditPane);
         }
+        
+        LogFileContent lfc = (LogFileContent) nodeInfo;
+        jeditPane.setText(lfc.getContent());
+        jeditPane.setCaretPosition(0);
+        splitPane.setDividerLocation(dividerLocation);
+        
+    }
+    
+    /**
+     * initialize the base components needed for the jedit view of the
+     * log file
+     */
+    private void initJeditView() {
+        jeditPane = new JEditTextArea();
+        jeditPane.setEditable(false);
+        jeditPane.setCaretVisible(false);
+        jeditPane.setCaretBlinkEnabled(false);
+        jeditPane.setRightClickPopup(new PopupMenu());
     }
     
     /**
@@ -675,7 +692,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         Object userObject = ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).getUserObject();
         if(userObject instanceof ThreadInfo) {
             ThreadInfo ti = (ThreadInfo) userObject;
-            int lineNumber = Integer.parseInt(ti.threadName.substring(ti.threadName.lastIndexOf(' ')+1));
+            int lineNumber = ti.threadName.indexOf("around") >= 0 ? 
+                Integer.parseInt(ti.threadName.substring(ti.threadName.lastIndexOf(" line ")+6, 
+                ti.threadName.lastIndexOf(" around "))) : 
+                Integer.parseInt(ti.threadName.substring(ti.threadName.lastIndexOf(' ')+1));
             
             // find log file node.
             TreePath selPath = tree.getSelectionPath();
@@ -699,7 +719,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 TreePath monitorPath = new TreePath(logfileContent.getPath());
                 tree.setSelectionPath(monitorPath);
                 tree.scrollPathToVisible(monitorPath);
-                htmlPane.scrollRectToVisible(new Rectangle(0,1000,1,1));
+                displayLogFileContent(logfileContent.getUserObject());
+                jeditPane.setFirstLine(lineNumber-1);
             }
            
             System.out.println("lineNumber " + lineNumber);
@@ -945,6 +966,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 "<html><body>" +
                 "<p>Java Version: " + System.getProperty("java.version") + "</p><br>" +
                 "<p>Icons used are based on Benno System Icons by Benno Meyer.</p><br>" +
+                "<p>Contains Classes from JEdit for logfile display.</p><br>" +
                 "<p>TDA is free software; you can redistribute it and/or modify<br>" +
                 "it under the terms of the Lesser GNU General Public License as published by<br>" +
                 "the Free Software Foundation; either version 2.1 of the License, or<br>" +
