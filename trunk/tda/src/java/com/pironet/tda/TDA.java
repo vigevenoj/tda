@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.94 2007-10-03 16:49:20 irockel Exp $
+ * $Id: TDA.java,v 1.95 2007-10-04 13:01:12 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -59,6 +59,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -81,6 +82,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
@@ -129,9 +131,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
     private JMenuItem showDumpMenuItem;
-    
-    private static Font HTML_DEFAULT_FONT = new Font("SansSerif", Font.PLAIN, 10);
-    private static Font PLAIN_DEFAULT_FONT = new Font("Courier", Font.PLAIN, 11);
     
     private StatusBar statusBar;
     
@@ -485,7 +484,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             splitPane.setBottomComponent(htmlView);
         }
         htmlPane.setContentType("text/html");
-        htmlPane.setFont(HTML_DEFAULT_FONT);
         htmlPane.setText("");
         htmlPane.setCaretPosition(0);
         topSplitPane.setRightComponent(null);
@@ -517,6 +515,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         jeditPane.setCaretVisible(false);
         jeditPane.setCaretBlinkEnabled(false);
         jeditPane.setRightClickPopup(new PopupMenu(jeditPane, this));
+        jeditPane.getInputHandler().addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), (ActionListener) jeditPane.getRightClickPopup());
     }
     
     /**
@@ -570,7 +569,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         if (text != null) {
             htmlPane.setContentType("text/html");
-            htmlPane.setFont(HTML_DEFAULT_FONT);
             htmlPane.setText(text);
             htmlPane.setCaretPosition(0);
         } else {

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PopupMenu.java,v 1.2 2007-10-03 16:49:19 irockel Exp $
+ * $Id: PopupMenu.java,v 1.3 2007-10-04 13:01:12 irockel Exp $
  */
 
 package com.pironet.tda.utils.jedit;
@@ -25,10 +25,12 @@ package com.pironet.tda.utils.jedit;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 
 /**
  * popup for the jedit text area
@@ -53,7 +55,7 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
         add(menuItem);
         againMenuItem = new JMenuItem("Search again");
         againMenuItem.addActionListener(this);
-        //againMenuItem.setAccelerator(KeyStroke.)
+        againMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
         add(againMenuItem);
         
         this.ref = ref;
@@ -61,20 +63,27 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        JMenuItem source = (JMenuItem)(e.getSource());
-        if(source.getText().equals("Goto Line...")) {
-            gotoLine();
-        } else if(source.getText().equals("Search...")) {
-            search();
-        } else if(source.getText().equals("Search again")) {
-            search(searchString, ref.getCaretPosition() +1);
+        if(e.getSource() instanceof JMenuItem) {
+            JMenuItem source = (JMenuItem) (e.getSource());
+            if (source.getText().equals("Goto Line...")) {
+                gotoLine();
+            } else if (source.getText().equals("Search...")) {
+                search();
+            } else if (source.getText().startsWith("Search again")) {
+                search(searchString, ref.getCaretPosition() + 1);
+            }
+        } else if(e.getSource() instanceof JEditTextArea) {
+            // only one key binding.
+            if(searchString != null) {
+                search(searchString, ref.getCaretPosition() + 1);
+            }
         }
     }
     
     private void search(String searchString, int offSet) {
         int searchIndex = ref.getText().indexOf(searchString, offSet);
         if (searchIndex < 0) {
-            JOptionPane.showMessageDialog(parent, "Error", "Search string not found", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parent, "Search string not found", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             ref.setCaretPosition(searchIndex);
         }
@@ -88,7 +97,7 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
             try {
                 lineNumber = Integer.parseInt(result);
             } catch (NumberFormatException ne) {
-                JOptionPane.showMessageDialog(parent, "Error", "Invalid line number entered", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(parent, "Invalid line number entered", "Error", JOptionPane.ERROR_MESSAGE);
             }
             if ((lineNumber > 0) && (lineNumber <= ref.getLineCount())) {
                 ref.setFirstLine(lineNumber);
