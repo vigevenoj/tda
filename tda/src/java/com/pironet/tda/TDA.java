@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.95 2007-10-04 13:01:12 irockel Exp $
+ * $Id: TDA.java,v 1.96 2007-10-14 07:21:28 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -154,9 +154,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         super(new BorderLayout());
         
         // init L&F
-        setupLookAndFeel();
-        
-        init();
+        setupLookAndFeel();        
     }
     
     private void init() {
@@ -227,6 +225,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         firstFile = true;
         setFileOpen(false);
         
+        // toolbar
+        add(getMainMenu().getToolBar(), BorderLayout.PAGE_START);
+        
     }
     
     /**
@@ -239,9 +240,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             UIManager.LookAndFeelInfo currentLAFI = null;
             
             // retrieve plaf param.
-            String plaf = "Mac,Nimbus,Windows,Metal";
+            String plaf = "Mac,Windows,Metal";
             if(PrefManager.get().isUseGTKLF()) {
-                plaf = "Nimbus,GTK,Mac,Windows,Metal";
+                plaf = "GTK,Mac,Windows,Metal";
             }
             
             // this line needs to be implemented in order to make L&F work properly
@@ -1423,6 +1424,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         frame.getRootPane().setPreferredSize(PrefManager.get().getPreferredSize());
         
+        frame.setJMenuBar(new MainMenu(TDA.get()));
+        TDA.get().init();
+        
         //Create and set up the content pane.
         if(dumpFile != null) {
             TDA.get().initDumpDisplay();
@@ -1430,8 +1434,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         TDA.get().setOpaque(true); //content panes must be opaque
         frame.setContentPane(TDA.get());
-        
-        frame.setJMenuBar(new MainMenu(TDA.get()));
         
         // init filechooser
         fc = new JFileChooser();
