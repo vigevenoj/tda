@@ -24,7 +24,7 @@ import javax.swing.*;
  * to the implementations of this class to do so.
  *
  * @author Slava Pestov
- * @version $Id: InputHandler.java,v 1.1 2007-10-03 12:50:26 irockel Exp $
+ * @version $Id: InputHandler.java,v 1.2 2007-10-14 07:34:50 irockel Exp $
  * @see org.jedit.syntax.DefaultInputHandler
  */
 public abstract class InputHandler extends KeyAdapter {
@@ -128,9 +128,9 @@ public abstract class InputHandler extends KeyAdapter {
      * @param listener The action
      */
     public static String getActionName(ActionListener listener) {
-        Enumeration enum = getActions();
-        while(enum.hasMoreElements()) {
-            String name = (String)enum.nextElement();
+        Enumeration enumActions = getActions();
+        while(enumActions.hasMoreElements()) {
+            String name = (String)enumActions.nextElement();
             ActionListener _listener = getAction(name);
             if(_listener == listener)
                 return name;
