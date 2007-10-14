@@ -2,4 +2,21 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <data xmlns="http://www.netbeans.org/ns/profiler/1" version="0.9.1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/JDK14Parser.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/LogFileContent.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/Logfile.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/MainMenu.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/PreferencesDialog.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/TDA.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/utils/TreeRenderer.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/utils/jedit/InputHandler.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/utils/jedit/JEditTextArea.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/utils/jedit/PopupMenu.java</file>
+        <file>file:/home/irockel/tda/src/java/com/pironet/tda/utils/jedit/TextAreaDefaults.java</file>
+        <file>file:/home/irockel/tda/test/java/com/pironet/tda/DumpParserFactoryTest.java</file>
+        <file>file:/home/irockel/tda/test/java/com/pironet/tda/JDK14ParserTest.java</file>
+        <file>file:/home/irockel/tda/test/java/com/pironet/tda/MonitorMapTest.java</file>
+        <file>file:/home/irockel/tda/test/java/com/pironet/tda/TdaSuite.java</file>
+    </open-files>
 </project-private>

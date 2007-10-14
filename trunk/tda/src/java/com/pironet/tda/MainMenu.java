@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.13 2007-05-08 14:11:48 irockel Exp $
+ * $Id: MainMenu.java,v 1.14 2007-10-14 07:21:28 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -26,9 +26,11 @@ import com.pironet.tda.utils.PrefManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 /**
@@ -44,6 +46,7 @@ public class MainMenu extends JMenuBar {
     private JMenuItem closeAllMenuItem;
     
     private TDA listener;
+    private JToolBar toolBar;
 
 
 
@@ -176,7 +179,7 @@ public class MainMenu extends JMenuBar {
         return(menu);
         
     }
-    
+
     /**
      * Build tools menu in the menu bar.
      */
@@ -275,5 +278,22 @@ public class MainMenu extends JMenuBar {
             recentFilesMenu = new JMenuItem("Open recent file");
             recentFilesMenu.setEnabled(false);
         }
+    }
+    
+    public JToolBar getToolBar() {
+        if(toolBar == null) {
+            createToolBar();
+        }
+        return toolBar;
+    }
+    
+    private void createToolBar() {
+        toolBar = new JToolBar("TDA Toolbar");        
+        toolBar.add(new JButton(TDA.createImageIcon("FileOpen.gif")));
+        toolBar.add(new JButton(TDA.createImageIcon("CloseFile.gif")));
+        toolBar.addSeparator();
+        toolBar.add(new JButton(TDA.createImageIcon("Preferences.gif")));
+        toolBar.addSeparator();
+        toolBar.add(new JButton(TDA.createImageIcon("Help.gif")));
     }
 }
