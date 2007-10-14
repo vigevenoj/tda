@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.20 2007-09-30 10:37:32 irockel Exp $
+ * $Id: PrefManager.java,v 1.21 2007-10-14 07:52:36 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -158,6 +158,14 @@ public class PrefManager {
         toolPrefs.putBoolean("forceLoggcLoading", force);
     }
     
+    public boolean getShowToolbar() {
+        return(toolPrefs.getBoolean("showToolbar", true));
+    }
+    
+    public void setShowToolbar(boolean state) {
+        toolPrefs.putBoolean("showToolbar", state);
+    }
+
     public String getDateParsingRegex() {
         return(toolPrefs.get("dateParsingRegex", "(\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d).*"));
     }

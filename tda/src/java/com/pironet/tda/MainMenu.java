@@ -17,16 +17,16 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.14 2007-10-14 07:21:28 irockel Exp $
+ * $Id: MainMenu.java,v 1.15 2007-10-14 07:52:36 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.PrefManager;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -208,6 +208,11 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_F, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Setup Filter");
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+        
+        menu.addSeparator();
+        menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.96 2007-10-14 07:21:28 irockel Exp $
+ * $Id: TDA.java,v 1.97 2007-10-14 07:52:36 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -74,6 +74,7 @@ import java.util.Map;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -226,8 +227,17 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         setFileOpen(false);
         
         // toolbar
-        add(getMainMenu().getToolBar(), BorderLayout.PAGE_START);
-        
+        setShowToolbar(PrefManager.get().getShowToolbar());        
+    }
+
+    private void setShowToolbar(boolean state) {
+        if(state) {
+            add(getMainMenu().getToolBar(), BorderLayout.PAGE_START);
+        } else {
+            remove(getMainMenu().getToolBar());
+        }
+        revalidate();
+        PrefManager.get().setShowToolbar(state);
     }
     
     /**
@@ -957,6 +967,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
         } else if("Show selected Dump in logfile".equals(source.getText())) {
             navigateToDumpInLogfile();
+        } else if("Show Toolbar".equals(source.getText())) {
+            setShowToolbar(((JCheckBoxMenuItem) source).getState());
         }
     }
     
