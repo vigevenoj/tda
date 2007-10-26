@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.57 2007-10-26 09:21:46 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.58 2007-10-26 10:14:12 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -342,24 +342,24 @@ public class JDK14Parser implements DumpParser {
             }
             
             int monitorCount = mmap.size();
-            StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System size=" +
-                    TDA.getFontSizeModifier(-1) + "><table border=0><tr bgcolor=\"#dddddd\"><td><font face=System size="+ TDA.getFontSizeModifier(-1) + 
-                    ">Overall Thread Count</td><td width=\"150\"></td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System " +
+                    "><table border=0><tr bgcolor=\"#dddddd\"><td><font face=System " + 
+                    ">Overall Thread Count</td><td width=\"150\"></td><td><b><font face=System>");
             statData.append(threadCount);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Overall Monitor Count</td><td></td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System" + 
+                    ">Overall Monitor Count</td><td></td><td><b><font face=System>");
             statData.append(monitorCount);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Number of threads waiting for a monitor</td><td></td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System " + 
+                    ">Number of threads waiting for a monitor</td><td></td><td><b><font face=System>");
             statData.append(waiting);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Number of threads locking a monitor</td><td></td><td><b><font face=System size="+ TDA.getFontSizeModifier(-1) + ">");
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System " + 
+                    ">Number of threads locking a monitor</td><td></td><td><b><font face=System size>");
             statData.append(locking);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Number of threads sleeping on a monitor</td><td></td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System " + 
+                    ">Number of threads sleeping on a monitor</td><td></td><td><b><font face=System>");
             statData.append(sleeping);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Number of deadlocks</td><td></td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System " + 
+                    ">Number of deadlocks</td><td></td><td><b><font face=System>");
             statData.append(deadlocks);
             
             ((Category) catThreads.getUserObject()).setName(((Category) catThreads.getUserObject()) + " (" + threadCount + " Threads overall)");
@@ -399,8 +399,8 @@ public class JDK14Parser implements DumpParser {
                 threadDump.add(catMonitorsLocks);
             }
             
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Number of Monitors without locking threads</td><td></td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System " +
+                    ">Number of Monitors without locking threads</td><td></td><td><b><font face=System>");
             statData.append(monitorsWithoutLocksCount);
             statData.append("</b></td></tr>");
             ((Category) catMonitorsLocks.getUserObject()).setName(((Category) catMonitorsLocks.getUserObject()) + " (" + monitorsWithoutLocksCount + 
@@ -415,20 +415,20 @@ public class JDK14Parser implements DumpParser {
             // check if a lot of threads are in state "waiting"
             if((deadlocks == 0) && (threadCount > 0) && ((waiting / (threadCount / 100.0)) > 10.0)) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) +
+                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " +
                         "><p>" + (int)(waiting / (threadCount / 100.0)) + "% of all threads are waiting for a monitor to become available again.</p><br>");
                 statData.append("This might indicate a congestion or even a deadlock. If a monitor doesn't have a locking thread, it might be<br>");
                 statData.append("hold by some external resource or system thread. You should check the <a href=\"wait://\">waiting threads</a>.<br></td></tr>");
             } else if(deadlocks > 0) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) +
+                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " +
                         "><p>The JVM has detected " + deadlocks + " deadlock(s) in the thread dump. You should check the <br><a href=\"dead://\">deadlocks</a> for further information.</p><br>");                
             }
             
             // check if a lot of threads are in state "waiting"
             if((threadCount > 0) && ((sleeping / (threadCount / 100.0)) > 25.0)) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) +
+                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System" +
                         "><p>" + (int)(sleeping / (threadCount / 100.0)) + "% of all threads are sleeping on a monitor.</p><br>");
                 statData.append("This might indicate they are waiting for some external resource (e.g. database) which is overloaded or<br>");
                 statData.append("not available or are just waiting to get to do something (idle threads).<br>");
@@ -438,7 +438,7 @@ public class JDK14Parser implements DumpParser {
             // display an info if there are monitors without locking threads
             if(monitorsWithoutLocksCount > 0) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) +
+                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System" +
                         "><p>This thread dump contains monitors without a locking thread information.<br>");
                 statData.append("This means, the monitor is hold by a system thread or some external resource.</p<br>");
                 statData.append("You should check the monitors without locking threads for more information.<br></td></tr>");
@@ -447,7 +447,7 @@ public class JDK14Parser implements DumpParser {
             // check for indications for running garbage collector
             if((threadCount > 0) && (overallThreadsWaitingWithoutLocks / (threadCount / 100.0) > 50.0)) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " + 
                         "<p>" + (int)(overallThreadsWaitingWithoutLocks / (threadCount / 100.0)) + "% of all threads are waiting for a monitor without a application");
                 statData.append("thread holding it.<br> This indicates a congestion. It is very likely the garbage collector is running");
                 statData.append("and is blocking the monitors.</p<br>");
@@ -696,21 +696,21 @@ public class JDK14Parser implements DumpParser {
                 }
             }
             
-            StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0 bgcolor=\"#dddddd\"><tr><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
-                    ">Threads locking monitor</td><td><b><font face=System size=" + TDA.getFontSizeModifier(-1) + ">");
+            StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0 bgcolor=\"#dddddd\"><tr><td><font face=System" + 
+                    ">Threads locking monitor</td><td><b><font face=System>");
             statData.append(locks);
             statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td>");
-            statData.append("<font face=System size=" + TDA.getFontSizeModifier(-1) + ">Threads sleeping on monitor</td><td><b><font face=System size=" + 
+            statData.append("<font face=System>Threads sleeping on monitor</td><td><b><font face=System size=" + 
                     TDA.getFontSizeModifier(-1) +">");
             statData.append(sleeps);
             statData.append("</b></td></tr>\n\n<tr><td>");
-            statData.append("<font face=System size=" + TDA.getFontSizeModifier(-1) + ">Threads waiting to lock monitor</td><td><b><font face=System size=" + 
+            statData.append("<font face=System>Threads waiting to lock monitor</td><td><b><font face=System size=" + 
                     TDA.getFontSizeModifier(-1) + ">");
             statData.append(waits);
             statData.append("</b></td></tr>\n\n");
             if(locks == 0) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System " + 
                         "<p>This monitor doesn't have a thread locking it. This means a VM Thread is holding it.</p><br>");
                 statData.append("If you see many monitors having no locking thread, this usually means, the garbage collector is running.<br>");
                 statData.append("In this case you should consider analyzing the Garbage Collector output. If the dump has many monitors with no locking thread<br>");
@@ -718,7 +718,7 @@ public class JDK14Parser implements DumpParser {
             }
             if(waits > 5) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System size=" + TDA.getFontSizeModifier(-1) + 
+                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System " + 
                         "<p>A lot of threads are waiting for this monitor to become available again.</p><br>");
                 statData.append("This might indicate a congestion. You also should analyze other locks blocked by threads waiting<br>");
                 statData.append("for this monitor as there might be much more threads waiting for it.<br></td></tr>");                
