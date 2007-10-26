@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.99 2007-10-26 09:21:24 irockel Exp $
+ * $Id: TDA.java,v 1.100 2007-10-26 10:18:16 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -949,7 +949,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 parseLoggcLogfile();
             } else if ("Find long running threads...".equals(source.getText())) {
                 findLongRunningThreads();
-            } else if ("Close logfile...".equals(source.getText())) {
+            } else if (("Close logfile...".equals(source.getText())) || ("Close...".equals(source.getText()))) {
                 closeCurrentDump();
             } else if ("Close all...".equals(source.getText())) {
                 closeAllDumps();
