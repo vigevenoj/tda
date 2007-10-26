@@ -46,7 +46,7 @@ import java.util.Vector;
  *     + "}");</pre>
  *
  * @author Slava Pestov
- * @version $Id: JEditTextArea.java,v 1.1 2007-10-03 12:50:26 irockel Exp $
+ * @version $Id: JEditTextArea.java,v 1.2 2007-10-26 13:11:45 irockel Exp $
  */
 public class JEditTextArea extends JComponent
 {
@@ -1922,7 +1922,7 @@ public class JEditTextArea extends JComponent
 		}
 	}
 
-	class MouseHandler extends MouseAdapter
+	class MouseHandler extends MouseAdapter implements MouseWheelListener
 	{
 		public void mousePressed(MouseEvent evt)
 		{
