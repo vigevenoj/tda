@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.56 2007-10-03 12:50:27 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.57 2007-10-26 09:21:46 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -422,7 +422,7 @@ public class JDK14Parser implements DumpParser {
             } else if(deadlocks > 0) {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
                 statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System size=" + TDA.getFontSizeModifier(-1) +
-                        "><p>The JVM has detected + " + deadlocks + " dealock(s) in the thread dump. You should check the <br><a href=\"dead://\">deadlocks</a> for further information.</p><br>");                
+                        "><p>The JVM has detected " + deadlocks + " deadlock(s) in the thread dump. You should check the <br><a href=\"dead://\">deadlocks</a> for further information.</p><br>");                
             }
             
             // check if a lot of threads are in state "waiting"
@@ -590,9 +590,9 @@ public class JDK14Parser implements DumpParser {
             if(!found && !line.trim().equals("")) {
                 if (line.startsWith("Found one Java-level deadlock")) {
                     found = true;
-                    dContent.append("<body bgcolor=\"ffffff\"><b>");
+                    dContent.append("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                     dContent.append("Found one Java-level deadlock");
-                    dContent.append("</b><hr><pre>\n");
+                    dContent.append("</b><hr></font><pre>\n");
                 } else if(lineCounter >= maxCheckLines) {
                     finished = true;
                 } else {
@@ -605,9 +605,9 @@ public class JDK14Parser implements DumpParser {
                         createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent);
                     }
                     dContent = new StringBuffer();
-                    dContent.append("</pre><b>");
+                    dContent.append("</pre><b><font size=" + TDA.getFontSizeModifier(-1) + ">");
                     dContent.append("Found one Java-level deadlock");
-                    dContent.append("</b><hr><pre>\n");
+                    dContent.append("</b><hr></font><pre>\n");
                     first = true;
                 } else if(line.startsWith("Found") && (line.trim().endsWith("deadlocks.") || line.trim().endsWith("deadlock."))) {
                     finished = true;
@@ -617,9 +617,9 @@ public class JDK14Parser implements DumpParser {
                     dContent.append(linkifyDeadlockInfo(line));
                     dContent.append("\n");
                 } else if(line.startsWith("Java stack information for the threads listed above")) {
-                    dContent.append("</pre><br><b>");
+                    dContent.append("</pre><br><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                     dContent.append("Java stack information for the threads listed above");
-                    dContent.append("</b><hr><pre>");
+                    dContent.append("</b><hr></font><pre>");
                     first = true;
                 } else if (line.trim().startsWith("- waiting on") ||
                            line.trim().startsWith("- waiting to") ||
@@ -635,9 +635,9 @@ public class JDK14Parser implements DumpParser {
                     } else {
                         dContent.append("<br>");
                     }
-                    dContent.append("<b><code>");
+                    dContent.append("<b><font size=" + TDA.getFontSizeModifier(-1) + "><code>");
                     dContent.append(line);
-                    dContent.append("</code></b><pre>");                    
+                    dContent.append("</font></code></b><pre>");                    
                 } else {
                     dContent.append(line);
                     dContent.append("\n");
