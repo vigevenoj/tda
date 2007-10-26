@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.15 2007-10-14 07:52:36 irockel Exp $
+ * $Id: MainMenu.java,v 1.16 2007-10-26 08:47:24 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -47,6 +47,7 @@ public class MainMenu extends JMenuBar {
     
     private TDA listener;
     private JToolBar toolBar;
+    private JButton closeToolBarButton;
 
 
 
@@ -63,6 +64,13 @@ public class MainMenu extends JMenuBar {
      */
     public JMenuItem getCloseMenuItem() {
         return(closeMenuItem);
+    }
+    
+    /**
+     * get the close file menu item
+     */
+    public JButton getCloseToolBarButton() {
+        return(closeToolBarButton);
     }
     
     /**
@@ -285,6 +293,11 @@ public class MainMenu extends JMenuBar {
         }
     }
     
+    /**
+     * creates and returns a toolbar for the main menu with most
+     * important entries.
+     * @return toolbar instance, is created on demand.
+     */
     public JToolBar getToolBar() {
         if(toolBar == null) {
             createToolBar();
@@ -292,13 +305,36 @@ public class MainMenu extends JMenuBar {
         return toolBar;
     }
     
+    /**
+     * create a toolbar showing the most important main menu entries.
+     */
     private void createToolBar() {
         toolBar = new JToolBar("TDA Toolbar");        
-        toolBar.add(new JButton(TDA.createImageIcon("FileOpen.gif")));
-        toolBar.add(new JButton(TDA.createImageIcon("CloseFile.gif")));
+        toolBar.add(createToolBarButton("Open Logfile", "FileOpen.gif"));
+        closeToolBarButton = createToolBarButton("Close selected Logfile", "CloseFile.gif");
+        closeToolBarButton.setEnabled(false);
+        toolBar.add(closeToolBarButton);
         toolBar.addSeparator();
-        toolBar.add(new JButton(TDA.createImageIcon("Preferences.gif")));
+        toolBar.add(createToolBarButton("Preferences", "Preferences.gif"));
         toolBar.addSeparator();
-        toolBar.add(new JButton(TDA.createImageIcon("Help.gif")));
+        toolBar.add(createToolBarButton("Find long running threads", "FindLRThreads.gif"));
+        toolBar.add(createToolBarButton("Filters", "Filters.gif"));
+        toolBar.addSeparator();
+        toolBar.add(createToolBarButton("Help","Help.gif"));
+    }
+    
+    /**
+     * create a toolbar button with tooltip and given icon.
+     * @param text tooltip text
+     * @param fileName filename for the icon to load
+     * @return toolbar button
+     */
+    private JButton createToolBarButton(String text, String fileName) {
+        JButton toolbarButton = new JButton(TDA.createImageIcon(fileName));
+        if(text != null) {
+            toolbarButton.setToolTipText(text);
+        }
+        toolbarButton.addActionListener(listener);
+        return(toolbarButton);
     }
 }

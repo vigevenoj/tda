@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.97 2007-10-14 07:52:36 irockel Exp $
+ * $Id: TDA.java,v 1.98 2007-10-26 08:47:24 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -73,6 +73,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -309,6 +310,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         topNodes = new Vector();
         getMainMenu().getLongMenuItem().setEnabled(true);
         getMainMenu().getCloseMenuItem().setEnabled(true);
+        getMainMenu().getCloseToolBarButton().setEnabled(true);
         getMainMenu().getCloseAllMenuItem().setEnabled(true);
         
         addDumpFile();
@@ -905,70 +907,88 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      * check menu events
      */
     public void actionPerformed(ActionEvent e) {
-        JMenuItem source = (JMenuItem)(e.getSource());
-        if(source.getText().substring(1).startsWith(":\\") || source.getText().startsWith("/") ) {
-            dumpFile = source.getText();
-            openFiles(new File[] {new File(dumpFile)}, true);
-        } else if("Open...".equals(source.getText())) {
-            chooseFile();
-        } else if("Open JMX Connection...".equals(source.getText())) {
-            openJMXConnection(false);
-        } else if("Open loggc file...".equals(source.getText())) {
-            openLoggcFile();
-        } else if("Preferences".equals(source.getText())) {
-            showPreferencesDialog();
-        } else if("Filters...".equals(source.getText())) {
-            showFilterDialog();
-        } else if("Exit TDA".equals(source.getText())) {
-            saveState();
-            frame.dispose();
-        } else if("Overview".equals(source.getText())) {
-            showHelpOverview();
-        } else if("Release Notes".equals(source.getText())) {
-            showReleaseNotes();
-        } else if("License".equals(source.getText())) {
-            showLicense();
-        } else if("Forum".equals(source.getText())) {
-            try {
-                Browser.open("https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this.getRootPane(),
-                        "Error opening TDA Online Forum\nPlease open https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967 in your browser!",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+        if(e.getSource() instanceof JMenuItem) {
+            JMenuItem source = (JMenuItem) (e.getSource());
+            if (source.getText().substring(1).startsWith(":\\") || source.getText().startsWith("/")) {
+                dumpFile = source.getText();
+                openFiles(new File[]{new File(dumpFile)}, true);
+            } else if ("Open...".equals(source.getText())) {
+                chooseFile();
+            } else if ("Open JMX Connection...".equals(source.getText())) {
+                openJMXConnection(false);
+            } else if ("Open loggc file...".equals(source.getText())) {
+                openLoggcFile();
+            } else if ("Preferences".equals(source.getText())) {
+                showPreferencesDialog();
+            } else if ("Filters...".equals(source.getText())) {
+                showFilterDialog();
+            } else if ("Exit TDA".equals(source.getText())) {
+                saveState();
+                frame.dispose();
+            } else if ("Overview".equals(source.getText())) {
+                showHelpOverview();
+            } else if ("Release Notes".equals(source.getText())) {
+                showReleaseNotes();
+            } else if ("License".equals(source.getText())) {
+                showLicense();
+            } else if ("Forum".equals(source.getText())) {
+                try {
+                    Browser.open("https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this.getRootPane(),
+                            "Error opening TDA Online Forum\nPlease open https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967 in your browser!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else if ("About TDA".equals(source.getText())) {
+                showInfo();
+            } else if ("Search...".equals(source.getText())) {
+                showSearchDialog();
+            } else if ("Apply Filter...".equals(source.getText())) {
+                showApplyFilterDialog();
+            } else if ("Parse loggc-logfile...".equals(source.getText())) {
+                parseLoggcLogfile();
+            } else if ("Find long running threads...".equals(source.getText())) {
+                findLongRunningThreads();
+            } else if ("Close logfile...".equals(source.getText())) {
+                closeCurrentDump();
+            } else if ("Close all...".equals(source.getText())) {
+                closeAllDumps();
+            } else if ("Diff Selection".equals(source.getText())) {
+                TreePath[] paths = tree.getSelectionPaths();
+                if (paths.length < 2) {
+                    JOptionPane.showMessageDialog(this.getRootPane(),
+                            "You must select at least two dumps for getting a diff!\n",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+
+                } else {
+                    DefaultMutableTreeNode mergeRoot = fetchTop(tree.getSelectionPath());
+                    Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
+                    DumpParserFactory.get().getCurrentDumpParser().mergeDumps(mergeRoot,
+                            dumpMap, paths, paths.length, null);
+                    createTree();
+                    this.getRootPane().revalidate();
+                }
+            } else if ("Show selected Dump in logfile".equals(source.getText())) {
+                navigateToDumpInLogfile();
+            } else if ("Show Toolbar".equals(source.getText())) {
+                setShowToolbar(((JCheckBoxMenuItem) source).getState());
             }
-        } else if("About TDA".equals(source.getText())) {
-            showInfo();
-        } else if("Search...".equals(source.getText())) {
-            showSearchDialog();
-        } else if("Apply Filter...".equals(source.getText())) {
-            showApplyFilterDialog();
-        } else if("Parse loggc-logfile...".equals(source.getText())) {
-            parseLoggcLogfile();
-        } else if("Find long running threads...".equals(source.getText())) {
-            findLongRunningThreads();
-        } else if("Close logfile...".equals(source.getText())) {
-            closeCurrentDump();
-        } else if("Close all...".equals(source.getText())) {
-            closeAllDumps();
-        } else if("Diff Selection".equals(source.getText())) {
-            TreePath[] paths = tree.getSelectionPaths();
-            if(paths.length < 2) {
-                JOptionPane.showMessageDialog(this.getRootPane(),
-                        "You must select at least two dumps for getting a diff!\n",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                
-            } else {
-                DefaultMutableTreeNode mergeRoot = fetchTop(tree.getSelectionPath());
-                Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
-                DumpParserFactory.get().getCurrentDumpParser().mergeDumps(mergeRoot,
-                        dumpMap, paths, paths.length, null);
-                createTree();
-                this.getRootPane().revalidate();
+        } else if (e.getSource() instanceof JButton) {
+            JButton source = (JButton) e.getSource();
+            if("Open Logfile".equals(source.getToolTipText())) {
+                chooseFile();
+            } else if("Close selected Logfile".equals(source.getToolTipText())) {
+                closeCurrentDump();
+            } else if("Preferences".equals(source.getToolTipText())) {
+                showPreferencesDialog();
+            } else if("Find long running threads".equals(source.getToolTipText())) {
+                findLongRunningThreads();
+            } else if("Filters".equals(source.getToolTipText())) {
+                showFilterDialog();
+            } else if("Help".equals(source.getToolTipText())) {
+                showHelpOverview();
             }
-        } else if("Show selected Dump in logfile".equals(source.getText())) {
-            navigateToDumpInLogfile();
-        } else if("Show Toolbar".equals(source.getText())) {
-            setShowToolbar(((JCheckBoxMenuItem) source).getState());
+            source.setSelected(false);
         }
     }
     
@@ -1207,6 +1227,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 init();
                 getMainMenu().getLongMenuItem().setEnabled(false);
                 getMainMenu().getCloseMenuItem().setEnabled(false);
+                getMainMenu().getCloseToolBarButton().setEnabled(false);
                 getMainMenu().getCloseAllMenuItem().setEnabled(false);
             } else {
                 // rebuild jtree
@@ -1249,6 +1270,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         getMainMenu().getLongMenuItem().setEnabled(false);
         getMainMenu().getCloseMenuItem().setEnabled(false);
+        getMainMenu().getCloseToolBarButton().setEnabled(false);
         getMainMenu().getCloseAllMenuItem().setEnabled(false);
     }
     
@@ -1545,6 +1567,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         if((source != null) && "File".equals(source.getText())) {
             // close menu item only active, if something is selected.
             getMainMenu().getCloseMenuItem().setEnabled(tree.getSelectionPath() != null);
+            getMainMenu().getCloseToolBarButton().setEnabled(tree.getSelectionPath() != null);
         }
     }
 
