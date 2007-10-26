@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.58 2007-10-26 10:14:12 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.59 2007-10-26 10:51:29 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -613,7 +613,7 @@ public class JDK14Parser implements DumpParser {
                     finished = true;
                 } else if(line.startsWith("=======")) {                    
                     // ignore this line
-                } else if(line.contains(" monitor 0x")) {
+                } else if(line.indexOf(" monitor 0x") >= 0) {
                     dContent.append(linkifyDeadlockInfo(line));
                     dContent.append("\n");
                 } else if(line.startsWith("Java stack information for the threads listed above")) {
