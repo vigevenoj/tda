@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.102 2007-10-29 17:20:21 irockel Exp $
+ * $Id: TDA.java,v 1.103 2007-10-29 19:56:20 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -131,7 +131,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private PreferencesDialog prefsDialog;
     private FilterDialog filterDialog;
     private LongThreadDialog longThreadDialog;
-    private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
     private JMenuItem showDumpMenuItem;
     private boolean runningAsPlugin;
@@ -1437,40 +1436,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             
         }
     }
-    
-    private void openJMXConnection(boolean resetNodes) {
-        if(jmxConnectionDialog == null) {
-            jmxConnectionDialog = new JMXConnectDialog(this, frame, new DefaultMutableTreeNode());
-            jmxConnectionDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        }
         
-        frame.setEnabled(false);
-        jmxConnectionDialog.reset();
-        jmxConnectionDialog.pack();
-        jmxConnectionDialog.setLocationRelativeTo(frame);
-        jmxConnectionDialog.setVisible(true);
-        
-        if(resetNodes){
-            topNodes = new Vector();
-        }
-    }
-    
-    public void addJMXConnection(RemoteConnection jmxConnection) {
-        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(jmxConnection);
-        topNodes.add(top);
-        // root nodes are moved down.
-        setRootNodeLevel(1);
-        
-        final SwingWorker worker = new SwingWorker() {
-            public Object construct() {
-                createTree();
-                
-                return null;
-            }
-        };
-        worker.start();
-    }
-    
     private int rootNodeLevel = 0;
     
     private int getRootNodeLevel() {
