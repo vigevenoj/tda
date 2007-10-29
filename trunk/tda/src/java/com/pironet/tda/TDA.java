@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.104 2007-10-29 19:58:15 irockel Exp $
+ * $Id: TDA.java,v 1.105 2007-10-29 20:04:53 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1010,8 +1010,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 showInfo();
             } else if ("Search...".equals(source.getText())) {
                 showSearchDialog();
-            } else if ("Apply Filter...".equals(source.getText())) {
-                showApplyFilterDialog();
             } else if ("Parse loggc-logfile...".equals(source.getText())) {
                 parseLoggcLogfile();
             } else if ("Find long running threads...".equals(source.getText())) {
@@ -1534,26 +1532,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         frame.setVisible(true);
     }
     
-    private void showApplyFilterDialog() {
-        TreePath firstSelected = tree.getSelectionPath();
-        Category cat = (Category) ((DefaultMutableTreeNode) firstSelected.getLastPathComponent()).getUserObject();
-        ApplyFilterDialog applyFilterDialog = new ApplyFilterDialog(frame, cat);
-        
-        frame.setEnabled(false);
-        
-        //Display the window.
-        applyFilterDialog.reset();
-        applyFilterDialog.pack();
-        applyFilterDialog.setLocationRelativeTo(frame);
-        applyFilterDialog.setVisible(true);
-        
-        applyFilterDialog.addWindowListener(new WindowAdapter() {
-                public void windowClosed(WindowEvent e) {
-                    frame.setEnabled(true);
-                }
-            });
-    }
-
     /**
      * display search dialog for current category
      */
