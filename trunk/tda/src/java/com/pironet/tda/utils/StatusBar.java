@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: StatusBar.java,v 1.2 2007-01-01 20:20:09 irockel Exp $
+ * $Id: StatusBar.java,v 1.3 2007-10-29 17:20:22 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -45,13 +45,15 @@ public class StatusBar extends JPanel {
     /** 
      * Creates a new instance of StatusBar 
      */
-    public StatusBar() {
+    public StatusBar(boolean showMemory) {
         super(new BorderLayout());
         add(createInfoPanel(), BorderLayout.WEST);
-        add(createMemoryStatus(), BorderLayout.CENTER);
-        JPanel iconPanel = new JPanel(new BorderLayout());
-        iconPanel.add(new JLabel(new AngledLinesWindowsCornerIcon()), BorderLayout.SOUTH);
-        add(iconPanel, BorderLayout.EAST);
+        if(showMemory) {
+            add(createMemoryStatus(), BorderLayout.CENTER);
+            JPanel iconPanel = new JPanel(new BorderLayout());
+            iconPanel.add(new JLabel(new AngledLinesWindowsCornerIcon()), BorderLayout.SOUTH);
+            add(iconPanel, BorderLayout.EAST);
+        }
     }
     
     /**

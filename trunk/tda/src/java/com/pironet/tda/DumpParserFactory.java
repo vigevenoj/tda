@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactory.java,v 1.4 2006-03-01 11:32:43 irockel Exp $
+ * $Id: DumpParserFactory.java,v 1.5 2007-10-29 17:20:21 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -47,9 +47,9 @@ public class DumpParserFactory {
         return(instance);
     }
     
-    public DumpParser getDumpParserForVersion(String javaVersion, InputStream dumpFileStream, Map threadStore) {
+    public DumpParser getDumpParserForVersion(String javaVersion, InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
         // currently only one parser supported.
-        currentDumpParser = new JDK14Parser(dumpFileStream, threadStore); 
+        currentDumpParser = new JDK14Parser(dumpFileStream, threadStore, withCurrentTimeStamp);
         return(currentDumpParser);
     }
     
