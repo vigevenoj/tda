@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactoryTest.java,v 1.1 2006-05-09 13:50:47 irockel Exp $
+ * $Id: DumpParserFactoryTest.java,v 1.2 2007-10-29 19:43:11 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -68,7 +68,7 @@ public class DumpParserFactoryTest extends TestCase {
         Map threadStore = null;
         DumpParserFactory instance = DumpParserFactory.get();
         
-        DumpParser result = instance.getDumpParserForVersion(javaVersion, dumpFileStream, threadStore);
+        DumpParser result = instance.getDumpParserForVersion(javaVersion, dumpFileStream, threadStore, false);
         assertNotNull(result);
     }
 
