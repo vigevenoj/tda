@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.16 2007-10-26 08:47:24 irockel Exp $
+ * $Id: MainMenu.java,v 1.17 2007-10-29 20:37:00 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -114,15 +114,6 @@ public class MainMenu extends JMenuBar {
                 "Open Log File with dumps.");
         menuItem.addActionListener(listener);
         menu.add(menuItem);
-        
-        /*menuItem = new JMenuItem("Open JMX Connection...",
-                KeyEvent.VK_N);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_N, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open remote JMX Connection.");
-        menuItem.addActionListener(actionListener);
-        menu.add(menuItem);*/
         
         closeMenuItem = new JMenuItem("Close...");
         closeMenuItem.getAccessibleContext().setAccessibleDescription(
