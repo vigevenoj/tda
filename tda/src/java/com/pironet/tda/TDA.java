@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.105 2007-10-29 20:04:53 irockel Exp $
+ * $Id: TDA.java,v 1.106 2007-10-29 20:42:41 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -33,6 +33,7 @@ import com.pironet.tda.utils.TreeRenderer;
 import com.pironet.tda.utils.jedit.JEditTextArea;
 import com.pironet.tda.utils.jedit.PopupMenu;
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import javax.swing.JEditorPane;
@@ -87,6 +88,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -914,6 +916,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             menuItem.addActionListener(this);
             popup.add(menuItem);
             popup.addSeparator();
+            menuItem = new JMenuItem("Release Notes");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            menuItem = new JMenuItem("License");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            popup.addSeparator();
             menuItem = new JMenuItem("About TDA");
             menuItem.addActionListener(this);
             popup.add(menuItem);
@@ -1100,50 +1109,59 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void showHelpOverview() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame, "Overview", "doc/tutorial.html");
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Overview", "doc/tutorial.html");
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
         tutDialog.pack();
-        tutDialog.setLocationRelativeTo(frame);
+        tutDialog.setLocationRelativeTo(getFrame());
         tutDialog.setVisible(true);
         
     }
     
     private void showReleaseNotes() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame, "Release Notes", "doc/README");
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Release Notes", "doc/README");
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
         tutDialog.pack();
-        tutDialog.setLocationRelativeTo(frame);
+        tutDialog.setLocationRelativeTo(getFrame());
         tutDialog.setVisible(true);
         
     }
     
     private void showLicense() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(frame, "License Information", "doc/COPYING");
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "License Information", "doc/COPYING");
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
         tutDialog.pack();
-        tutDialog.setLocationRelativeTo(frame);
+        tutDialog.setLocationRelativeTo(getFrame());
         tutDialog.setVisible(true);
         
+    }
+    
+    private JFrame getFrame() {
+        Container owner = this.getParent();
+        while (owner != null && !(owner instanceof JFrame)) {
+            owner = owner.getParent();
+        }
+        
+        return(owner != null ? (JFrame) owner : null);
     }
     
     private void showPreferencesDialog() {
         //Create and set up the window.
         if(prefsDialog == null) {
-            prefsDialog = new PreferencesDialog(frame);
+            prefsDialog = new PreferencesDialog(getFrame());
             prefsDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         }
         
-        frame.setEnabled(false);
+        getFrame().setEnabled(false);
         //Display the window.
         prefsDialog.reset();
         prefsDialog.pack();
-        prefsDialog.setLocationRelativeTo(frame);
+        prefsDialog.setLocationRelativeTo(getFrame());
         prefsDialog.setVisible(true);
     }
     
@@ -1151,15 +1169,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Create and set up the window.
         if(filterDialog == null) {
-            filterDialog = new FilterDialog(frame);
+            filterDialog = new FilterDialog(getFrame());
             filterDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         }
         
-        frame.setEnabled(false);
+        getFrame().setEnabled(false);
         //Display the window.
         filterDialog.reset();
         filterDialog.pack();
-        filterDialog.setLocationRelativeTo(frame);
+        filterDialog.setLocationRelativeTo(getFrame());
         filterDialog.setVisible(true);
     }
     
@@ -1541,18 +1559,18 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         JTree catTree = ((Category) node.getUserObject()).getCatTree(this);
         
         //Create and set up the window.
-        searchDialog = new SearchDialog(frame, catTree);
+        searchDialog = new SearchDialog(getFrame(), catTree);
         
-        frame.setEnabled(false);
+        getFrame().setEnabled(false);
         //Display the window.
         searchDialog.reset();
         searchDialog.pack();
-        searchDialog.setLocationRelativeTo(frame);
+        searchDialog.setLocationRelativeTo(getFrame());
         searchDialog.setVisible(true);
         
         searchDialog.addWindowListener(new WindowAdapter() {
                 public void windowClosed(WindowEvent e) {
-                    frame.setEnabled(true);
+                    getFrame().setEnabled(true);
                 }
             });
     }
