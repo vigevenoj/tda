@@ -17,16 +17,14 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.16 2007-10-02 08:28:46 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.17 2007-10-29 20:32:02 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.PrefManager;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
@@ -58,7 +56,7 @@ public class PreferencesDialog extends JDialog {
      * Creates a new instance of PreferencesDialog
      */
     public PreferencesDialog(JFrame owner) {
-        super(owner, "Preferences");
+        super(owner, "Preferences");  
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
         initPanel();        
