@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.103 2007-10-29 19:56:20 irockel Exp $
+ * $Id: TDA.java,v 1.104 2007-10-29 19:58:15 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -983,8 +983,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 openFiles(new File[]{new File(dumpFile)}, true);
             } else if ("Open...".equals(source.getText())) {
                 chooseFile();
-            } else if ("Open JMX Connection...".equals(source.getText())) {
-                openJMXConnection(false);
             } else if ("Open loggc file...".equals(source.getText())) {
                 openLoggcFile();
             } else if ("Preferences".equals(source.getText())) {
@@ -994,7 +992,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             } else if ("Exit TDA".equals(source.getText())) {
                 saveState();
                 frame.dispose();
-            } else if ("Overview".equals(source.getText())) {
+            } else if ("Overview".equals(source.getText()) || "Usage Overview".equals(source.getText())) {
                 showHelpOverview();
             } else if ("Release Notes".equals(source.getText())) {
                 showReleaseNotes();
