@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.59 2007-10-26 10:51:29 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.60 2007-10-29 17:20:21 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -67,13 +67,15 @@ public class JDK14Parser implements DumpParser {
     private boolean patternError = false;
     
     private boolean foundClassHistograms = false;
+    private boolean withCurrentTimeStamp = false;
     
     /** 
      * Creates a new instance of JDK14Parser 
      */
-    public JDK14Parser(InputStream dumpFileStream, Map threadStore) {
+    public JDK14Parser(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
         this.dumpFileStream = dumpFileStream;
         this.threadStore = threadStore;
+        this.withCurrentTimeStamp = withCurrentTimeStamp;
         maxCheckLines = PrefManager.get().getMaxRows();
         markSize = PrefManager.get().getStreamResetBuffer();
         millisTimeStamp = PrefManager.get().getMillisTimeStamp();
@@ -138,7 +140,11 @@ public class JDK14Parser implements DumpParser {
             if(bis == null) {
                 bis = new BufferedReader(new InputStreamReader(dumpFileStream));
             }
-            overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "");
+            if(withCurrentTimeStamp) {
+                overallTDI = new ThreadInfo("Dump at " + new Date(System.currentTimeMillis()), null, "");
+            } else {
+                overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "");
+            }
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
             catThreads = new DefaultMutableTreeNode(new Category("Threads", TDA.createImageIcon("Threads.gif")));
@@ -178,28 +184,30 @@ public class JDK14Parser implements DumpParser {
                 if(locked) {
                     if(line.indexOf("Full thread dump") >= 0) {
                         locked = false;
-                        overallTDI.threadName += " at line " + lineCounter;
-                        if(startTime != 0) {
-                            startTime = 0;
-                        } else if(matched != null && matched.matches()) {
-                            
-                            String parsedStartTime = matched.group(1);
-                            if(millisTimeStamp) {
-                                try {
-                                    // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=2342342340)
-                                    if(parsedStartTime.length() < 13) {
-                                        startTime = Long.parseLong(parsedStartTime) * (long)Math.pow(10, 13-parsedStartTime.length());
-                                    } else {
-                                        startTime = Long.parseLong(parsedStartTime);
+                        if(!withCurrentTimeStamp) {
+                            overallTDI.threadName += " at line " + lineCounter;
+                            if (startTime != 0) {
+                                startTime = 0;
+                            } else if (matched != null && matched.matches()) {
+
+                                String parsedStartTime = matched.group(1);
+                                if (millisTimeStamp) {
+                                    try {
+                                        // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=2342342340)
+                                        if (parsedStartTime.length() < 13) {
+                                            startTime = Long.parseLong(parsedStartTime) * (long) Math.pow(10, 13 - parsedStartTime.length());
+                                        } else {
+                                            startTime = Long.parseLong(parsedStartTime);
+                                        }
+                                    } catch (NumberFormatException nfe) {
+                                        startTime = 0;
                                     }
-                                } catch (NumberFormatException nfe) {
-                                    startTime = 0;
+                                    overallTDI.threadName += " around " + new Date(startTime);
+                                } else {
+                                    overallTDI.threadName += " around " + parsedStartTime;
                                 }
-                                overallTDI.threadName += " around " + new Date(startTime);
-                            } else {
-                                overallTDI.threadName += " around " + parsedStartTime;
+                                parsedStartTime = null;
                             }
-                            parsedStartTime = null;
                         }
                         dumpKey = overallTDI.threadName;
                     } else if(!patternError && (regexPattern != null)) {

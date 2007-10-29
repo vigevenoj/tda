@@ -17,10 +17,11 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.101 2007-10-26 10:35:34 irockel Exp $
+ * $Id: TDA.java,v 1.102 2007-10-29 17:20:21 irockel Exp $
  */
 package com.pironet.tda;
 
+import com.pironet.tda.jconsole.MBeanDumper;
 import com.pironet.tda.utils.AppInfo;
 import com.pironet.tda.utils.Browser;
 import com.pironet.tda.utils.HistogramTableModel;
@@ -56,7 +57,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -65,6 +65,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -133,6 +134,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JMXConnectDialog jmxConnectionDialog;
     private JTable histogramTable;
     private JMenuItem showDumpMenuItem;
+    private boolean runningAsPlugin;
     
     private StatusBar statusBar;
     
@@ -141,27 +143,34 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     /**
      * singleton access method for TDA
      */
-    public static TDA get() {
+    public static TDA get(boolean setLF) {
         if(myTDA == null) {
-            myTDA = new TDA();
+            myTDA = new TDA(setLF);
         }
         
         return(myTDA);
     }
     
     /**
-     * private constructor for singleton TDA
+     * constructor (needs to be public for plugin)
      */
-    private TDA() {
+    public TDA(boolean setLF) {
         super(new BorderLayout());
         
-        // init L&F
-        setupLookAndFeel();        
+        if(setLF) {
+           // init L&F
+           setupLookAndFeel();        
+        }
     }
-    
-    private void init() {
+
+    /**
+     * initializes tda panel
+     * @param asPlugin specifies if tda is running as plugin
+     */
+    public void init(boolean asPlugin) {
         // init everything
         tree = new JTree();
+        runningAsPlugin = asPlugin;
         
         //Create the HTML viewing pane.
         htmlPane = new JEditorPane("text/html", getInfoText());
@@ -185,6 +194,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         navigateToChild("Threads sleeping");
                     } else if(evt.getDescription().startsWith("dead")) {
                         navigateToChild("Deadlocks");
+                    } else if(evt.getDescription().startsWith("threaddump")) {
+                        addMXBeanDump();
                     } else if(evt.getURL() != null) {
                         try {
                             // launch a browser with the appropriate URL
@@ -198,6 +209,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                     }
                 }
             }
+
         });
 
         
@@ -221,16 +233,32 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Add the split pane to this panel.
         add(htmlView, BorderLayout.CENTER);
-        statusBar = new StatusBar();
-        add(statusBar, BorderLayout.SOUTH);
         
+        statusBar = new StatusBar(!asPlugin);
+        add(statusBar, BorderLayout.SOUTH);
+
         firstFile = true;
         setFileOpen(false);
         
-        // toolbar
-        setShowToolbar(PrefManager.get().getShowToolbar());        
+        if(!asPlugin) {
+            // toolbar
+            setShowToolbar(PrefManager.get().getShowToolbar());        
+        }
     }
 
+    private void addMXBeanDump() {
+        String dump = MBeanDumper.get().threadDump();
+        //System.out.println("dump=" + dump);
+        if(topNodes == null) {
+            initDumpDisplay();
+        }
+        addDumpStream(new ByteArrayInputStream(dump.getBytes()), "JMX Dump", false);
+        
+        this.getRootPane().revalidate();
+        tree.setShowsRootHandles(false);
+        displayContent(null);
+    }
+            
     private void setShowToolbar(boolean state) {
         if(state) {
             add(getMainMenu().getToolBar(), BorderLayout.PAGE_START);
@@ -299,7 +327,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         info.append("Version: <b>");
         info.append(AppInfo.getVersion());
         info.append("</b><p>");
-        info.append("Select File/Open to open your log file with thread dumps to start analyzing these thread dumps.<p>See Help/Overview for information on how to obtain a thread dump from your VM.</p></font></body></html>");
+        if(runningAsPlugin) {
+            info.append("<a href=\"threaddump://\">Request Thread Dump...</a>");
+        } else {
+            info.append("Select File/Open to open your log file with thread dumps to start analyzing these thread dumps.<p>See Help/Overview for information on how to obtain a thread dump from your VM.</p></font></body></html>");
+        }
         return(info.toString());
     }
     
@@ -308,13 +340,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         dumpStore = new DumpStore();
         
         topNodes = new Vector();
-        getMainMenu().getLongMenuItem().setEnabled(true);
-        getMainMenu().getCloseMenuItem().setEnabled(true);
-        getMainMenu().getCloseToolBarButton().setEnabled(true);
-        getMainMenu().getCloseAllMenuItem().setEnabled(true);
+        if(!runningAsPlugin) {
+            getMainMenu().getLongMenuItem().setEnabled(true);
+            getMainMenu().getCloseMenuItem().setEnabled(true);
+            getMainMenu().getCloseToolBarButton().setEnabled(true);
+            getMainMenu().getCloseAllMenuItem().setEnabled(true);
         
-        addDumpFile();
-        if(isFileOpen()) {
+            addDumpFile();
+        }
+        if(runningAsPlugin || isFileOpen()) {
             if(topSplitPane.getDividerLocation() <= 0) {
                 topSplitPane.setDividerLocation(200);
             }
@@ -361,35 +395,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void addDumpFiles(String[] files) {
         for(int i = 0; i < files.length; i++) {
             try {
-                final InputStream dumpFileStream = new ProgressMonitorInputStream(
-                        this, "Parsing " + files[i], new FileInputStream(files[i]));
-            
-                //Create the nodes.
-                final DefaultMutableTreeNode top = new DefaultMutableTreeNode(new Logfile(files[i]));
-                topNodes.add(top);
-                if(isLogfileSizeOk(files[i])) {
-                    DefaultMutableTreeNode logFile = new DefaultMutableTreeNode(new LogFileContent(files[i]));                    
-                    top.add(logFile);
-                }
-                setFileOpen(true);
-                
-                final SwingWorker worker = new SwingWorker() {
-                    
-                    public Object construct() {
-                        synchronized(syncObject) {
-                            int divider = splitPane.getDividerLocation();
-                            addThreadDumps(top, dumpFileStream);
-                            createTree();
-                            tree.expandRow(1);
-                            
-                            splitPane.setDividerLocation(divider);
-                        }
-                        
-                        return null;
-                    }
-                    
-                };
-                worker.start();
+                addDumpStream(new FileInputStream(files[i]), files[i], true);
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(this.getRootPane(),
                         "Error opening "  + ex.getMessage() + ".",
@@ -397,12 +403,48 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
         }        
     }
+    
+    private void addDumpStream(InputStream inputStream, String file, boolean withLogfile) {
+        final InputStream parseFileStream = new ProgressMonitorInputStream(this, "Parsing " + file, inputStream);
+
+        //Create the nodes.
+        if(!runningAsPlugin || topNodes.size() == 0) {
+            topNodes.add(new DefaultMutableTreeNode(new Logfile(file)));
+        }
+        final DefaultMutableTreeNode top = (DefaultMutableTreeNode) topNodes.get(topNodes.size()-1);
+        
+        if (withLogfile && isLogfileSizeOk(file)) {
+            DefaultMutableTreeNode logFile = new DefaultMutableTreeNode(new LogFileContent(file));
+            top.add(logFile);
+        }
+        setFileOpen(true);
+
+        final SwingWorker worker = new SwingWorker() {
+
+                    public Object construct() {
+                        synchronized (syncObject) {
+                            int divider = splitPane.getDividerLocation();
+                            addThreadDumps(top, parseFileStream);
+                            createTree();
+                            tree.expandRow(1);
+
+                            splitPane.setDividerLocation(divider);
+                        }
+
+                        return null;
+                    }
+                };
+        worker.start();
+    }
         
     protected void createTree() {
         //Create a tree that allows multiple selection at a time.
         if(topNodes.size() == 1) {
             tree = new JTree((DefaultMutableTreeNode) topNodes.get(0));
-            frame.setTitle("TDA - Thread Dumps of " + dumpFile);
+            tree.setRootVisible(!runningAsPlugin);
+            if(!runningAsPlugin) {
+                frame.setTitle("TDA - Thread Dumps of " + dumpFile);
+            }
         } else {
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("Thread Dump Nodes");
             for(int i = 0; i < topNodes.size(); i++) {
@@ -410,7 +452,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             tree = new JTree(root);
             tree.setRootVisible(false);
-            frame.setTitle(frame.getTitle() + " ...");
+            if(!runningAsPlugin) {
+                frame.setTitle(frame.getTitle() + " ...");
+            }
         }
         
         tree.setShowsRootHandles(true);
@@ -569,7 +613,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         if(needDividerPos) {
             topSplitPane.setDividerLocation(PrefManager.get().getTopDividerPos());
         }
-        if(cat.howManyFiltered() > 0) {
+        if (cat.howManyFiltered() > 0) {
             statusBar.setInfoText("Filtered " + cat.howManyFiltered() + " elements in this category. Showing remaining " + cat.showing() + " elements.");
         } else {
             statusBar.setInfoText(AppInfo.getStatusBarInfo());
@@ -681,7 +725,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             String fileName = top.getUserObject().toString();
             Map dumpMap = new HashMap();
             dumpStore.addFileToDumpFiles(fileName, dumpMap);
-            dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, dumpMap);
+            dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, dumpMap, runningAsPlugin);
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
@@ -837,18 +881,44 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         menuItem = new JMenuItem("Find long running threads...");
         menuItem.addActionListener(this);
         popup.add(menuItem);
-        popup.addSeparator();
-        menuItem = new JMenuItem("Parse loggc-logfile...");
-        menuItem.addActionListener(this);
-        popup.add(menuItem);
-        menuItem = new JMenuItem("Close logfile...");
-        menuItem.addActionListener(this);
-        popup.add(menuItem);
-        popup.addSeparator();
+        
         showDumpMenuItem = new JMenuItem("Show selected Dump in logfile");
         showDumpMenuItem.addActionListener(this);
         showDumpMenuItem.setEnabled(false);
-        popup.add(showDumpMenuItem);
+        if(!runningAsPlugin) {
+            popup.addSeparator();
+            menuItem = new JMenuItem("Parse loggc-logfile...");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            menuItem = new JMenuItem("Close logfile...");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            popup.addSeparator();
+            popup.add(showDumpMenuItem);
+        } else {
+            popup.addSeparator();
+            menuItem = new JMenuItem("Request Thread Dump...");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            popup.addSeparator();
+            menuItem = new JMenuItem("Preferences");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            menuItem = new JMenuItem("Filters...");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            popup.addSeparator();
+            menuItem = new JMenuItem("Usage Overview");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            menuItem = new JMenuItem("Forum");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            popup.addSeparator();
+            menuItem = new JMenuItem("About TDA");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+        }
         
         //Add listener to the text area so the popup menu can come up.
         MouseListener popupListener = new PopupListener(popup);
@@ -972,6 +1042,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 navigateToDumpInLogfile();
             } else if ("Show Toolbar".equals(source.getText())) {
                 setShowToolbar(((JCheckBoxMenuItem) source).getState());
+            } else if ("Request Thread Dump...".equals(source.getText())) {
+                addMXBeanDump();
             }
         } else if (e.getSource() instanceof JButton) {
             JButton source = (JButton) e.getSource();
@@ -1224,7 +1296,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 removeAll();
                 revalidate();
                 
-                init();
+                init(false);
                 getMainMenu().getLongMenuItem().setEnabled(false);
                 getMainMenu().getCloseMenuItem().setEnabled(false);
                 getMainMenu().getCloseToolBarButton().setEnabled(false);
@@ -1265,7 +1337,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         removeAll();
         revalidate();
         
-        init();
+        init(false);
         revalidate();
         
         getMainMenu().getLongMenuItem().setEnabled(false);
@@ -1458,16 +1530,16 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         frame.getRootPane().setPreferredSize(PrefManager.get().getPreferredSize());
         
-        frame.setJMenuBar(new MainMenu(TDA.get()));
-        TDA.get().init();
+        frame.setJMenuBar(new MainMenu(TDA.get(true)));
+        TDA.get(true).init(false);
         
         //Create and set up the content pane.
         if(dumpFile != null) {
-            TDA.get().initDumpDisplay();
+            TDA.get(true).initDumpDisplay();
         }
         
-        TDA.get().setOpaque(true); //content panes must be opaque
-        frame.setContentPane(TDA.get());
+        TDA.get(true).setOpaque(true); //content panes must be opaque
+        frame.setContentPane(TDA.get(true));
         
         // init filechooser
         fc = new JFileChooser();
@@ -1479,7 +1551,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
          */
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                TDA.get().saveState();
+                TDA.get(true).saveState();
             }
             
             public void windowClosed(WindowEvent e) {
