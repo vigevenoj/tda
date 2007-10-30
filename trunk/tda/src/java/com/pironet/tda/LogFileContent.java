@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogFileContent.java,v 1.2 2007-10-03 12:50:27 irockel Exp $
+ * $Id: LogFileContent.java,v 1.3 2007-10-30 09:35:15 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -40,6 +40,8 @@ public class LogFileContent {
      * stored as soft reference, as this content might get quite big.
      */
     private SoftReference content;
+    
+    private StringBuffer contentBuffer;
     
     /** 
      * Creates a new instance of LogFileContent 
@@ -66,11 +68,28 @@ public class LogFileContent {
      * after the last access to it.
      */
     public String getContent() {
-        if(content == null || content.get() == null) {
-            readContent();
+        if(contentBuffer == null) {
+            if (content == null || content.get() == null) {
+                readContent();
+            }
+
+            return (((StringBuffer) content.get()).toString());
+        } else {
+            return (contentBuffer.toString());
         }
+    }
         
-        return((String) content.get());
+    /**
+     * append the given string to the content buffer for this logfile
+     * @param append the string to append.
+     */
+    public void appendToContentBuffer(String append) {
+        if(contentBuffer == null) {
+            contentBuffer = new StringBuffer(append);
+        } else {
+            contentBuffer.append("\n");
+            contentBuffer.append(append);
+        }
     }
 
     /**
@@ -90,7 +109,7 @@ public class LogFileContent {
                 contentReader.append(br.readLine());
                 contentReader.append("\n");
             }
-            content = new SoftReference(contentReader.toString());
+            content = new SoftReference(contentReader);
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {

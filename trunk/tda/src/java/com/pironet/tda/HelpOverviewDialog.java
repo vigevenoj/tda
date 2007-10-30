@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.5 2007-05-04 09:00:40 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.6 2007-10-30 09:35:15 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -58,7 +58,7 @@ public class HelpOverviewDialog extends JDialog {
     private String file;
     
     /** 
-     * Creates a new instance of PreferencesDialog 
+     * Creates a new instance of HelpOverviewDialog 
      */
     public HelpOverviewDialog(JFrame owner, String title, String file) {
         super(owner, title);
