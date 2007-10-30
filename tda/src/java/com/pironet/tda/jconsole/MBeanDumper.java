@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.1 2007-10-29 17:20:22 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.2 2007-10-30 09:35:15 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -25,9 +25,12 @@ import java.io.IOException;
 import java.lang.management.LockInfo;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
+import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.MBeanOperationInfo;
@@ -48,6 +51,8 @@ public class MBeanDumper {
     private MBeanServerConnection server;
     private ThreadMXBean tmbean;
     private ObjectName objname;
+    
+    private String dumpPrefix = "\nFull thread dump ";
     
     // default - JDK 6+ VM
     private String findDeadlocksMethodName = "findDeadlockedThreads";
@@ -71,6 +76,18 @@ public class MBeanDumper {
             throw ie;
        }
        parseMBeanInfo(); 
+       setDumpPrefix();
+    }
+    
+    private void setDumpPrefix() {
+        try {
+            RuntimeMXBean rmbean = (RuntimeMXBean) ManagementFactory.newPlatformMXBeanProxy(server,
+                                            ManagementFactory.RUNTIME_MXBEAN_NAME,
+                                            RuntimeMXBean.class);
+            dumpPrefix += rmbean.getVmName() + " " + rmbean.getVmVersion() + "\n";
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
     
     public static void init(MBeanServerConnection server) throws IOException {
@@ -102,10 +119,19 @@ public class MBeanDumper {
         
         return(dump.toString());
     }
+    
+    /**
+     * create dump date similar to format used by 1.6 VMs
+     * @return dump date (e.g. 2007-10-25 08:00:00)
+     */
+    private String getDumpDate() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        return(sdfDate.format(new Date(System.currentTimeMillis())));
+    }
 
     private void dumpThreadInfo(StringBuilder dump) {
-       dump.append(new Date(System.currentTimeMillis()));
-       dump.append("\nFull thread dump");
+       dump.append(getDumpDate());
+       dump.append(dumpPrefix);
        dump.append("\n");
        long[] tids = tmbean.getAllThreadIds();
        ThreadInfo[] tinfos = tmbean.getThreadInfo(tids, Integer.MAX_VALUE);
@@ -119,8 +145,8 @@ public class MBeanDumper {
      * Prints the thread dump information with locks info to System.out.
      */
     private void dumpThreadInfoWithLocks(StringBuilder dump) {
-       dump.append(new Date(System.currentTimeMillis()));
-       dump.append("\nFull thread dump with locks info");
+       dump.append(getDumpDate());
+       dump.append(dumpPrefix);
        dump.append("\n");
 
        ThreadInfo[] tinfos = tmbean.dumpAllThreads(true, true);
@@ -159,12 +185,12 @@ public class MBeanDumper {
                                                                                 
     private void printThread(ThreadInfo ti, StringBuilder dump) {
        StringBuilder sb = new StringBuilder("\"" + ti.getThreadName() + "\"" +
-                                            " Id=" + ti.getThreadId() +
+                                            " id=" + ti.getThreadId() +
                                             " in " + ti.getThreadState());
        if (ti.getLockName() != null) {
            String[] lockInfo = ti.getLockName().split("@");
-           sb.append("\n" + INDENT +" - waiting on <0x" + lockInfo[1] + "> (a " + lockInfo[0] + ")");
-           sb.append("\n" + INDENT +" - locking <0x" + lockInfo[1] + "> (a " + lockInfo[0] + ")");
+           sb.append("\n" + INDENT +"- waiting on <0x" + lockInfo[1] + "> (a " + lockInfo[0] + ")");
+           sb.append("\n" + INDENT +"- locked <0x" + lockInfo[1] + "> (a " + lockInfo[0] + ")");
        }
        if (ti.isSuspended()) {
            sb.append(" (suspended)");
@@ -176,7 +202,7 @@ public class MBeanDumper {
        dump.append("\n");
        if (ti.getLockOwnerName() != null) {
             dump.append(INDENT + " owned by " + ti.getLockOwnerName() +
-                               " Id=" + ti.getLockOwnerId());
+                               " id=" + ti.getLockOwnerId());
             dump.append("\n");
        }
     }

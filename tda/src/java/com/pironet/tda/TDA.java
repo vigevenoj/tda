@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.106 2007-10-29 20:42:41 irockel Exp $
+ * $Id: TDA.java,v 1.107 2007-10-30 09:35:15 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -69,6 +69,7 @@ import java.awt.event.WindowAdapter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -88,7 +89,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ProgressMonitorInputStream;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -136,6 +136,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JTable histogramTable;
     private JMenuItem showDumpMenuItem;
     private boolean runningAsPlugin;
+    private DefaultMutableTreeNode logFile;
     
     private StatusBar statusBar;
     
@@ -249,15 +250,20 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
 
     private void addMXBeanDump() {
         String dump = MBeanDumper.get().threadDump();
-        //System.out.println("dump=" + dump);
+        //System.out.println(dump);
         if(topNodes == null) {
             initDumpDisplay();
         }
-        addDumpStream(new ByteArrayInputStream(dump.getBytes()), "JMX Dump", false);
+        addDumpStream(new ByteArrayInputStream(dump.getBytes()), "Logfile", false);
+        addToLogfile(dump);
         
         this.getRootPane().revalidate();
         tree.setShowsRootHandles(false);
         displayContent(null);
+    }
+
+    private void addToLogfile(String dump) {
+        ((LogFileContent) logFile.getUserObject()).appendToContentBuffer(dump);
     }
             
     private void setShowToolbar(boolean state) {
@@ -414,8 +420,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         final DefaultMutableTreeNode top = (DefaultMutableTreeNode) topNodes.get(topNodes.size()-1);
         
-        if (withLogfile && isLogfileSizeOk(file)) {
-            DefaultMutableTreeNode logFile = new DefaultMutableTreeNode(new LogFileContent(file));
+        if ((!withLogfile && logFile == null) || isLogfileSizeOk(file)) {
+            logFile = new DefaultMutableTreeNode(new LogFileContent(file));
             top.add(logFile);
         }
         setFileOpen(true);
@@ -691,7 +697,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         splitPane.setBottomComponent(histogramView);
     }
-    
+
     private class FilterListener implements CaretListener {
         HistogramTableModel htm;
         String currentText = "";
@@ -905,21 +911,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             menuItem = new JMenuItem("Preferences");
             menuItem.addActionListener(this);
             popup.add(menuItem);
-            menuItem = new JMenuItem("Filters...");
+            menuItem = new JMenuItem("Filters");
             menuItem.addActionListener(this);
             popup.add(menuItem);
             popup.addSeparator();
-            menuItem = new JMenuItem("Usage Overview");
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            menuItem = new JMenuItem("Forum");
+            menuItem = new JMenuItem("Save Logfile...");
             menuItem.addActionListener(this);
             popup.add(menuItem);
             popup.addSeparator();
-            menuItem = new JMenuItem("Release Notes");
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            menuItem = new JMenuItem("License");
+            menuItem = new JMenuItem("Help");
             menuItem.addActionListener(this);
             popup.add(menuItem);
             popup.addSeparator();
@@ -994,15 +994,19 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 chooseFile();
             } else if ("Open loggc file...".equals(source.getText())) {
                 openLoggcFile();
+            } else if ("Save Logfile...".equals(source.getText())) {
+                saveLogFile();
             } else if ("Preferences".equals(source.getText())) {
                 showPreferencesDialog();
-            } else if ("Filters...".equals(source.getText())) {
+            } else if ("Filters".equals(source.getText())) {
                 showFilterDialog();
             } else if ("Exit TDA".equals(source.getText())) {
                 saveState();
                 frame.dispose();
-            } else if ("Overview".equals(source.getText()) || "Usage Overview".equals(source.getText())) {
+            } else if ("Overview".equals(source.getText())) {
                 showHelpOverview();
+            } else if ("Help".equals(source.getText()) || "Usage Overview".equals(source.getText())) {
+                showPluginHelp();
             } else if ("Release Notes".equals(source.getText())) {
                 showReleaseNotes();
             } else if ("License".equals(source.getText())) {
@@ -1119,6 +1123,16 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
     }
     
+    private void showPluginHelp() {
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Help", "doc/tutorial.html");
+        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        
+        //Display the window.
+        tutDialog.pack();
+        tutDialog.setLocationRelativeTo(getFrame());
+        tutDialog.setVisible(true);
+    }
+    
     private void showReleaseNotes() {
         HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Release Notes", "doc/README");
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -1186,6 +1200,51 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      * or if a add has to be performed.
      */
     private boolean firstFile = true;
+    
+    /**
+     * save the current logfile (only used in plugin mode)
+     */
+    private void saveLogFile() {
+        if(fc == null) {
+            fc = new JFileChooser();
+            fc.setMultiSelectionEnabled(true);
+            fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
+        }
+        if(firstFile && (PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
+            fc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
+        }
+        int returnVal = fc.showSaveDialog(this.getRootPane());
+        fc.setPreferredSize(fc.getSize());
+        PrefManager.get().setPreferredSizeFileChooser(fc.getSize());
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            int selectValue = 0;
+            if(file.exists()) {
+                Object[] options = { "Overwrite", "Cancel" };
+                selectValue = JOptionPane.showOptionDialog(null, "<html><body>File exists<br><b>" + file +
+                        "</b></body></html>", "Confirm overwrite",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                        null, options, options[0]);
+            }
+            if(selectValue == 0) {
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(file);
+                    fos.write(((LogFileContent) logFile.getUserObject()).getContent().getBytes());
+                    fos.flush();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        fos.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
     
     /**
      * choose a log file.

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.17 2007-10-29 20:37:00 irockel Exp $
+ * $Id: MainMenu.java,v 1.18 2007-10-30 09:35:15 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -201,7 +201,7 @@ public class MainMenu extends JMenuBar {
         longMenuItem.setEnabled(false);
         menu.add(longMenuItem);
 
-        menuItem = new JMenuItem("Filters...",
+        menuItem = new JMenuItem("Filters",
                 KeyEvent.VK_F);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_F, ActionEvent.ALT_MASK));
