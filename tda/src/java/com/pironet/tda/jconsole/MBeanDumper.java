@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.2 2007-10-30 09:35:15 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.3 2007-11-01 11:04:06 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -46,8 +46,6 @@ import javax.management.ReflectionException;
  * @author irockel
  */
 public class MBeanDumper {
-    private static MBeanDumper mBeanDumper;
-    
     private MBeanServerConnection server;
     private ThreadMXBean tmbean;
     private ObjectName objname;
@@ -88,16 +86,7 @@ public class MBeanDumper {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-    
-    public static void init(MBeanServerConnection server) throws IOException {
-        mBeanDumper = new MBeanDumper(server);
-    }
-    
-    public static MBeanDumper get() {
-        return mBeanDumper;
-    }
-            
+    }       
 
     /**
      * Prints the thread dump information to System.out.
@@ -283,6 +272,7 @@ public class MBeanDumper {
                 }
             }
             if (!found) {
+                System.out.println("using 1.5 functionality!");
                 // if findDeadlockedThreads operation doesn't exist,
                 // the target VM is running on JDK 5 and details about
                 // synchronizers and locks cannot be dumped.

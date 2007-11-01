@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.107 2007-10-30 09:35:15 irockel Exp $
+ * $Id: TDA.java,v 1.108 2007-11-01 11:04:06 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -121,10 +121,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JTree tree;
     private JSplitPane splitPane;
     private JSplitPane topSplitPane;
-    private TreePath mergeDump;
     private DumpStore dumpStore;
     private Vector topNodes;
-    private InputStream dumpFileStream;
     private JScrollPane htmlView;
     private JScrollPane tableView;
     private JScrollPane dumpView;
@@ -137,6 +135,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private JMenuItem showDumpMenuItem;
     private boolean runningAsPlugin;
     private DefaultMutableTreeNode logFile;
+    private MBeanDumper mBeanDumper;
     
     private StatusBar statusBar;
     
@@ -163,6 +162,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
            // init L&F
            setupLookAndFeel();        
         }
+    }
+
+    /**
+     * constructor (needs to be public for plugin)
+     */
+    public TDA(boolean setLF, MBeanDumper mBeanDumper) {
+        this(setLF);
+        
+        this.mBeanDumper = mBeanDumper;
     }
 
     /**
@@ -249,7 +257,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
 
     private void addMXBeanDump() {
-        String dump = MBeanDumper.get().threadDump();
+        String dump = mBeanDumper.threadDump();
         //System.out.println(dump);
         if(topNodes == null) {
             initDumpDisplay();
