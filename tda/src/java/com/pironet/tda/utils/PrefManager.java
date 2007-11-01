@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.21 2007-10-14 07:52:36 irockel Exp $
+ * $Id: PrefManager.java,v 1.22 2007-11-01 15:35:25 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -220,6 +220,29 @@ public class PrefManager {
         return(toolPrefs.get("recentFiles", "").split(PARAM_DELIM));
     }
     
+    public void addToRecentSessions(String file) {
+        String[] currentFiles = getRecentSessions();
+        
+        // only add files already in it
+        if(!hasInRecentFiles(file, currentFiles)) {
+            int start = currentFiles.length == 10 ? 1 : 0;
+            StringBuffer recentSessions = new StringBuffer();
+            
+            for(int i = start; i < currentFiles.length; i++) {
+                recentSessions.append(currentFiles[i]);
+                recentSessions.append(PARAM_DELIM);
+            }
+            
+            // append new files
+            recentSessions.append(file);
+            toolPrefs.put("recentSessions", recentSessions.toString());
+        }
+    }
+    
+    public String[] getRecentSessions() {
+        return(toolPrefs.get("recentSessions", "").split(PARAM_DELIM));
+    }
+
     public void setUseGTKLF(boolean value) {
         toolPrefs.putBoolean("useGTKLF", value);
     }

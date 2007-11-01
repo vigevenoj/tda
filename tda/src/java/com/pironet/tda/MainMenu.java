@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.19 2007-11-01 14:59:39 irockel Exp $
+ * $Id: MainMenu.java,v 1.20 2007-11-01 15:35:25 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -43,6 +43,7 @@ public class MainMenu extends JMenuBar {
     private JMenuItem closeMenuItem;
     private JMenuItem longMenuItem;
     private JMenuItem recentFilesMenu;
+    private JMenuItem recentSessionsMenu;
     private JMenuItem closeAllMenuItem;
     
     private TDA listener;
@@ -146,13 +147,9 @@ public class MainMenu extends JMenuBar {
                 "Open a stored session of logfiles");
         menuItem.addActionListener(listener);
         menu.add(menuItem);
-        menuItem = new JMenuItem("Open recent Session",
-                null);
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open a stored session of logfiles");
-        menuItem.addActionListener(listener);
-        menuItem.setEnabled(false);
-        menu.add(menuItem);
+        
+        createRecentSessionsMenu();
+        menu.add(recentSessionsMenu);
         
         menu.addSeparator();
 
@@ -283,6 +280,28 @@ public class MainMenu extends JMenuBar {
         }
     }
     
+    /**
+     * create the menu for opening recently selected files.
+     */
+    private void createRecentSessionsMenu() {
+        String[] recentFiles = PrefManager.get().getRecentSessions();
+        
+        if(recentFiles.length > 1) {
+            recentSessionsMenu = new JMenu("Open recent session");
+            
+            for(int i = 1; i < recentFiles.length; i++) {
+                if(!recentFiles[i].equals("")) {
+                    JMenuItem item = new JMenuItem(recentFiles[i]);
+                    ((JMenu) recentSessionsMenu).add(item);
+                    item.addActionListener(listener);
+                }
+            }
+        } else {
+            recentSessionsMenu = new JMenuItem("Open recent session");
+            recentSessionsMenu.setEnabled(false);
+        }
+    }
+
     /**
      * creates and returns a toolbar for the main menu with most
      * important entries.

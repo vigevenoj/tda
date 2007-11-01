@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogFileContent.java,v 1.4 2007-11-01 14:59:39 irockel Exp $
+ * $Id: LogFileContent.java,v 1.5 2007-11-01 15:35:25 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -100,19 +100,18 @@ public class LogFileContent implements Serializable {
      * synchronization is not needed here.
      */
     private void readContent() {
+        StringBuffer contentReader = new StringBuffer();
 
         BufferedReader br = null;
         try {
-            File contentFile = new File(getLogfile());
             br = new BufferedReader(new FileReader(getLogfile()));
-            StringBuffer contentReader = new StringBuffer();
             while(br.ready()) {
                 contentReader.append(br.readLine());
                 contentReader.append("\n");
             }
-            content = new SoftReference(contentReader);
         } catch (IOException ex) {
             ex.printStackTrace();
+            contentReader.append("The Logfile unavailable! " + ex.getMessage());
         } finally {
             try {
                 br.close();
@@ -120,6 +119,7 @@ public class LogFileContent implements Serializable {
                 ex.printStackTrace();
             }
         }
+        content = new SoftReference(contentReader);
     }
     
 }
