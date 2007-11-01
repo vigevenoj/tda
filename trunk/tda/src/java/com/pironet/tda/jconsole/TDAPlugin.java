@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAPlugin.java,v 1.1 2007-10-29 17:20:22 irockel Exp $
+ * $Id: TDAPlugin.java,v 1.2 2007-11-01 11:04:06 irockel Exp $
  */
 
 package com.pironet.tda.jconsole;
@@ -57,12 +57,11 @@ public class TDAPlugin extends JConsolePlugin implements PropertyChangeListener
     public synchronized Map getTabs() {
         if (tabs == null) {
             try {
-                tda = new TDA(false);
-                tda.init(true);
                 setMBeanServerConnection(getContext().getMBeanServerConnection());
-                MBeanDumper.init(server);
-                // use LinkedHashMap if you want a predictable order
-                // of the tabs to be added in JConsole
+                MBeanDumper mBeanDumper = new MBeanDumper(server);
+                tda = new TDA(false, mBeanDumper);
+                
+                tda.init(true);
                 tabs = new LinkedHashMap();
                 tabs.put("Thread Dumps", tda);
             } catch (IOException ex) {
