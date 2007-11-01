@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.61 2007-11-01 10:40:15 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.62 2007-11-01 11:44:28 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -438,8 +438,8 @@ public class JDK14Parser implements DumpParser {
                 statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
                 statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System" +
                         "><p>" + (int)(sleeping / (threadCount / 100.0)) + "% of all threads are sleeping on a monitor.</p><br>");
-                statData.append("This might indicate they are waiting for some external resource (e.g. database) which is overloaded or<br>");
-                statData.append("not available or are just waiting to get to do something (idle threads).<br>");
+                statData.append("This might indicate they are waiting for some external resource (e.g. database) which is overloaded<br>");
+                statData.append("or not available or are just waiting to get to do something (idle threads).<br>");
                 statData.append("You should check the <a href=\"sleep://\">sleeping threads</a> with a filter excluding all idle threads.</td></tr>");
             }
             
