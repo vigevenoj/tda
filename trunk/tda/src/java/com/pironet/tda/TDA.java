@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.110 2007-11-01 14:59:39 irockel Exp $
+ * $Id: TDA.java,v 1.111 2007-11-01 15:35:25 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -323,6 +323,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         ex.printStackTrace();
                     }
                 }
+                PrefManager.get().addToRecentSessions(file.getAbsolutePath());
             }
         }
     }
@@ -361,27 +362,34 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             File file = fc.getSelectedFile();
             int selectValue = 0;
             if ((selectValue == 0) && (file.exists())) {
-                ObjectInputStream ois = null;
-                setFileOpen(true);
-                initDumpDisplay();
-                try {
-                    ois = new ObjectInputStream(new FileInputStream(file));
-                    topNodes = (Vector) ois.readObject();
-                    dumpStore = (DumpStore) ois.readObject();
-                    ois.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                } catch (ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        ois.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-                createTree();
+                loadSession(file, false);
             }
+        }
+    }
+    
+    private void loadSession(File file, boolean isRecent) {
+        ObjectInputStream ois = null;
+        setFileOpen(true);
+        initDumpDisplay();
+        try {
+            ois = new ObjectInputStream(new FileInputStream(file));
+            topNodes = (Vector) ois.readObject();
+            dumpStore = (DumpStore) ois.readObject();
+            ois.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                ois.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        createTree();
+        if(!isRecent) {
+            PrefManager.get().addToRecentSessions(file.getAbsolutePath());
         }
     }
             
@@ -1112,8 +1120,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         if(e.getSource() instanceof JMenuItem) {
             JMenuItem source = (JMenuItem) (e.getSource());
             if (source.getText().substring(1).startsWith(":\\") || source.getText().startsWith("/")) {
-                dumpFile = source.getText();
-                openFiles(new File[]{new File(dumpFile)}, true);
+                if(source.getText().endsWith(".tsf")) {
+                    loadSession(new File(source.getText()), true);
+                } else {
+                    dumpFile = source.getText();
+                    openFiles(new File[]{new File(dumpFile)}, true);
+                }
             } else if ("Open...".equals(source.getText())) {
                 chooseFile();
             } else if ("Open loggc file...".equals(source.getText())) {
