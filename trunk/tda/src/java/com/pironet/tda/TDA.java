@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.108 2007-11-01 11:04:06 irockel Exp $
+ * $Id: TDA.java,v 1.109 2007-11-01 11:37:15 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -258,6 +258,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
 
     private void addMXBeanDump() {
         String dump = mBeanDumper.threadDump();
+        String locks = mBeanDumper.findDeadlock();
+        
+        // if deadlocks were found, append them to dump output.
+        if(locks != null && !"".equals(locks)) {
+            dump += "\n" + locks;
+        }
         //System.out.println(dump);
         if(topNodes == null) {
             initDumpDisplay();
@@ -983,7 +989,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             if (e.isPopupTrigger()) {
                 popup.show(e.getComponent(),
                         e.getX(), e.getY());
-                showDumpMenuItem.setEnabled(((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).
+                showDumpMenuItem.setEnabled((tree.getSelectionPath() != null) 
+                        && ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).
                         getUserObject() instanceof ThreadInfo);
             }
         }
