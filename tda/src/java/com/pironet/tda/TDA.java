@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.111 2007-11-01 15:35:25 irockel Exp $
+ * $Id: TDA.java,v 1.112 2007-11-01 16:07:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -77,6 +77,8 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -311,7 +313,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             if (selectValue == 0) {
                 ObjectOutputStream oos = null;
                 try {
-                    oos = new ObjectOutputStream(new FileOutputStream(file));
+                    oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
                     oos.writeObject(topNodes);
                     oos.writeObject(dumpStore);
                 } catch (IOException ex) {
@@ -362,33 +364,47 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             File file = fc.getSelectedFile();
             int selectValue = 0;
             if ((selectValue == 0) && (file.exists())) {
-                loadSession(file, false);
+                try {
+                    loadSession(file, false);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
     
-    private void loadSession(File file, boolean isRecent) {
-        ObjectInputStream ois = null;
+    private void loadSession(File file, boolean isRecent) throws IOException {
         setFileOpen(true);
         initDumpDisplay();
-        try {
-            ois = new ObjectInputStream(new FileInputStream(file));
-            topNodes = (Vector) ois.readObject();
-            dumpStore = (DumpStore) ois.readObject();
-            ois.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                ois.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        createTree();
-        if(!isRecent) {
+        final ObjectInputStream ois = new ObjectInputStream(new ProgressMonitorInputStream(this, "Opening session " + file,
+                new GZIPInputStream(new FileInputStream(file))));
+        final SwingWorker worker = new SwingWorker() {
+
+                    public Object construct() {
+                        synchronized (syncObject) {
+                            try {
+                                topNodes = (Vector) ois.readObject();
+                                dumpStore = (DumpStore) ois.readObject();
+                                ois.close();
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            } catch (ClassNotFoundException ex) {
+                                ex.printStackTrace();
+                            } finally {
+                                try {
+                                    ois.close();
+                                } catch (IOException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                            createTree();
+                        }
+
+                        return null;
+                    }
+                };
+        worker.start();
+        if (!isRecent) {
             PrefManager.get().addToRecentSessions(file.getAbsolutePath());
         }
     }
@@ -1121,7 +1137,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             JMenuItem source = (JMenuItem) (e.getSource());
             if (source.getText().substring(1).startsWith(":\\") || source.getText().startsWith("/")) {
                 if(source.getText().endsWith(".tsf")) {
-                    loadSession(new File(source.getText()), true);
+                    try {
+                        loadSession(new File(source.getText()), true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 } else {
                     dumpFile = source.getText();
                     openFiles(new File[]{new File(dumpFile)}, true);
