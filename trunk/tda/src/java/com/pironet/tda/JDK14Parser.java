@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.60 2007-10-29 17:20:21 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.61 2007-11-01 10:40:15 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -141,7 +141,7 @@ public class JDK14Parser implements DumpParser {
                 bis = new BufferedReader(new InputStreamReader(dumpFileStream));
             }
             if(withCurrentTimeStamp) {
-                overallTDI = new ThreadInfo("Dump at " + new Date(System.currentTimeMillis()), null, "");
+                overallTDI = new ThreadInfo("Full Thread Dump at " + new Date(System.currentTimeMillis()), null, "");
             } else {
                 overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "");
             }
