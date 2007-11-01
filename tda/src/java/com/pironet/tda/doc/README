@@ -9,6 +9,8 @@ Changes from 1.4 are:
 * Added jconsole plugin support, TDA can now be used as jconsole plugin.
 * Added ability to request thread dumps via JMX if running as jconsole plugin.
 * JMX Dumps can be saved into logfile for later offline usage.
+* Session now can be stored to disk (and loaded again).
+* Bugfixing.
 
 Changes from 1.3 are:
 * Full logfile is added as node (loaded up to specified size).
