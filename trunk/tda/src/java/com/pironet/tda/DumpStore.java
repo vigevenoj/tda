@@ -17,10 +17,11 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpStore.java,v 1.1 2006-10-03 07:27:54 irockel Exp $
+ * $Id: DumpStore.java,v 1.2 2007-11-01 14:59:39 irockel Exp $
  */
 package com.pironet.tda;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Map;
  * stores a tree of dump files
  * @author irockel
  */
-public class DumpStore {
+public class DumpStore implements Serializable {
     
     private Map dumpFiles;
     

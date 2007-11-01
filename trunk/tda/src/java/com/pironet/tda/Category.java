@@ -17,16 +17,16 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.10 2007-04-30 20:11:39 irockel Exp $
+ * $Id: Category.java,v 1.11 2007-11-01 14:59:40 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.filter.FilterChecker;
+import com.pironet.tda.utils.IconFactory;
 import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.TreeRenderer;
-import java.util.Date;
-import java.util.Enumeration;
+import java.io.Serializable;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -38,7 +38,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  *
  * @author irockel
  */
-public class Category {
+public class Category implements Serializable {
     private String name = null;
     
     private DefaultMutableTreeNode rootNode = null;
@@ -48,26 +48,26 @@ public class Category {
     
     private JTree filteredCatTree;
     
-    private FilterChecker filterChecker = null;
+    private transient FilterChecker filterChecker = null;
     
     private boolean filterEnabled = true;
     
-    private Icon icon = null;
+    private int iconID = -1;
         
     /** 
      * Creates a new instance of Category 
      */
-    public Category(String name, Icon treeIcon) {
-        this(name, treeIcon, true);
+    public Category(String name, int iconID) {
+        this(name, iconID, true);
     }
 
     /** 
      * Creates a new instance of Category 
      */
-    public Category(String name, Icon treeIcon, boolean filtering) {
+    public Category(String name, int iconID, boolean filtering) {
         setName(name);
         filterEnabled = filtering;
-        icon = treeIcon;
+        this.iconID = iconID;
     }
     
     public void setName(String value) {
@@ -79,7 +79,7 @@ public class Category {
     }
     
     public Icon getIcon() {
-        return(icon);
+        return(IconFactory.get().getIconFor(iconID));
     }
         
     private long lastUpdated = -1;
@@ -164,7 +164,6 @@ public class Category {
     private JTree filterTree(DefaultMutableTreeNode rootNode) {
         filteredRootNode = new DefaultMutableTreeNode("root");
         if(rootNode != null) {
-            Enumeration enumChilds = rootNode.children();
             for(int i = 0; i < rootNode.getChildCount(); i++) {
                 DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) rootNode.getChildAt(i);
                 if(getFilterChecker().recheck((ThreadInfo) childNode.getUserObject())) {

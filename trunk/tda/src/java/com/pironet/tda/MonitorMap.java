@@ -17,23 +17,22 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MonitorMap.java,v 1.4 2007-06-04 16:03:14 irockel Exp $
+ * $Id: MonitorMap.java,v 1.5 2007-11-01 14:59:39 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * map for saving monitor-thread relation in a thread dump.
  *
  * @author irockel
  */
-public class MonitorMap {
+public class MonitorMap implements Serializable {
     
     public final int LOCK_THREAD_POS = 0;
     public final int WAIT_THREAD_POS = 1;

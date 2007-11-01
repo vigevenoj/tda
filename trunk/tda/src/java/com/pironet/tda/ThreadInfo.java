@@ -17,17 +17,19 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadInfo.java,v 1.2 2006-05-20 20:03:30 irockel Exp $
+ * $Id: ThreadInfo.java,v 1.3 2007-11-01 14:59:39 irockel Exp $
  */
 
 package com.pironet.tda;
+
+import java.io.Serializable;
 
 /**
  * Info (name, content tuple) for thread dump display tree.
  *
  * @author irockel
  */
-public class ThreadInfo {
+public class ThreadInfo implements Serializable {
     public String threadName;
     public String content;
     public String info;

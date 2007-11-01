@@ -17,17 +17,19 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpsBaseNode.java,v 1.2 2006-10-03 07:27:54 irockel Exp $
+ * $Id: DumpsBaseNode.java,v 1.3 2007-11-01 14:59:39 irockel Exp $
  */
 
 package com.pironet.tda;
+
+import java.io.Serializable;
 
 /**
  * abstract base class for providing thread dump information.
  *
  * @author irockel
  */
-public abstract class DumpsBaseNode {
+public abstract class DumpsBaseNode implements Serializable {
         
     public abstract Object getContent();
     

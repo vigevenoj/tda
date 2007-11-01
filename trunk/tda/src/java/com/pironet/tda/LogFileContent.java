@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogFileContent.java,v 1.3 2007-10-30 09:35:15 irockel Exp $
+ * $Id: LogFileContent.java,v 1.4 2007-11-01 14:59:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -26,13 +26,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.ref.SoftReference;
 
 /**
  * logfile content info object of log file thread dump information.
  * @author irockel
  */
-public class LogFileContent {
+public class LogFileContent implements Serializable {
     
     private String logFile;
     

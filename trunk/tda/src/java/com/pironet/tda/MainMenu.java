@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.18 2007-10-30 09:35:15 irockel Exp $
+ * $Id: MainMenu.java,v 1.19 2007-11-01 14:59:39 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -132,28 +132,27 @@ public class MainMenu extends JMenuBar {
         createRecentFileMenu();
         menu.add(recentFilesMenu);
         
-/*        menu.addSeparator();
+        menu.addSeparator();
         menuItem = new JMenuItem("Save Session...",
                 KeyEvent.VK_S);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Save the current session of loaded log files");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
-        menuItem.setEnabled(false);
+        menuItem.setEnabled(true);
         menuItem = new JMenuItem("Open Session...",
                 KeyEvent.VK_P);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Open a stored session of logfiles");
-        menuItem.addActionListener(actionListener);
-        menuItem.setEnabled(false);
+        menuItem.addActionListener(listener);
         menu.add(menuItem);
         menuItem = new JMenuItem("Open recent Session",
                 null);
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Open a stored session of logfiles");
-        menuItem.addActionListener(actionListener);
+        menuItem.addActionListener(listener);
         menuItem.setEnabled(false);
-        menu.add(menuItem);*/
+        menu.add(menuItem);
         
         menu.addSeparator();
 

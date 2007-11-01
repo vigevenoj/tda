@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.109 2007-11-01 11:37:15 irockel Exp $
+ * $Id: TDA.java,v 1.110 2007-11-01 14:59:39 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -71,6 +71,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +96,8 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 
 /**
@@ -279,6 +283,107 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void addToLogfile(String dump) {
         ((LogFileContent) logFile.getUserObject()).appendToContentBuffer(dump);
     }
+
+    private void saveSession() {
+        if (fc == null) {
+            fc = new JFileChooser();
+            fc.setMultiSelectionEnabled(true);
+            fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
+        }
+        if (firstFile && (PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
+            fc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
+        }
+        int returnVal = fc.showSaveDialog(this.getRootPane());
+        fc.setPreferredSize(fc.getSize());
+        fc.setFileFilter(getSessionFilter());
+        PrefManager.get().setPreferredSizeFileChooser(fc.getSize());
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            int selectValue = 0;
+            if (file.exists()) {
+                Object[] options = {"Overwrite", "Cancel"};
+                selectValue = JOptionPane.showOptionDialog(null, "<html><body>File exists<br><b>" + file +
+                        "</b></body></html>", "Confirm overwrite",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                        null, options, options[0]);
+            }
+            if (selectValue == 0) {
+                ObjectOutputStream oos = null;
+                try {
+                    oos = new ObjectOutputStream(new FileOutputStream(file));
+                    oos.writeObject(topNodes);
+                    oos.writeObject(dumpStore);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        oos.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    
+    private FileFilter getSessionFilter() {
+        FileFilter filter = new FileFilter() {
+
+            public boolean accept(File arg0) {
+                return(arg0 != null && (arg0.isDirectory() || arg0.getName().endsWith("tsf")));
+            }
+
+            public String getDescription() {
+                return("TDA Session Files");
+            }
+            
+        };
+        return(filter);
+    }
+    
+    private void openSession() {
+        if (fc == null) {
+            fc = new JFileChooser();
+            fc.setMultiSelectionEnabled(true);
+            fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
+        }
+        if (firstFile && (PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
+            fc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
+        }
+        
+        fc.setFileFilter(getSessionFilter());
+        int returnVal = fc.showOpenDialog(this.getRootPane());
+        fc.setPreferredSize(fc.getSize());
+        PrefManager.get().setPreferredSizeFileChooser(fc.getSize());
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            int selectValue = 0;
+            if ((selectValue == 0) && (file.exists())) {
+                ObjectInputStream ois = null;
+                setFileOpen(true);
+                initDumpDisplay();
+                try {
+                    ois = new ObjectInputStream(new FileInputStream(file));
+                    topNodes = (Vector) ois.readObject();
+                    dumpStore = (DumpStore) ois.readObject();
+                    ois.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                } catch (ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        ois.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                createTree();
+            }
+        }
+    }
             
     private void setShowToolbar(boolean state) {
         if(state) {
@@ -356,18 +461,22 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         return(info.toString());
     }
     
+    /**
+     * init the basic display for showing dumps
+     */
     public void initDumpDisplay() {
         // clear tree
         dumpStore = new DumpStore();
-        
+
         topNodes = new Vector();
         if(!runningAsPlugin) {
             getMainMenu().getLongMenuItem().setEnabled(true);
             getMainMenu().getCloseMenuItem().setEnabled(true);
             getMainMenu().getCloseToolBarButton().setEnabled(true);
             getMainMenu().getCloseAllMenuItem().setEnabled(true);
-        
-            addDumpFile();
+            if(dumpFile != null) {
+                addDumpFile();
+            }
         }
         if(runningAsPlugin || isFileOpen()) {
             if(topSplitPane.getDividerLocation() <= 0) {
@@ -1011,6 +1120,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 openLoggcFile();
             } else if ("Save Logfile...".equals(source.getText())) {
                 saveLogFile();
+            } else if ("Save Session...".equals(source.getText())) {
+                saveSession();
+            } else if ("Open Session...".equals(source.getText())) {
+                openSession();
             } else if ("Preferences".equals(source.getText())) {
                 showPreferencesDialog();
             } else if ("Filters".equals(source.getText())) {

@@ -17,12 +17,13 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.62 2007-11-01 11:44:28 irockel Exp $
+ * $Id: JDK14Parser.java,v 1.63 2007-11-01 14:59:39 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.HistogramTableModel;
+import com.pironet.tda.utils.IconFactory;
 import com.pironet.tda.utils.PrefManager;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -147,18 +148,18 @@ public class JDK14Parser implements DumpParser {
             }
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
-            catThreads = new DefaultMutableTreeNode(new Category("Threads", TDA.createImageIcon("Threads.gif")));
+            catThreads = new DefaultMutableTreeNode(new Category("Threads", IconFactory.THREADS));
             threadDump.add(catThreads);
             
-            catWaiting = new DefaultMutableTreeNode(new Category("Threads waiting for Monitors", TDA.createImageIcon("ThreadsWaiting.gif")));
+            catWaiting = new DefaultMutableTreeNode(new Category("Threads waiting for Monitors", IconFactory.THREADS_WAITING));
             
-            catSleeping = new DefaultMutableTreeNode(new Category("Threads sleeping on Monitors", TDA.createImageIcon("ThreadsSleeping.gif")));
+            catSleeping = new DefaultMutableTreeNode(new Category("Threads sleeping on Monitors", IconFactory.THREADS_SLEEPING));
 
-            catLocking = new DefaultMutableTreeNode(new Category("Threads locking Monitors", TDA.createImageIcon("ThreadsLocking.gif")));
+            catLocking = new DefaultMutableTreeNode(new Category("Threads locking Monitors", IconFactory.THREADS_LOCKING));
             
             // create category for monitors with disabled filtering.
-            catMonitors = new DefaultMutableTreeNode(new Category("Monitors", TDA.createImageIcon("Monitors.gif"), false));
-            catMonitorsLocks = new DefaultMutableTreeNode(new Category("Monitors without locking thread", TDA.createImageIcon("Monitors-nolocks.gif"), false));
+            catMonitors = new DefaultMutableTreeNode(new Category("Monitors", IconFactory.MONITORS, false));
+            catMonitorsLocks = new DefaultMutableTreeNode(new Category("Monitors without locking thread", IconFactory.MONITORS_NOLOCKS, false));
             
             String title = null;
             String dumpKey = null;
@@ -587,9 +588,8 @@ public class JDK14Parser implements DumpParser {
         boolean finished = false;
         boolean found = false;
         int deadlocks = 0;
-        int lineCounter = 0;
         StringBuffer dContent = new StringBuffer();
-        Category deadlockCat = new Category("Deadlocks", TDA.createImageIcon("Deadlock.gif"));
+        Category deadlockCat = new Category("Deadlocks", IconFactory.DEADLOCKS);
         DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(deadlockCat);
         boolean first = true;
         
@@ -858,7 +858,7 @@ public class JDK14Parser implements DumpParser {
         }
            
         String info = prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1); 
-        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new Category(info, TDA.createImageIcon("DiffDumps.gif")));
+        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new Category(info, IconFactory.DIFF_DUMPS));
         root.add(catMerge);
         
         if(dumpStore.get(keys.get(0)) != null) {
