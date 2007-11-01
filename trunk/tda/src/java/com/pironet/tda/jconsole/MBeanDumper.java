@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.3 2007-11-01 11:04:06 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.4 2007-11-01 11:38:03 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -96,10 +96,12 @@ public class MBeanDumper {
         if (canDumpLocks) {
             if (tmbean.isObjectMonitorUsageSupported() &&
                 tmbean.isSynchronizerUsageSupported()) {
-                // Print lock info if both object monitor usage 
-                // and synchronizer usage are supported.
-                // This sample code can be modified to handle if 
-                // either monitor usage or synchronizer usage is supported.
+                /*
+                 * Print lock info if both object monitor usage 
+                 * and synchronizer usage are supported.
+                 * This sample code can be modified to handle if 
+                 * either monitor usage or synchronizer usage is supported.
+                 */
                 dumpThreadInfoWithLocks(dump);
             }
         } else {
@@ -233,7 +235,8 @@ public class MBeanDumper {
                return null;
            }
 
-           dump.append("Deadlock found :-");
+           dump.append("\n\nFound one Java-level deadlock:\n");
+           dump.append("==============================\n");
            ThreadInfo[] infos = tmbean.getThreadInfo(tids, true, true);
            for (int i = 1; i < infos.length; i++) {
                ThreadInfo ti = infos[i];
@@ -246,6 +249,8 @@ public class MBeanDumper {
            if (tids == null) { 
                return null;
            }
+           dump.append("\n\nFound one Java-level deadlock:\n");
+           dump.append("==============================\n");
            ThreadInfo[] infos = tmbean.getThreadInfo(tids, Integer.MAX_VALUE);
            for (int i = 1; i < infos.length; i++) {
                ThreadInfo ti = infos[i];
@@ -272,12 +277,19 @@ public class MBeanDumper {
                 }
             }
             if (!found) {
-                System.out.println("using 1.5 functionality!");
-                // if findDeadlockedThreads operation doesn't exist,
-                // the target VM is running on JDK 5 and details about
-                // synchronizers and locks cannot be dumped.
+                /*
+                 * if findDeadlockedThreads operation doesn't exist,
+                 * the target VM is running on JDK 5 and details about
+                 * synchronizers and locks cannot be dumped.
+                 */
                 findDeadlocksMethodName = "findMonitorDeadlockedThreads";
-                canDumpLocks = false;
+                
+                /*
+                 * hack for jconsole dumping itself, for strange reasons, vm 
+                 * doesn't provide findDeadlockedThreads, but 1.5 ops fails with
+                 * an error.
+                 */
+                canDumpLocks = System.getProperty("java.version").equals("1.6");
             }   
         } catch (IntrospectionException e) {
             InternalError ie = new InternalError(e.getMessage());
