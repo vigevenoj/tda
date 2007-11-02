@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.21 2007-11-02 10:51:06 irockel Exp $
+ * $Id: MainMenu.java,v 1.22 2007-11-02 12:00:04 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -50,6 +50,7 @@ public class MainMenu extends JMenuBar {
     private JToolBar toolBar;
     private JButton closeToolBarButton;
     private JMenuItem saveSessionMenuItem;
+    private boolean runningAsPlugin;
 
 
 
@@ -59,6 +60,11 @@ public class MainMenu extends JMenuBar {
     public MainMenu(TDA listener) {
         this.listener = listener;
         createMenuBar();
+    }
+    
+    public MainMenu(TDA listener, boolean runningAsPlugin) {
+        this(listener);
+        this.runningAsPlugin = runningAsPlugin;
     }
             
     /**
@@ -323,11 +329,15 @@ public class MainMenu extends JMenuBar {
      * create a toolbar showing the most important main menu entries.
      */
     private void createToolBar() {
-        toolBar = new JToolBar("TDA Toolbar");        
-        toolBar.add(createToolBarButton("Open Logfile", "FileOpen.gif"));
-        closeToolBarButton = createToolBarButton("Close selected Logfile", "CloseFile.gif");
-        closeToolBarButton.setEnabled(false);
-        toolBar.add(closeToolBarButton);
+        toolBar = new JToolBar("TDA Toolbar");
+        if(runningAsPlugin) {
+            toolBar.add(createToolBarButton("Request a Thread Dump", "FileOpen.gif"));
+        } else {
+            toolBar.add(createToolBarButton("Open Logfile", "FileOpen.gif"));
+            closeToolBarButton = createToolBarButton("Close selected Logfile", "CloseFile.gif");
+            closeToolBarButton.setEnabled(false);
+            toolBar.add(closeToolBarButton);
+        }
         toolBar.addSeparator();
         toolBar.add(createToolBarButton("Preferences", "Preferences.gif"));
         toolBar.addSeparator();
