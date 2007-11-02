@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.116 2007-11-02 10:51:06 irockel Exp $
+ * $Id: TDA.java,v 1.117 2007-11-02 12:00:04 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -142,6 +142,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private boolean runningAsPlugin;
     private DefaultMutableTreeNode logFile;
     private MBeanDumper mBeanDumper;
+    private MainMenu pluginMainMenu;
     
     private StatusBar statusBar;
     
@@ -256,10 +257,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         firstFile = true;
         setFileOpen(false);
         
-        if(!asPlugin) {
+        //if(!asPlugin) {
             // toolbar
             setShowToolbar(PrefManager.get().getShowToolbar());        
-        }
+        //}
     }
 
     private void addMXBeanDump() {
@@ -1023,7 +1024,14 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     protected MainMenu getMainMenu() {
-        return((MainMenu) frame.getJMenuBar());
+        if((frame != null) && (frame.getJMenuBar() != null)) {
+            return((MainMenu) frame.getJMenuBar());
+        } else {
+            if(pluginMainMenu == null) {
+                pluginMainMenu = new MainMenu(this, runningAsPlugin);
+            }
+            return(pluginMainMenu);
+        }
     }
     
     public void createPopupMenu() {
@@ -1031,11 +1039,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Create the popup menu.
         JPopupMenu popup = new JPopupMenu();
-        
-        /*menuItem = new JMenuItem("Fetch Thread Dump");
-        menuItem.addActionListener(this);
-        popup.add(menuItem);
-        popup.addSeparator();*/
         
         menuItem = new JMenuItem("Diff Selection");
         menuItem.addActionListener(this);
@@ -1071,6 +1074,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             popup.add(menuItem);
             popup.addSeparator();
             menuItem = new JMenuItem("Save Logfile...");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            popup.addSeparator();
+            menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
             menuItem.addActionListener(this);
             popup.add(menuItem);
             popup.addSeparator();
@@ -1233,6 +1240,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 findLongRunningThreads();
             } else if("Filters".equals(source.getToolTipText())) {
                 showFilterDialog();
+            } else if("Request a Thread Dump".equals(source.getToolTipText())) {
+                addMXBeanDump();
             } else if("Help".equals(source.getToolTipText())) {
                 showInfoFile("Overview", "doc/overview.html");
             }
