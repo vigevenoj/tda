@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.20 2007-11-01 15:35:25 irockel Exp $
+ * $Id: MainMenu.java,v 1.21 2007-11-02 10:51:06 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -49,6 +49,7 @@ public class MainMenu extends JMenuBar {
     private TDA listener;
     private JToolBar toolBar;
     private JButton closeToolBarButton;
+    private JMenuItem saveSessionMenuItem;
 
 
 
@@ -83,6 +84,10 @@ public class MainMenu extends JMenuBar {
     
     public JMenuItem getLongMenuItem() {
         return(longMenuItem);
+    }
+    
+    public JMenuItem getSaveSessionMenuItem() {
+        return(saveSessionMenuItem);
     }
     
     /**
@@ -134,13 +139,13 @@ public class MainMenu extends JMenuBar {
         menu.add(recentFilesMenu);
         
         menu.addSeparator();
-        menuItem = new JMenuItem("Save Session...",
+        saveSessionMenuItem = new JMenuItem("Save Session...",
                 KeyEvent.VK_S);
-        menuItem.getAccessibleContext().setAccessibleDescription(
+        saveSessionMenuItem.getAccessibleContext().setAccessibleDescription(
                 "Save the current session of loaded log files");
-        menuItem.addActionListener(listener);
-        menu.add(menuItem);
-        menuItem.setEnabled(true);
+        saveSessionMenuItem.addActionListener(listener);
+        menu.add(saveSessionMenuItem);
+        saveSessionMenuItem.setEnabled(false);
         menuItem = new JMenuItem("Open Session...",
                 KeyEvent.VK_P);
         menuItem.getAccessibleContext().setAccessibleDescription(
