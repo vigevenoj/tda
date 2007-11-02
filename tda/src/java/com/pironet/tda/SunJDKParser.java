@@ -1,5 +1,5 @@
 /*
- * JDK14Parser.java
+ * SunJDKParser.java
  *
  * This file is part of TDA - Thread Dump Analysis Tool.
  *
@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14Parser.java,v 1.63 2007-11-01 14:59:39 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.1 2007-11-02 08:42:41 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -50,7 +50,7 @@ import javax.swing.tree.TreePath;
  *
  * @author irockel
  */
-public class JDK14Parser implements DumpParser {
+public class SunJDKParser implements DumpParser {
     private int markSize = 16384;
     private int maxCheckLines = 10;
     
@@ -71,9 +71,9 @@ public class JDK14Parser implements DumpParser {
     private boolean withCurrentTimeStamp = false;
     
     /** 
-     * Creates a new instance of JDK14Parser 
+     * Creates a new instance of SunJDKParser 
      */
-    public JDK14Parser(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
+    public SunJDKParser(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
         this.dumpFileStream = dumpFileStream;
         this.threadStore = threadStore;
         this.withCurrentTimeStamp = withCurrentTimeStamp;
