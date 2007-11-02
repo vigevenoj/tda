@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.8 2007-11-02 08:57:01 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.9 2007-11-02 15:38:19 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -78,7 +78,7 @@ public class HelpOverviewDialog extends JDialog {
                 // if a link was clicked
                 if(evt.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
                     try {
-                        if(evt.getURL().toString().contains("#")) {
+                        if(evt.getURL().toString().indexOf("#") >= 0) {
                             // show internal anchors in editor pane.
                             htmlView.setPage(evt.getURL());
                         } else {
