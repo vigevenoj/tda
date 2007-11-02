@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.7 2007-11-02 08:40:30 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.8 2007-11-02 08:57:01 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -28,8 +28,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,10 +37,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLEditorKit;
 
 /**
  *
@@ -50,11 +46,8 @@ import javax.swing.text.html.HTMLEditorKit;
  */
 public class HelpOverviewDialog extends JDialog {
     private JEditorPane htmlView;
-    private JTabbedPane prefsPane;
     private JPanel buttonPanel;
     private JButton closeButton;
-    
-    private String content;
     
     private String file;
     
@@ -68,39 +61,6 @@ public class HelpOverviewDialog extends JDialog {
         initPanel();
         setLocationRelativeTo(owner);
     }
-    
-    /*public void hyperlinkUpdate(HyperlinkEvent e)
-        {
-            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-            {
-                JEditorPane pane = (JEditorPane) e.getSource();
-               
-                if (e instanceof HTMLFrameHyperlinkEvent)
-                {
-                    HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent)e;
-                   
-                    HTMLDocument doc = (HTMLDocument)pane.getDocument();
-                   
-                   
-                   
-                    doc.processHTMLFrameHyperlinkEvent(evt);
-
-                   
-                }
-                else
-                {
-                    try
-                    {
-                        pane.setPage(e.getURL());
-                    }
-                    catch (Throwable t)
-                    {
-                        t.printStackTrace();
-                    }
-
-                }
-            }
-        }*/
         
     private void initPanel() {
         try {

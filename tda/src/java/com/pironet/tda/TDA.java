@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.112 2007-11-01 16:07:45 irockel Exp $
+ * $Id: TDA.java,v 1.113 2007-11-02 08:57:00 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -99,7 +99,6 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 
 /**
@@ -1273,7 +1272,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void showHelpOverview() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Overview", "doc/tutorial.html");
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Overview", "doc/overview.html");
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
@@ -1284,7 +1283,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void showPluginHelp() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Help", "doc/tutorial.html");
+        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Help", "doc/overview.html");
         tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
