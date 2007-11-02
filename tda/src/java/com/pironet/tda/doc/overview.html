@@ -26,35 +26,41 @@ production environments. Note: There is a bug in early 1.5.x releases preventing
 histogram to be printed if any other than the concurrent mark sweep garbage collector is used.
 </p>
 
+<p>TDA can also be used as plugin in JConsole for requesting thread dumps from a remote virtual 
+machine using JMX. See <i><a href="#plugin">Running as JConsole Plugin</a></i> for further information.
+</p>
+
 <p>
-For having the class histograms included you need to provide the -XX:+PrintClassHistogram option
-with the startup parameters of your application or application container.
+To have the class histograms included in your dumps you need to provide the -XX:+PrintClassHistogram 
+option with the virtual machine's startup parameters of your application or application container.
 </p>
 
 <p><a name="introduction"><h3>Obtaining a thread dump at runtime</h3></a>
-For getting a thread dump, you need to send a kill-QUIT-Signal to the Java VM, for this you 
-need the PID of the VM and then do a <pre>kill -QUIT &lt;PID&gt;</pre> on a Unix Environment. 
-If you use Windows, you need a special tool for accomplishing this, SendSignal, see References 
-for this. It does the same like <pre>kill -QUIT</pre> on Windows-Systems. Beware: if you're 
-using the remote connection on windows, you need to start the connection with <pre>mstsc.exe /console</pre> 
-otherwise you won't have sufficient rights to use the tool. The JDK will then write the thread-dump 
-to std-out. E.g. if your application is running in a tomcat, this would be catalina.out in a 
-default tomcat installation.</p>
+For requesting a thread dump, you need to send a kill-QUIT-Signal to the Java VM, for this you 
+need the PID of the VM and then do a <pre>kill -QUIT &lt;PID&gt;</pre> in a Unix Environment. 
+If you use Windows, you need a special tool for accomplishing this, e.g. SendSignal, see 
+<a href="#references">References</a> for a link. It does the same like <pre>kill -QUIT</pre> on Windows-Systems. 
+Beware: if you're using the remote connection on windows, you need to start the connection with 
+<pre>mstsc.exe /console</pre> otherwise you won't have sufficient rights to use the tool. The JDK will 
+then write the thread-dump to std-out. E.g. if your application is running in a tomcat, this would be 
+catalina.out in a default tomcat installation.</p>
 
 <p>Starting with Sun's JDK 1.5 you can also request a thread dump using the JVM utility <b>jstack</b>. jstack 
 prints the thread dump into the shell window where you called it. To use the dump in TDA, pipe the output
 into a log file and open this file. To analyze multiple dumps just append them to the log file. jstack also 
 allows you to get thread dumps from javacore-files, either dumped on an OutOfMemoryError or using the
-JVM tool jmap.
-Note: On the windows platform this tool is available starting with JDK 1.6. It is not available at all on the 
-linux-ia64 platform.
+JVM tool jmap. On the windows platform this tool is available starting with JDK 1.6. It is not available 
+at all on the linux-ia64 platform.
 </p>
 
 <p><a name="parsing"><h3>Sample Parsing Session</h3></a>
 Open the log file you want to analyse, TDA will search for all thread dumps in this log file 
-and displays them in a tree. As the Sun JVM thread dump doesn't log any date information when the dump 
+and displays them in a tree. Up to Sun's JDK 1.5 the VM doesn't log any date information when the dump 
 was requested, you can provide a regular expression in the <b>Preferences</b> which is then used 
-for parsing the lines before the thread dump to get a time stamp (see below for an example).</p>
+for parsing the lines before the thread dump to get a time stamp (see below for an example). In JDK 1.6 a 
+time stamp is logged just before the dump, the default regular expression is set up to parse this time stamp. 
+In <i><a href="#regex">Setting regular expression for time stamp parsing</a></i> you will find information 
+on how to set up your own regular expression for time stamp parsing.</p>
 
 <p><center><img src="info.png" border=0>
 <br><i>Information about the selected dump</i></center></p>
@@ -62,19 +68,21 @@ for parsing the lines before the thread dump to get a time stamp (see below for 
 <p>For each thread dump TDA sums up all found threads and all monitors found in the threads, it 
 also groups threads waiting on, for and locking monitors. Clicking on the dump nodes itself will
 provide you with information about the dump. If there is something special about it, TDA will give
-you some hints what to do next.</p> 
+you some hints on what to do next.</p> 
 
 <p><center><img src="threaddumps.png" border=0>
 <br><i>Thread Dump View</i></center></p>
 
-<p>If you want to focus on a lock found in a thread you can just click on the monitor,  TDA will then 
-expand the <b>Monitor</b> node of the thread dump and focus the clicked monitor. It will also give you
-information about the monitor if there is something special about, e.g. it has no obvious thread locking
+<p>If you want to focus on a lock found in a thread you can just click on the monitor, TDA will then 
+expand the <b>Monitor</b> node of the thread dump and focuses the clicked monitor. It will also give you
+information about the monitor, if there is something special about, e.g. it has no obvious thread locking
 the monitor but others waiting for it.</p>
 
-<p>Starting here you can easily see if a thread is hanging and holding lock which a lot 
+<p>Starting here you can easily see if a thread is hanging and holding a lock which a lot 
 of other threads are waiting for. If there aren't any locking threads but only waiting threads it is
-very likely the garbage collector is locking the monitor currently.</p>
+very likely the garbage collector is locking the monitor currently. In this case you will get a hint
+telling you about this.</p>
+
 <p><center><img src="monitor.png" border=0>
 <br><i>Monitors used by threads</i></center></p>
 
@@ -90,49 +98,53 @@ the heap dump will go into this log file instead of standard out and the TDA wil
 add the heap dump from a loggc file you need to use <b>Open loggc file...</b> in the popup menu of the thread dump pane. 
 TDA will then parse this file backward and adds the found heap dumps to the thread dumps starting with the last dump. 
 You can added multiple loggc-files, TDA will then continue after the last one where it added a heap dump 
-with the last loggc-logfile. 
+with the last loggc-logfile or uses the dump you clicked on. 
 </p>
 
 <p>If your log file contains a lot of thread dumps done during one session of the VM currently analyzed, 
 you can use <b>Find long running threads</b> in the tools menu to extract long running threads from the 
-thread dumps. Currently this does also show waiting thread, so you need to search for threads actually doing something</p>
+thread dumps. Currently this does also show waiting thread, so you need to search for threads actually 
+doing something. Use appropriate filters to filter out all idle and uninteresting threads from the result.</p>
 
 <p><a name="regex"><h3>Setting regular expression for time stamp parsing</h3></a>
 Because the Sun JDK (&lt;=1.5.x) doesn't provide any time information when dumping threads a regular expression time 
 stamp parsing for each line in the log file is included. TDA matches every line to the regular expression 
 given in the preferences and stores the first matching group if the regular expression matches the line. 
 It then takes the last match found as time stamp for the next thread dump to get a time stamp nearest to the 
-thread dump. An example for such a regular expression is <i>(\d\d\/\d\d\/\d\d\s\d\d:\d\d:\d\d).*</i>. This 
-expression matches lines like <i>06/02/14 14:54:04       at java.lang.Thread.run(Thread.java:534)</i>. TDA 
-then takes the first capturing group as time stamp. In this example the \d is for digits and the capturing 
-group is included in the brackets and matches <i>06/02/14 14:54:04</i>. This is then stored as timestamp 
-for the next thread dump. Starting with JDK 1.6 the SUN JDKs print out a time stamp in the line before the dump. 
-The default regular expression recognizes this time stamp.</p>
+thread dump. An example for such a regular expression is 
+<pre>(\d\d\/\d\d\/\d\d\s\d\d:\d\d:\d\d).*</pre> 
+This expression matches lines like 
+<pre>06/02/14 14:54:04       at java.lang.Thread.run(Thread.java:534)</pre> 
+TDA then takes the first capturing group of the expression as time stamp. In this example the \d is for digits 
+and the capturing group is included in the brackets and matches <i>06/02/14 14:54:04</i>. This is then stored 
+as timestamp for the next thread dump. Starting with JDK 1.6 the SUN JDKs print out a time stamp in the line 
+before the dump. The default regular expression recognizes this time stamp.</p>
 
 <p>If the timestamp is stored in milliseconds since 1970 there is a checkbox in the preferences <i>Parsed 
 timestamp is a long representing msecs since 1970</i> to tell TDA to convert the parsed time stamp from 
-milliseconds into a human readable time stamp.</p> See References for detailed information about the regular 
-expressions in java.
+milliseconds into a human readable time stamp.</p> See <a href="#references">References</a> for detailed 
+information about the regular expressions in java.
 
 <p><a name="filters"><h3>Using filters</h3></a>
-To filter out sleeping and uninteresting threads in your view you can use filters to just ignore these threads. For example 
-if you use jgroups in your application and don't want to see als the STACKs and QUEUEs of jgroups you can specify 
-something like that seen in the next screenshot.
+To filter out sleeping and uninteresting threads in your view you can use filters to just ignore these threads. 
+For example if you use jgroups in your application and don't want to see als the STACKs and QUEUEs of jgroups you 
+can specify something like that seen in the next screenshot.
 
 <p><center><img src="filters.png" border=0>
 <br><i>A filter filtering jgroups threads</i></center></p>
 
 <p>The status bar will provide information about the number of filtered threads and how many are remaining. Note that changes
-to the filters are only after you changed a view. The filter changes will not be applied to the currently displayed thread view.</p>
+to the filters only apply after you changed a view. The filter changes will not be applied to the currently displayed thread view.</p>
 
 <p>Filters can be used to match different parts of the thread information. You can match or search in stack, title and you can 
 check for the thread state the thread is in. Filters can be including or excluding. The example above is a excluding
 filter which checks if org.jgroups is in the stack information of a thread.</p>
 
 <p><a name="deadlocks"><h3>Deadlocks</h3></a>
-If the JVM finds a deadlock in your application it logs this into the thread dump. This information will
+If the JVM finds a java level deadlock in your application it logs this into the thread dump. This information will
 be displayed in the deadlock node of the dump. There is also a hint concerning the found deadlock(s) in
-the dump summary.</p>
+the dump summary. Note though, it doesn't have any deadlock
+detection for java level deadlocks itself, it relies on the deadlock detection of the VM.</p>
 
 <p><center><img src="deadlock.png" border=0>
 <br><i>Deadlock informations</i></center></p>
@@ -142,8 +154,8 @@ the dump summary.</p>
    in the dump summury and gives you hints what to do next.</p>
    
 <p><a name="plugin"><h3>Running as JConsole Plugin</h3></a>
-  TDA can be used as plugin in JConsole. Use the following to start JConsole with TDA as plugin: 
-  <code>jconsole -pluginpath ./tda-1.5beta.jar</code>.</p>
+  TDA can be used as plugin in the JVM utility JConsole. Use the following to start JConsole with TDA as plugin: 
+  <code>jconsole -pluginpath ./tda.jar</code>.</p>
   
   <p>The Plugin offers requesting thread dumps from a remote Virtual Machine through JMX. The Dumps are
   parsed and can be analyzed just like running as standalone-application. The upper-right-frame has a popup menu offering 
@@ -158,7 +170,8 @@ For further offline analysis you can use the GC-Viewer found below. VisualVM tri
 for analysis of production systems.</p>
 <ul>
 <li><a href="http://www.tagtraum.com/gcviewer.html">GC-Viewer</a>
-<li><a href="http://visualvm.dev.java.net/">VisualVM</a> 
+<li><a href="http://visualvm.dev.java.net/">VisualVM</a>
+<li><a href="http://java.sun.com/j2se/1.5.0/docs/guide/management/jconsole.html">JConsole</a>
 <li><a href="http://java.sun.com/j2se/1.4.2/docs/api/index.html">Java API Specification 1.4.2</a> (for regular expressions look for <b>Pattern</b> class.)
 <li><a href="http://www.latenighthacking.com/projects/2003/sendSignal/">SendSignal</a>
 <li><a href="http://www.jroller.com/dumpster">Dumpster (my blog)</a>
