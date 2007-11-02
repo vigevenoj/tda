@@ -1,5 +1,5 @@
 /*
- * JDK14ParserTest.java
+ * SunJDKParserTest.java
  *
  * This file is part of TDA - Thread Dump Analysis Tool.
  *
@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: JDK14ParserTest.java,v 1.2 2007-09-18 09:13:01 irockel Exp $
+ * $Id: SunJDKParserTest.java,v 1.1 2007-11-02 08:43:05 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -31,9 +31,9 @@ import javax.swing.tree.TreePath;
  *
  * @author irockel
  */
-public class JDK14ParserTest extends TestCase {
+public class SunJDKParserTest extends TestCase {
     
-    public JDK14ParserTest(String testName) {
+    public SunJDKParserTest(String testName) {
         super(testName);
     }
 
@@ -44,18 +44,18 @@ public class JDK14ParserTest extends TestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite(JDK14ParserTest.class);
+        TestSuite suite = new TestSuite(SunJDKParserTest.class);
         
         return suite;
     }
 
     /**
-     * Test of hasMoreDumps method, of class com.pironet.tda.JDK14Parser.
+     * Test of hasMoreDumps method, of class com.pironet.tda.SunJDKParser.
      */
     public void testHasMoreDumps() {
         System.out.println("hasMoreDumps");
         
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         boolean expResult = true;
         boolean result = instance.hasMoreDumps();
@@ -66,12 +66,12 @@ public class JDK14ParserTest extends TestCase {
     }
 
     /**
-     * Test of isFoundClassHistograms method, of class com.pironet.tda.JDK14Parser.
+     * Test of isFoundClassHistograms method, of class com.pironet.tda.SunJDKParser.
      */
     public void testIsFoundClassHistograms() {
         System.out.println("isFoundClassHistograms");
         
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         boolean expResult = true;
         boolean result = instance.isFoundClassHistograms();
@@ -82,12 +82,12 @@ public class JDK14ParserTest extends TestCase {
     }
 
     /**
-     * Test of parseNext method, of class com.pironet.tda.JDK14Parser.
+     * Test of parseNext method, of class com.pironet.tda.SunJDKParser.
      */
     public void testParseNext() {
         System.out.println("parseNext");
         
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         MutableTreeNode expResult = null;
         MutableTreeNode result = instance.parseNext();
@@ -98,7 +98,7 @@ public class JDK14ParserTest extends TestCase {
     }
 
     /**
-     * Test of parseLoggcFile method, of class com.pironet.tda.JDK14Parser.
+     * Test of parseLoggcFile method, of class com.pironet.tda.SunJDKParser.
      */
     public void testParseLoggcFile() {
         System.out.println("parseLoggcFile");
@@ -106,7 +106,7 @@ public class JDK14ParserTest extends TestCase {
         /*InputStream loggcFileStream = null;
         DefaultMutableTreeNode root = null;
         Map dumpStore = null;
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         instance.parseLoggcFile(loggcFileStream, root, dumpStore);*/
         
@@ -115,13 +115,13 @@ public class JDK14ParserTest extends TestCase {
     }
 
     /**
-     * Test of setDumpHistogramCounter method, of class com.pironet.tda.JDK14Parser.
+     * Test of setDumpHistogramCounter method, of class com.pironet.tda.SunJDKParser.
      */
     public void testSetDumpHistogramCounter() {
         System.out.println("setDumpHistogramCounter");
         
         int value = 0;
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         instance.setDumpHistogramCounter(value);
         
@@ -130,7 +130,7 @@ public class JDK14ParserTest extends TestCase {
     }
 
     /**
-     * Test of findLongRunningThreads method, of class com.pironet.tda.JDK14Parser.
+     * Test of findLongRunningThreads method, of class com.pironet.tda.SunJDKParser.
      */
     public void testFindLongRunningThreads() {
         System.out.println("findLongRunningThreads");
@@ -140,7 +140,7 @@ public class JDK14ParserTest extends TestCase {
         TreePath[] paths = null;
         int minOccurence = 0;
         String regex = "";
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         instance.findLongRunningThreads(root, dumpStore, paths, minOccurence, regex);
         
@@ -149,7 +149,7 @@ public class JDK14ParserTest extends TestCase {
     }
 
     /**
-     * Test of mergeDumps method, of class com.pironet.tda.JDK14Parser.
+     * Test of mergeDumps method, of class com.pironet.tda.SunJDKParser.
      */
     public void testMergeDumps() {
         System.out.println("mergeDumps");
@@ -159,7 +159,7 @@ public class JDK14ParserTest extends TestCase {
         TreePath[] dumps = null;
         int minOccurence = 0;
         String regex = "";
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         instance.mergeDumps(root, dumpStore, dumps, minOccurence, regex);
         
@@ -168,12 +168,12 @@ public class JDK14ParserTest extends TestCase {
     }
 
     /**
-     * Test of close method, of class com.pironet.tda.JDK14Parser.
+     * Test of close method, of class com.pironet.tda.SunJDKParser.
      */
     public void testClose() throws Exception {
         System.out.println("close");
         
-        JDK14Parser instance = null;
+        SunJDKParser instance = null;
         
         instance.close();
         
