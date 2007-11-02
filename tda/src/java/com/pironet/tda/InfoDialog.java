@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: InfoDialog.java,v 1.1 2007-11-02 10:30:17 irockel Exp $
+ * $Id: InfoDialog.java,v 1.2 2007-11-02 10:34:13 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -63,14 +63,14 @@ public class InfoDialog extends JDialog {
                 "Icons used are based on Benno System Icons by Benno Meyer and <br>" +
                 "on Tulliana 2 Icons by Umut Pulat.<br>" +
                 "Contains classes from JEdit for logfile display.</i></p><br>" +
-                "<p>TDA is free software; you can redistribute it and/or modify<br>" +
-                "it under the terms of the Lesser GNU General Public License as published by<br>" +
+                "<p>TDA is free software; you can redistribute it and/or modify it under<br>" +
+                "the terms of the Lesser GNU General Public License as published by<br>" +
                 "the Free Software Foundation; either version 2.1 of the License, or<br>" +
                 "(at your option) any later version.</p><br>" +
-                "TDA is distributed in the hope that it will be useful,<br>" +
-                "but WITHOUT ANY WARRANTY; without even the implied warranty of<br>" +
-                "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br>" +
-                "Lesser GNU General Public License for more details.<p><br>";
+                "TDA is distributed in the hope that it will be useful, but WITHOUT ANY<br>" +
+                "WARRANTY; without even the implied warranty of MERCHANTABILITY or <br>" +
+                "FITNESS FOR A PARTICULAR PURPOSE. See the Lesser GNU General Public<br>" +
+                "License for more details.<p><br>";
         
         getContentPane().add(new JLabel(info), BorderLayout.CENTER);
         getContentPane().add(new JLabel(""), BorderLayout.EAST);
