@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.113 2007-11-02 08:57:00 irockel Exp $
+ * $Id: TDA.java,v 1.114 2007-11-02 09:45:19 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1129,7 +1129,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
         
     /**
-     * check menu events
+     * check menu and button events.
      */
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() instanceof JMenuItem) {
@@ -1163,13 +1163,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 saveState();
                 frame.dispose();
             } else if ("Overview".equals(source.getText())) {
-                showHelpOverview();
-            } else if ("Help".equals(source.getText()) || "Usage Overview".equals(source.getText())) {
-                showPluginHelp();
+                showInfoFile("Overview", "doc/overview.html");
+            } else if ("Help".equals(source.getText())) {
+                showInfoFile("Overview", "doc/overview.html");
             } else if ("Release Notes".equals(source.getText())) {
-                showReleaseNotes();
+                showInfoFile("Release Notes", "doc/README");
             } else if ("License".equals(source.getText())) {
-                showLicense();
+                showInfoFile("License Information", "doc/COPYING");
             } else if ("Forum".equals(source.getText())) {
                 try {
                     Browser.open("https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967");
@@ -1225,7 +1225,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             } else if("Filters".equals(source.getToolTipText())) {
                 showFilterDialog();
             } else if("Help".equals(source.getToolTipText())) {
-                showHelpOverview();
+                showInfoFile("Overview", "doc/overview.html");
             }
             source.setSelected(false);
         }
@@ -1271,47 +1271,20 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
-    private void showHelpOverview() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Overview", "doc/overview.html");
-        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        
-        //Display the window.
-        tutDialog.pack();
-        tutDialog.setLocationRelativeTo(getFrame());
-        tutDialog.setVisible(true);
-        
-    }
     
-    private void showPluginHelp() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Help", "doc/overview.html");
-        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    /**
+     * display the specified file in a info window.
+     * @param title title of the info window.
+     * @param file the file to display.
+     */
+    private void showInfoFile(String title, String file) {
+        HelpOverviewDialog infoDialog = new HelpOverviewDialog(getFrame(), title, file);
+        infoDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
-        tutDialog.pack();
-        tutDialog.setLocationRelativeTo(getFrame());
-        tutDialog.setVisible(true);
-    }
-    
-    private void showReleaseNotes() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "Release Notes", "doc/README");
-        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        
-        //Display the window.
-        tutDialog.pack();
-        tutDialog.setLocationRelativeTo(getFrame());
-        tutDialog.setVisible(true);
-        
-    }
-    
-    private void showLicense() {
-        HelpOverviewDialog tutDialog = new HelpOverviewDialog(getFrame(), "License Information", "doc/COPYING");
-        tutDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        
-        //Display the window.
-        tutDialog.pack();
-        tutDialog.setLocationRelativeTo(getFrame());
-        tutDialog.setVisible(true);
-        
+        infoDialog.pack();
+        infoDialog.setLocationRelativeTo(getFrame());
+        infoDialog.setVisible(true);
     }
     
     private JFrame getFrame() {
