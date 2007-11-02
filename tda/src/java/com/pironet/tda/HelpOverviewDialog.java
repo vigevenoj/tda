@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.6 2007-10-30 09:35:15 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.7 2007-11-02 08:40:30 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -42,6 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  *
@@ -67,6 +68,39 @@ public class HelpOverviewDialog extends JDialog {
         initPanel();
         setLocationRelativeTo(owner);
     }
+    
+    /*public void hyperlinkUpdate(HyperlinkEvent e)
+        {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+            {
+                JEditorPane pane = (JEditorPane) e.getSource();
+               
+                if (e instanceof HTMLFrameHyperlinkEvent)
+                {
+                    HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent)e;
+                   
+                    HTMLDocument doc = (HTMLDocument)pane.getDocument();
+                   
+                   
+                   
+                    doc.processHTMLFrameHyperlinkEvent(evt);
+
+                   
+                }
+                else
+                {
+                    try
+                    {
+                        pane.setPage(e.getURL());
+                    }
+                    catch (Throwable t)
+                    {
+                        t.printStackTrace();
+                    }
+
+                }
+            }
+        }*/
         
     private void initPanel() {
         try {
@@ -84,8 +118,13 @@ public class HelpOverviewDialog extends JDialog {
                 // if a link was clicked
                 if(evt.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
                     try {
-                        // launch a browser with the appropriate URL
-                        Browser.open(evt.getURL().toString());
+                        if(evt.getURL().toString().contains("#")) {
+                            // show internal anchors in editor pane.
+                            htmlView.setPage(evt.getURL());
+                        } else {
+                            // launch a browser with the appropriate URL
+                            Browser.open(evt.getURL().toString());
+                        }
                     } catch(InterruptedException e) {
                         System.out.println("Error launching external browser.");
                     } catch(IOException e) {
