@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.11 2007-11-01 14:59:40 irockel Exp $
+ * $Id: Category.java,v 1.12 2007-11-02 15:29:13 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -44,9 +44,9 @@ public class Category implements Serializable {
     private DefaultMutableTreeNode rootNode = null;
     private DefaultMutableTreeNode filteredRootNode = null;
     
-    private JScrollPane lastView = null;
+    private transient JScrollPane lastView = null;
     
-    private JTree filteredCatTree;
+    private transient JTree filteredCatTree;
     
     private transient FilterChecker filterChecker = null;
     
@@ -91,8 +91,6 @@ public class Category implements Serializable {
         if(filterEnabled && (filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
             // first refresh filter checker with current filters
             setFilterChecker(FilterChecker.getFilterChecker());
-            
-            // FIXME: what to do with special filters?
             
             // apply new filter settings.
             filteredCatTree = filterTree(rootNode);
