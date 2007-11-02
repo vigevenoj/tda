@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: StatusBar.java,v 1.3 2007-10-29 17:20:22 irockel Exp $
+ * $Id: StatusBar.java,v 1.4 2007-11-02 14:56:20 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -117,6 +117,7 @@ class MemoryStatusUpdater implements Runnable {
                 double totalMem = rt.totalMemory() / 1024.0 / 1024.0;
                 memStatus.setString(formatter.format(usedMem) + "MB/" +
                         formatter.format(totalMem) +"MB");
+                memStatus.setToolTipText(memStatus.getString() + " Memory used.");
                 Thread.sleep(5000);
             }
         } catch (InterruptedException ex) {
