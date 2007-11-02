@@ -10,6 +10,8 @@ Changes from 1.4 are:
 * Added ability to request thread dumps via JMX if running as jconsole plugin.
 * JMX Dumps can be saved into logfile for later offline usage.
 * Session now can be stored to disk (and loaded again).
+* expanded help overview.
+* Major code cleanup.
 * Bugfixing.
 
 Changes from 1.3 are:
