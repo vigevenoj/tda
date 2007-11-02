@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.117 2007-11-02 12:00:04 irockel Exp $
+ * $Id: TDA.java,v 1.118 2007-11-02 15:37:42 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -311,15 +311,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     private static void initSessionFc() {
 
-        if (sessionFc == null) {
-            sessionFc = new JFileChooser();
-            sessionFc.setMultiSelectionEnabled(true);
-            sessionFc.setCurrentDirectory(PrefManager.get().getSelectedPath());
-            if ((PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
-                sessionFc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
-            }
-            sessionFc.setFileFilter(getSessionFilter());
+        sessionFc = new JFileChooser();
+        sessionFc.setMultiSelectionEnabled(true);
+        sessionFc.setCurrentDirectory(PrefManager.get().getSelectedPath());
+        if ((PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
+            sessionFc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
         }
+        sessionFc.setFileFilter(getSessionFilter());
+            
+        sessionFc.setSelectedFile(null);
     }
     
     private void saveSession() {
@@ -331,6 +331,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = sessionFc.getSelectedFile();
+            // check if file has a suffix
+            if(file.getName().indexOf(".") < 0) {
+                file = new File(file.getAbsolutePath() + ".tsf");
+            } 
             int selectValue = 0;
             if (file.exists()) {
                 Object[] options = {"Overwrite", "Cancel"};
@@ -343,6 +347,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 ObjectOutputStream oos = null;
                 try {
                     oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
+                    
                     oos.writeObject(topNodes);
                     oos.writeObject(dumpStore);
                 } catch (IOException ex) {
