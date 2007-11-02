@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.114 2007-11-02 09:45:19 irockel Exp $
+ * $Id: TDA.java,v 1.115 2007-11-02 10:30:17 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1232,24 +1232,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void showInfo() {
-        JOptionPane.showMessageDialog(this.getRootPane(),
-                "<html><body>" +
-                "<p>Java Version: " + System.getProperty("java.version") + "</p><br>" +
-                "<p>Icons used are based on Benno System Icons by Benno Meyer.</p><br>" +
-                "<p>Contains Classes from JEdit for logfile display.</p><br>" +
-                "<p>TDA is free software; you can redistribute it and/or modify<br>" +
-                "it under the terms of the Lesser GNU General Public License as published by<br>" +
-                "the Free Software Foundation; either version 2.1 of the License, or<br>" +
-                "(at your option) any later version.</p><br>" +
-                "TDA is distributed in the hope that it will be useful,<br>" +
-                "but WITHOUT ANY WARRANTY; without even the implied warranty of<br>" +
-                "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br>" +
-                "Lesser GNU General Public License for more details.<p><br>" +
-                "You should have received a copy of the Lesser GNU General Public License<br>" +
-                "along with TDA; if not, write to the Free Software<br>" +
-                "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA<p>",
-                "About TDA", JOptionPane.INFORMATION_MESSAGE, TDA.createImageIcon("tda-logo.jpg"));
+        InfoDialog infoDialog = new InfoDialog(getFrame());
+        infoDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
+        //Display the window.
+        infoDialog.pack();
+        infoDialog.setLocationRelativeTo(getFrame());
+        infoDialog.setVisible(true);
     }
     
     /**
