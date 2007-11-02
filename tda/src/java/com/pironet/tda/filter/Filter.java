@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.6 2007-05-03 12:48:31 irockel Exp $
+ * $Id: Filter.java,v 1.7 2007-11-02 15:38:18 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -204,17 +204,17 @@ public class Filter {
                     result = getFilterExpressionPattern().matcher(ti.content).matches();
                     break;
                 case WAITING_ON_RULE :
-                    result = ti.content.contains("- waiting on") && checkLine(ti, "- waiting on", '<', ')');
+                    result = (ti.content.indexOf("- waiting on") >= 0) && checkLine(ti, "- waiting on", '<', ')');
                     break;
                 case WAITING_FOR_RULE :
-                    result = ti.threadName.contains("waiting for monitor entry") &&
+                    result = (ti.threadName.indexOf("waiting for monitor entry") >= 0) &&
                             checkLine(ti, "- waiting to lock", '<', ')');
                     break;
                 case LOCKING_RULE :
-                    result = ti.content.contains("- locked") && checkLine(ti, "- locked", '<', ')');
+                    result = (ti.content.indexOf("- locked") >= 0) && checkLine(ti, "- locked", '<', ')');
                     break;
                 case SLEEPING_RULE :
-                    result = ti.threadName.contains("Object.wait()");
+                    result = (ti.threadName.indexOf("Object.wait()") >= 0);
                     break;
             }
             //System.out.println("Filter " + getFilterExpression() + " result = " + result + " // content" + ti.content);
