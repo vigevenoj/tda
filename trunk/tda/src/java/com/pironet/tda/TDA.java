@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.115 2007-11-02 10:30:17 irockel Exp $
+ * $Id: TDA.java,v 1.116 2007-11-02 10:51:06 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -108,6 +108,7 @@ import javax.swing.tree.TreePath;
  */
 public class TDA extends JPanel implements TreeSelectionListener, ActionListener, MenuListener {
     private static JFileChooser fc;
+    private static JFileChooser sessionFc;
     private static boolean DEBUG = false;
     private static int DIVIDER_SIZE = 4;
     protected static JFrame frame;
@@ -284,23 +285,51 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void addToLogfile(String dump) {
         ((LogFileContent) logFile.getUserObject()).appendToContentBuffer(dump);
     }
+    
+    /**
+     * create file filter for session files.
+     * @return file filter instance.
+     */
+    private static FileFilter getSessionFilter() {
+        FileFilter filter = new FileFilter() {
 
+            public boolean accept(File arg0) {
+                return(arg0 != null && (arg0.isDirectory() || arg0.getName().endsWith("tsf")));
+            }
+
+            public String getDescription() {
+                return("TDA Session Files");
+            }
+            
+        };
+        return(filter);
+    }
+    
+    /**
+     * initializes session file chooser, if not already done.
+     */
+    private static void initSessionFc() {
+
+        if (sessionFc == null) {
+            sessionFc = new JFileChooser();
+            sessionFc.setMultiSelectionEnabled(true);
+            sessionFc.setCurrentDirectory(PrefManager.get().getSelectedPath());
+            if ((PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
+                sessionFc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
+            }
+            sessionFc.setFileFilter(getSessionFilter());
+        }
+    }
+    
     private void saveSession() {
-        if (fc == null) {
-            fc = new JFileChooser();
-            fc.setMultiSelectionEnabled(true);
-            fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
-        }
-        if (firstFile && (PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
-            fc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
-        }
-        int returnVal = fc.showSaveDialog(this.getRootPane());
-        fc.setPreferredSize(fc.getSize());
-        fc.setFileFilter(getSessionFilter());
-        PrefManager.get().setPreferredSizeFileChooser(fc.getSize());
+        initSessionFc();
+        int returnVal = sessionFc.showSaveDialog(this.getRootPane());
+        sessionFc.setPreferredSize(sessionFc.getSize());
+        
+        PrefManager.get().setPreferredSizeFileChooser(sessionFc.getSize());
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
+            File file = sessionFc.getSelectedFile();
             int selectValue = 0;
             if (file.exists()) {
                 Object[] options = {"Overwrite", "Cancel"};
@@ -329,38 +358,17 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
-    private FileFilter getSessionFilter() {
-        FileFilter filter = new FileFilter() {
-
-            public boolean accept(File arg0) {
-                return(arg0 != null && (arg0.isDirectory() || arg0.getName().endsWith("tsf")));
-            }
-
-            public String getDescription() {
-                return("TDA Session Files");
-            }
-            
-        };
-        return(filter);
-    }
+    
     
     private void openSession() {
-        if (fc == null) {
-            fc = new JFileChooser();
-            fc.setMultiSelectionEnabled(true);
-            fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
-        }
-        if (firstFile && (PrefManager.get().getPreferredSizeFileChooser().height > 0)) {
-            fc.setPreferredSize(PrefManager.get().getPreferredSizeFileChooser());
-        }
+        initSessionFc();
         
-        fc.setFileFilter(getSessionFilter());
-        int returnVal = fc.showOpenDialog(this.getRootPane());
-        fc.setPreferredSize(fc.getSize());
-        PrefManager.get().setPreferredSizeFileChooser(fc.getSize());
+        int returnVal = sessionFc.showOpenDialog(this.getRootPane());
+        sessionFc.setPreferredSize(sessionFc.getSize());
+        PrefManager.get().setPreferredSizeFileChooser(sessionFc.getSize());
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
+            File file = sessionFc.getSelectedFile();
             int selectValue = 0;
             if ((selectValue == 0) && (file.exists())) {
                 try {
@@ -495,6 +503,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         if(!runningAsPlugin) {
             getMainMenu().getLongMenuItem().setEnabled(true);
             getMainMenu().getCloseMenuItem().setEnabled(true);
+            getMainMenu().getSaveSessionMenuItem().setEnabled(true);
             getMainMenu().getCloseToolBarButton().setEnabled(true);
             getMainMenu().getCloseAllMenuItem().setEnabled(true);
             if(dumpFile != null) {
@@ -1492,6 +1501,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 init(false);
                 getMainMenu().getLongMenuItem().setEnabled(false);
                 getMainMenu().getCloseMenuItem().setEnabled(false);
+                getMainMenu().getSaveSessionMenuItem().setEnabled(false);
                 getMainMenu().getCloseToolBarButton().setEnabled(false);
                 getMainMenu().getCloseAllMenuItem().setEnabled(false);
             } else {
@@ -1535,6 +1545,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         getMainMenu().getLongMenuItem().setEnabled(false);
         getMainMenu().getCloseMenuItem().setEnabled(false);
+        getMainMenu().getSaveSessionMenuItem().setEnabled(false);
         getMainMenu().getCloseToolBarButton().setEnabled(false);
         getMainMenu().getCloseAllMenuItem().setEnabled(false);
     }
