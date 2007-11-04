@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.118 2007-11-02 15:37:42 irockel Exp $
+ * $Id: TDA.java,v 1.119 2007-11-04 18:04:09 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -511,6 +511,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             getMainMenu().getCloseMenuItem().setEnabled(true);
             getMainMenu().getSaveSessionMenuItem().setEnabled(true);
             getMainMenu().getCloseToolBarButton().setEnabled(true);
+            getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
             getMainMenu().getCloseAllMenuItem().setEnabled(true);
             if(dumpFile != null) {
                 addDumpFile();
@@ -1517,6 +1518,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 getMainMenu().getCloseMenuItem().setEnabled(false);
                 getMainMenu().getSaveSessionMenuItem().setEnabled(false);
                 getMainMenu().getCloseToolBarButton().setEnabled(false);
+                getMainMenu().getFindLRThreadsToolBarButton().setEnabled(false);
                 getMainMenu().getCloseAllMenuItem().setEnabled(false);
             } else {
                 // rebuild jtree
@@ -1561,6 +1563,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         getMainMenu().getCloseMenuItem().setEnabled(false);
         getMainMenu().getSaveSessionMenuItem().setEnabled(false);
         getMainMenu().getCloseToolBarButton().setEnabled(false);
+        getMainMenu().getFindLRThreadsToolBarButton().setEnabled(false);
         getMainMenu().getCloseAllMenuItem().setEnabled(false);
     }
     
