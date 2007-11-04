@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.22 2007-11-02 12:00:04 irockel Exp $
+ * $Id: MainMenu.java,v 1.23 2007-11-04 18:04:09 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -50,6 +50,7 @@ public class MainMenu extends JMenuBar {
     private JToolBar toolBar;
     private JButton closeToolBarButton;
     private JMenuItem saveSessionMenuItem;
+    private JButton findLRThreadsButton;
     private boolean runningAsPlugin;
 
 
@@ -79,6 +80,13 @@ public class MainMenu extends JMenuBar {
      */
     public JButton getCloseToolBarButton() {
         return(closeToolBarButton);
+    }
+    
+    /**
+     * get the close file menu item
+     */
+    public JButton getFindLRThreadsToolBarButton() {
+        return(findLRThreadsButton);
     }
     
     /**
@@ -341,7 +349,10 @@ public class MainMenu extends JMenuBar {
         toolBar.addSeparator();
         toolBar.add(createToolBarButton("Preferences", "Preferences.gif"));
         toolBar.addSeparator();
-        toolBar.add(createToolBarButton("Find long running threads", "FindLRThreads.gif"));
+        findLRThreadsButton = createToolBarButton("Find long running threads", "FindLRThreads.gif");
+        findLRThreadsButton.setEnabled(false);
+        toolBar.add(findLRThreadsButton);
+        
         toolBar.add(createToolBarButton("Filters", "Filters.gif"));
         toolBar.addSeparator();
         toolBar.add(createToolBarButton("Help","Help.gif"));
@@ -359,6 +370,7 @@ public class MainMenu extends JMenuBar {
             toolbarButton.setToolTipText(text);
         }
         toolbarButton.addActionListener(listener);
+        toolbarButton.setFocusable(false);
         return(toolbarButton);
     }
 }
