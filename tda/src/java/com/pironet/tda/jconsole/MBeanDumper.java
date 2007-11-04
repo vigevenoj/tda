@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.4 2007-11-01 11:38:03 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.5 2007-11-04 07:59:49 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -289,7 +289,7 @@ public class MBeanDumper {
                  * doesn't provide findDeadlockedThreads, but 1.5 ops fails with
                  * an error.
                  */
-                canDumpLocks = System.getProperty("java.version").equals("1.6");
+                canDumpLocks = System.getProperty("java.version").startsWith("1.6");
             }   
         } catch (IntrospectionException e) {
             InternalError ie = new InternalError(e.getMessage());
