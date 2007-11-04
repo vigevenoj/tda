@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.5 2007-11-04 07:59:49 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.6 2007-11-04 10:59:11 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -55,6 +55,7 @@ public class MBeanDumper {
     // default - JDK 6+ VM
     private String findDeadlocksMethodName = "findDeadlockedThreads";
     private boolean canDumpLocks = true;
+    private String javaVersion;
 
     /**
      * Constructs a ThreadMonitor object to get thread information
@@ -74,7 +75,6 @@ public class MBeanDumper {
             throw ie;
        }
        parseMBeanInfo(); 
-       setDumpPrefix();
     }
     
     private void setDumpPrefix() {
@@ -83,6 +83,7 @@ public class MBeanDumper {
                                             ManagementFactory.RUNTIME_MXBEAN_NAME,
                                             RuntimeMXBean.class);
             dumpPrefix += rmbean.getVmName() + " " + rmbean.getVmVersion() + "\n";
+            javaVersion = rmbean.getVmVersion();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -266,6 +267,7 @@ public class MBeanDumper {
     private void parseMBeanInfo() throws IOException {
         try {
             MBeanOperationInfo[] mopis = server.getMBeanInfo(objname).getOperations();
+            setDumpPrefix();
 
             // look for findDeadlockedThreads operations;
             boolean found = false;
@@ -286,10 +288,11 @@ public class MBeanDumper {
                 
                 /*
                  * hack for jconsole dumping itself, for strange reasons, vm 
-                 * doesn't provide findDeadlockedThreads, but 1.5 ops fails with
+                 * doesn't provide findDeadlockedThreads, but 1.5 ops fail with
                  * an error.
                  */
-                canDumpLocks = System.getProperty("java.version").startsWith("1.6");
+                //System.out.println("java.version=" +javaVersion);
+                canDumpLocks = javaVersion.startsWith("1.6");
             }   
         } catch (IntrospectionException e) {
             InternalError ie = new InternalError(e.getMessage());
