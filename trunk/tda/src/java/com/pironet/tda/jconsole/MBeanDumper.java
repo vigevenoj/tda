@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.6 2007-11-04 10:59:11 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.7 2007-11-04 11:28:52 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -94,19 +94,33 @@ public class MBeanDumper {
      */
     public String threadDump() {
         StringBuilder dump = new StringBuilder();
-        if (canDumpLocks) {
-            if (tmbean.isObjectMonitorUsageSupported() &&
-                tmbean.isSynchronizerUsageSupported()) {
-                /*
-                 * Print lock info if both object monitor usage 
-                 * and synchronizer usage are supported.
-                 * This sample code can be modified to handle if 
-                 * either monitor usage or synchronizer usage is supported.
-                 */
-                dumpThreadInfoWithLocks(dump);
+        int retries = 0;
+        try {
+            if (canDumpLocks) {
+                if (tmbean.isObjectMonitorUsageSupported() &&
+                        tmbean.isSynchronizerUsageSupported()) {
+                    /*
+                     * Print lock info if both object monitor usage 
+                     * and synchronizer usage are supported.
+                     * This sample code can be modified to handle if 
+                     * either monitor usage or synchronizer usage is supported.
+                     */
+                    dumpThreadInfoWithLocks(dump);
+                }
+            } else {
+                dumpThreadInfo(dump);
             }
-        } else {
-            dumpThreadInfo(dump);
+        } catch(NullPointerException npe) {
+            if (retries > 5) {
+                throw npe;
+            }
+            try {
+                // workaround for unstable connections.
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            retries++;
         }
         
         return(dump.toString());
