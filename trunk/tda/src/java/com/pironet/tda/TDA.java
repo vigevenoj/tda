@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.121 2007-11-05 13:21:34 irockel Exp $
+ * $Id: TDA.java,v 1.122 2007-11-05 16:27:08 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -348,6 +348,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 try {
                     oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
                     
+                    oos.writeObject(dumpFile);
                     oos.writeObject(topNodes);
                     oos.writeObject(dumpStore);
                 } catch (IOException ex) {
@@ -396,6 +397,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                     public Object construct() {
                         synchronized (syncObject) {
                             try {
+                                dumpFile = (String) ois.readObject();
                                 topNodes = (Vector) ois.readObject();
                                 dumpStore = (DumpStore) ois.readObject();
                                 ois.close();
