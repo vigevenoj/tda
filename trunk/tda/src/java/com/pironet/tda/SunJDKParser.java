@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.3 2007-11-05 13:03:05 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.4 2007-11-05 14:12:12 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -587,6 +587,7 @@ public class SunJDKParser implements DumpParser {
         boolean finished = false;
         boolean found = false;
         int deadlocks = 0;
+        int lineCounter = 0;
         StringBuffer dContent = new StringBuffer();
         Category deadlockCat = new Category("Deadlocks", IconFactory.DEADLOCKS);
         DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(deadlockCat);
@@ -594,8 +595,9 @@ public class SunJDKParser implements DumpParser {
         
         while(bis.ready() && !finished) {            
             String line = bis.readLine();
+            
             if(!found && !line.equals("")) {
-                if (line.startsWith("Found one Java-level deadlock")) {
+                if (line.trim().startsWith("Found one Java-level deadlock")) {
                     found = true;
                     dContent.append("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                     dContent.append("Found one Java-level deadlock");
@@ -635,7 +637,7 @@ public class SunJDKParser implements DumpParser {
                     dContent.append(linkifyMonitor(line));
                     dContent.append("\n");
                     
-                } else if(line.startsWith("\"")) {
+                } else if(line.trim().startsWith("\"")) {
                     dContent.append("</pre>");
                     if(first) {
                         first = false;
