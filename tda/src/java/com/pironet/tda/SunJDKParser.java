@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.1 2007-11-02 08:42:41 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.2 2007-11-05 09:14:32 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -213,7 +213,7 @@ public class SunJDKParser implements DumpParser {
                         dumpKey = overallTDI.threadName;
                     } else if(!patternError && (regexPattern != null)) {
                         try {
-                            Matcher m = regexPattern.matcher(line.trim());
+                            Matcher m = regexPattern.matcher(line);
                             if(m.matches()) {
                                 matched = m;
                             }
@@ -259,57 +259,57 @@ public class SunJDKParser implements DumpParser {
                             mmap.parseAndAddThread((String)monitorStack.pop(), title, content.toString());
                         }
                         
-                        title = line.trim();
+                        title = line;
                         content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
                         content.append(line);
                         content.append("\n");
-                    } else if (line.trim().startsWith("at ")) {
+                    } else if (line.indexOf("at ") > 0) {
                         content.append(line);
                         content.append("\n");
-                    } else if (line.trim().startsWith("java.lang.Thread.State")) {
+                    } else if (line.indexOf("java.lang.Thread.State") > 0) {
                         content.append(line);
                         content.append("\n");
-                    } else if (line.trim().startsWith("Locked ownable synchronizers:")) {
+                    } else if (line.indexOf("Locked ownable synchronizers:") > 0) {
                         content.append(line);
                         content.append("\n");
-                    } else if (line.trim().startsWith("- waiting on")) {
+                    } else if (line.indexOf("- waiting on") > 0) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(sContent == null) {
                             sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                         }
-                        sContent.append(newLine.trim());
+                        sContent.append(newLine);
                         monitorStack.push(line);
                         sContent.append("\n");
                         content.append("\n");
-                    } else if (line.trim().startsWith("- waiting to")) {
+                    } else if (line.indexOf("- waiting to") > 0) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(wContent == null) {
                             wContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                         }
-                        wContent.append(newLine.trim());
+                        wContent.append(newLine);
                         monitorStack.push(line);
                         wContent.append("\n");
                         content.append("\n");
-                    } else if (line.trim().startsWith("- locked")) {
+                    } else if (line.indexOf("- locked") > 0) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(lContent == null) {
                             lContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                         }
-                        lContent.append(newLine.trim());
+                        lContent.append(newLine);
                         monitorStack.push(line);
                         lContent.append("\n");
                         content.append("\n");
-                    } else if (line.trim().startsWith("- ")) {
+                    } else if (line.indexOf("- ") > 0) {
                         content.append(line);
                         content.append("\n");
                     }
                     
                     // last thread reached?
-                    if(line.startsWith("\"Suspend Checker Thread\"") ||
-                       line.startsWith("\"VM Periodic Task Thread\"")) {
+                    if((line.indexOf("\"Suspend Checker Thread\"") > 0) ||
+                       (line.indexOf("\"VM Periodic Task Thread\"") > 0)) {
                         finished = true;
                         bis.mark(markSize);
                         if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
@@ -545,8 +545,8 @@ public class SunJDKParser implements DumpParser {
         int lineCounter = 0;
         
         while(bis.ready() && !finished) {
-            String line = bis.readLine();
-            if(!found && !line.trim().equals("")) {
+            String line = bis.readLine().trim();
+            if(!found && !line.equals("")) {
                 if (line.startsWith("num   #instances    #bytes  class name")) {
                     found = true;
                 } else if(lineCounter >= maxCheckLines) {
@@ -556,13 +556,13 @@ public class SunJDKParser implements DumpParser {
                 }
             } else if(found) {
                 if(line.startsWith("Total ")) {
-                    String newLine = line.trim().replaceAll("(\\s)+", ";");
+                    String newLine = line.replaceAll("(\\s)+", ";");
                     String[] elems = newLine.split(";");
                     classHistogram.setBytes(Long.parseLong(elems[2]));
                     classHistogram.setInstances(Long.parseLong(elems[1]));
                     finished = true;
                 } else if(!line.startsWith("-------")) {
-                    String newLine = line.trim().replaceAll("(\\s)+", ";");
+                    String newLine = line.replaceAll("(\\s)+", ";");
                     String[] elems = newLine.split(";");
                     
                     if(elems.length == 4) {
@@ -595,7 +595,7 @@ public class SunJDKParser implements DumpParser {
         
         while(bis.ready() && !finished) {            
             String line = bis.readLine();
-            if(!found && !line.trim().equals("")) {
+            if(!found && !line.equals("")) {
                 if (line.startsWith("Found one Java-level deadlock")) {
                     found = true;
                     dContent.append("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
@@ -617,26 +617,26 @@ public class SunJDKParser implements DumpParser {
                     dContent.append("Found one Java-level deadlock");
                     dContent.append("</b><hr></font><pre>\n");
                     first = true;
-                } else if(line.startsWith("Found") && (line.trim().endsWith("deadlocks.") || line.trim().endsWith("deadlock."))) {
+                } else if((line.indexOf("Found") > 0) && (line.endsWith("deadlocks.") || line.endsWith("deadlock."))) {
                     finished = true;
                 } else if(line.startsWith("=======")) {                    
                     // ignore this line
                 } else if(line.indexOf(" monitor 0x") >= 0) {
                     dContent.append(linkifyDeadlockInfo(line));
                     dContent.append("\n");
-                } else if(line.startsWith("Java stack information for the threads listed above")) {
+                } else if(line.indexOf("Java stack information for the threads listed above") > 0) {
                     dContent.append("</pre><br><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                     dContent.append("Java stack information for the threads listed above");
                     dContent.append("</b><hr></font><pre>");
                     first = true;
-                } else if (line.trim().startsWith("- waiting on") ||
-                           line.trim().startsWith("- waiting to") ||
-                           line.trim().startsWith("- locked")) {
+                } else if ((line.indexOf("- waiting on") > 0) ||
+                           (line.indexOf("- waiting to") > 0) ||
+                           (line.indexOf("- locked") > 0)) {
                     
                     dContent.append(linkifyMonitor(line));
                     dContent.append("\n");
                     
-                } else if(line.startsWith("\"")) {
+                } else if(line.indexOf("\"") > 0) {
                     dContent.append("</pre>");
                     if(first) {
                         first = false;

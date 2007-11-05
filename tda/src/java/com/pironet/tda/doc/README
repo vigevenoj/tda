@@ -12,6 +12,7 @@ Changes from 1.4 are:
 * Session now can be stored to disk (and loaded again).
 * expanded help overview.
 * Major code cleanup.
+* Improved memory footprint.
 * Bugfixing.
 
 Changes from 1.3 are:
