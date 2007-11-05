@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.2 2007-11-05 09:14:32 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.3 2007-11-05 13:03:05 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -134,7 +134,6 @@ public class SunJDKParser implements DumpParser {
         DefaultMutableTreeNode catLocking = null;
         DefaultMutableTreeNode catSleeping = null;
         DefaultMutableTreeNode catWaiting = null;
-        DefaultMutableTreeNode threadInfo = null;
         
         try {
             Map threads = new HashMap();
@@ -263,16 +262,16 @@ public class SunJDKParser implements DumpParser {
                         content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
                         content.append(line);
                         content.append("\n");
-                    } else if (line.indexOf("at ") > 0) {
+                    } else if (line.indexOf("at ") >= 0) {
                         content.append(line);
                         content.append("\n");
-                    } else if (line.indexOf("java.lang.Thread.State") > 0) {
+                    } else if (line.indexOf("java.lang.Thread.State") >= 0) {
                         content.append(line);
                         content.append("\n");
-                    } else if (line.indexOf("Locked ownable synchronizers:") > 0) {
+                    } else if (line.indexOf("Locked ownable synchronizers:") >= 0) {
                         content.append(line);
                         content.append("\n");
-                    } else if (line.indexOf("- waiting on") > 0) {
+                    } else if (line.indexOf("- waiting on") >= 0) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(sContent == null) {
@@ -282,7 +281,7 @@ public class SunJDKParser implements DumpParser {
                         monitorStack.push(line);
                         sContent.append("\n");
                         content.append("\n");
-                    } else if (line.indexOf("- waiting to") > 0) {
+                    } else if (line.indexOf("- waiting to") >= 0) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(wContent == null) {
@@ -292,7 +291,7 @@ public class SunJDKParser implements DumpParser {
                         monitorStack.push(line);
                         wContent.append("\n");
                         content.append("\n");
-                    } else if (line.indexOf("- locked") > 0) {
+                    } else if (line.indexOf("- locked") >= 0) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(lContent == null) {
@@ -302,14 +301,14 @@ public class SunJDKParser implements DumpParser {
                         monitorStack.push(line);
                         lContent.append("\n");
                         content.append("\n");
-                    } else if (line.indexOf("- ") > 0) {
+                    } else if (line.indexOf("- ") >= 0) {
                         content.append(line);
                         content.append("\n");
                     }
                     
                     // last thread reached?
-                    if((line.indexOf("\"Suspend Checker Thread\"") > 0) ||
-                       (line.indexOf("\"VM Periodic Task Thread\"") > 0)) {
+                    if((line.indexOf("\"Suspend Checker Thread\"") >= 0) ||
+                       (line.indexOf("\"VM Periodic Task Thread\"") >= 0)) {
                         finished = true;
                         bis.mark(markSize);
                         if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
@@ -617,26 +616,26 @@ public class SunJDKParser implements DumpParser {
                     dContent.append("Found one Java-level deadlock");
                     dContent.append("</b><hr></font><pre>\n");
                     first = true;
-                } else if((line.indexOf("Found") > 0) && (line.endsWith("deadlocks.") || line.endsWith("deadlock."))) {
+                } else if((line.indexOf("Found") >= 0) && (line.endsWith("deadlocks.") || line.endsWith("deadlock."))) {
                     finished = true;
                 } else if(line.startsWith("=======")) {                    
                     // ignore this line
                 } else if(line.indexOf(" monitor 0x") >= 0) {
                     dContent.append(linkifyDeadlockInfo(line));
                     dContent.append("\n");
-                } else if(line.indexOf("Java stack information for the threads listed above") > 0) {
+                } else if(line.indexOf("Java stack information for the threads listed above") >= 0) {
                     dContent.append("</pre><br><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                     dContent.append("Java stack information for the threads listed above");
                     dContent.append("</b><hr></font><pre>");
                     first = true;
-                } else if ((line.indexOf("- waiting on") > 0) ||
-                           (line.indexOf("- waiting to") > 0) ||
-                           (line.indexOf("- locked") > 0)) {
+                } else if ((line.indexOf("- waiting on") >= 0) ||
+                           (line.indexOf("- waiting to") >= 0) ||
+                           (line.indexOf("- locked") >= 0)) {
                     
                     dContent.append(linkifyMonitor(line));
                     dContent.append("\n");
                     
-                } else if(line.indexOf("\"") > 0) {
+                } else if(line.startsWith("\"")) {
                     dContent.append("</pre>");
                     if(first) {
                         first = false;
