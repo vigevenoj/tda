@@ -3,6 +3,7 @@
 <link rel="stylesheet" type="text/css" href="stylesheet.css" title="Style">
 <body bgcolor="ffffff">
 <h2>TDA - Thread Dump Analyzer Overview</h2>
+<hr/><i>Version 1.5, Copyright 2007 by Ingo Rockel <a href="mailto:irockel@dev.java.net">&lt;irockel@dev.java.net&gt;</a></i>
 <p><h3>Contents</h3>
     <ol>
     <li><a href="#introduction">Introduction</a></li>
@@ -12,6 +13,7 @@
     <li><a href="#filters">Using filters</a></li>
     <li><a href="#deadlocks">Deadlocks</a></li>
     <li><a href="#plugin">Running as JConsole Plugin</a></li>
+    <li><a href="#sessions">Using Sessions</a></li>
     <li name="A"><a href="#help">Get Help</a></li>
     <li name="B"><a href="#references">References</a></li>
     </ol>
@@ -154,13 +156,20 @@ detection for java level deadlocks itself, it relies on the deadlock detection o
    in the dump summury and gives you hints what to do next.</p>
    
 <p><a name="plugin"><h3>Running as JConsole Plugin</h3></a>
-  TDA can be used as plugin in the JVM utility JConsole. Use the following to start JConsole with TDA as plugin: 
-  <code>jconsole -pluginpath ./tda.jar</code>.</p>
+  TDA can be used as plugin in the JVM utility JConsole. Use the following to start JConsole with TDA as plugin: </p>
+  <pre>jconsole -pluginpath ./tda.jar</pre>
   
   <p>The Plugin offers requesting thread dumps from a remote Virtual Machine through JMX. The Dumps are
-  parsed and can be analyzed just like running as standalone-application. The upper-right-frame has a popup menu offering 
-the plugin features. The requested Thread Dumps can also be stored as Logfile for later offline analysis.</p>
+  parsed and can be analyzed just like running as standalone-application. The upper-right-frame showing the dump tree has a popup menu offering 
+the plugin features. The toolbar is also available for convenience, it can be switched off using the popup menu. The requested Thread Dumps can 
+also be stored as Logfile for later offline analysis. The plugin supports requesting thread dumps from 1.5 and 1.6 VMs. The extended informations
+from 1.6 are not parsed yet though (e.g. informations about locked synchronizers). But they are saved to the logfile also.</p>
    
+<p><a name="sessions"><h3>Using Sessions</h3></a>
+If you opened several logfiles and you want to quit TDA and go back to this logfiles later, you can store the open logfiles to a session file.
+The logfile tree then is dumped into a session file for later usage. You must keep the logfiles if you want to be able to browse them again. For the
+tree navigation they are not necessary.</p>
+
 <p><a name="help"><h3>Get Help</h3></a>
 If you need additional help or have suggestions, comments go to the <a href="http://tda.dev.java.net/">TDA page on dev.java.net</a>. 
 There you can ask questions in the forum.</p>
