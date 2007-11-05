@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.120 2007-11-04 18:15:51 irockel Exp $
+ * $Id: TDA.java,v 1.121 2007-11-05 13:21:34 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -109,7 +109,6 @@ import javax.swing.tree.TreePath;
 public class TDA extends JPanel implements TreeSelectionListener, ActionListener, MenuListener {
     private static JFileChooser fc;
     private static JFileChooser sessionFc;
-    private static boolean DEBUG = false;
     private static int DIVIDER_SIZE = 4;
     protected static JFrame frame;
     
@@ -948,7 +947,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 jeditPane.setFirstLine(lineNumber-1);
             }
            
-            System.out.println("lineNumber " + lineNumber);
+            //System.out.println("lineNumber " + lineNumber);
         }
     }
     
