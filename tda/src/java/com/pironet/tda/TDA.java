@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.122 2007-11-05 16:27:08 irockel Exp $
+ * $Id: TDA.java,v 1.123 2007-11-06 08:40:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -714,7 +714,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         htmlPane.setContentType("text/html");
         htmlPane.setText("");
         htmlPane.setCaretPosition(0);
-        topSplitPane.setRightComponent(null);
+        threadDisplay = false;
     }
     
     private void displayLogFileContent(Object nodeInfo) {
@@ -760,6 +760,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         } else {
             needDividerPos = true;
         }
+        setThreadDisplay(true);
         if(cat.getLastView() == null) {
             JTree catTree = cat.getCatTree(this);
             catTree.addMouseListener(getCatPopupMenu());
@@ -805,7 +806,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
     
     private void displayTable(HistogramTableModel htm) {
-        topSplitPane.setRightComponent(null);
+        setThreadDisplay(false);
+
         htm.setFilter("");
         htm.setShowHotspotClasses(PrefManager.get().getShowHotspotClasses());
         
