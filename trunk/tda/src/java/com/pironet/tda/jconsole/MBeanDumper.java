@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.11 2007-11-06 09:37:08 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.12 2007-11-06 09:42:47 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -38,6 +38,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.swing.JOptionPane;
 
 /**
  * Request a Thread Dump via the given MBeanServerConnection, can only be
@@ -117,7 +118,13 @@ public class MBeanDumper {
                 retries = 5;
             } catch (NullPointerException npe) {
                 if (retries >= CONNECT_RETRIES) {
-                    throw npe;
+                    JOptionPane.showMessageDialog(null,
+                                    "Error requesting dump using the JMX Connection. Remote VM returned nothing.\n" +
+                                    "You can try to reconnect or just simply try to request a dump again.",                                    
+                                    "Error during requesting Dump", JOptionPane.ERROR_MESSAGE);
+                    
+                    // return empty string;
+                    return("");
                 }
                 try {
                     // workaround for unstable connections.
