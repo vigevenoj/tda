@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.9 2007-11-06 08:45:46 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.10 2007-11-06 08:57:09 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -139,7 +139,7 @@ public class MBeanDumper {
      */
     private String getDumpDate() {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-        return(sdfDate.format(new Date(System.currentTimeMillis())));
+        return(sdfDate.format(new Date()));
     }
 
     private void dumpThreadInfo(StringBuilder dump) {
