@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: RootSuite.java,v 1.1 2006-05-09 13:50:47 irockel Exp $
+ * $Id: RootSuite.java,v 1.2 2007-11-06 09:36:37 irockel Exp $
  */
 import junit.framework.*;
 
@@ -43,7 +43,6 @@ public class RootSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("RootSuite");
         suite.addTest(com.pironet.tda.TdaSuite.suite());
-        suite.addTest(com.pironet.tda.utils.UtilsSuite.suite());
         return suite;
     }
     

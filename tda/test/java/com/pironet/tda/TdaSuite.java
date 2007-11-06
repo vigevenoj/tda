@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TdaSuite.java,v 1.2 2007-11-02 08:43:05 irockel Exp $
+ * $Id: TdaSuite.java,v 1.3 2007-11-06 09:36:36 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -46,7 +46,6 @@ public class TdaSuite extends TestCase {
         TestSuite suite = new TestSuite("TdaSuite");
         suite.addTest(com.pironet.tda.DumpParserFactoryTest.suite());
         suite.addTest(com.pironet.tda.SunJDKParserTest.suite());
-        suite.addTest(com.pironet.tda.MonitorMapTest.suite());
         return suite;
     }
     
