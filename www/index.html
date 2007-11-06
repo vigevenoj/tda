@@ -6,7 +6,21 @@
 
 <h2>News</h2>
 <p>More News in my <a href="http://www.jroller.com/page/dumpster">weblog</a>.</p>
-<p><b>[2007/10/30]</b> Beta 1.5 relase of TDA available. This release includes: 
+<p><b>[2007/11/06]</b> 1.5 release of TDA available. This release includes: 
+    <ul>
+       <li>Added jconsole plugin support, TDA can now be used as jconsole plugin.</li>
+       <li>Added ability to request thread dumps via JMX if running as jconsole plugin.</li>
+       <li>JMX Dumps can be saved into logfile for later offline usage.</li>
+       <li>Session now can be stored to disk (and loaded again).</li>
+       <li>Extended help overview.</li>
+       <li>Major code cleanup.</li>
+       <li>Improved memory footprint.</li>
+       <li>Added splash-screen (JDK 1.6 only).</li>
+       <li>Bugfixing.</li>
+    </ul>
+    </p>
+    See <a href="http://www.jroller.com/dumpster/entry/tda_thread_dump_analyzer_version">my blog</a> for further informationen.
+<p><b>[2007/10/30]</b> Beta 1.5 release of TDA available. This release includes: 
     <ul>
        <li>Added jconsole plugin support, TDA can now be used as jconsole plugin.
        <li>Added ability to request thread dumps via JMX if running as jconsole plugin.
@@ -14,7 +28,7 @@
     </ul>
 See <a href="http://www.jroller.com/dumpster/entry/tda_as_jconsole_plugin">my blog</a> for further informationen.
 </p>
-<p><b>[2007/10/26]</b> 1.4 relase of TDA done. This release includes: 
+<p><b>[2007/10/26]</b> 1.4 release of TDA done. This release includes: 
     <ul>
        <li>Full logfile is added as node (loaded up to specified size).
        <li>Added Thread Dump navigation into logfile.
@@ -25,7 +39,7 @@ See <a href="http://www.jroller.com/dumpster/entry/tda_as_jconsole_plugin">my bl
        <li>Bugfixing.</li>
     </ul>
 </p>
-<p><b>[2007/06/05]</b> 1.3 relase of TDA done. This release includes: 
+<p><b>[2007/06/05]</b> 1.3 release of TDA done. This release includes: 
     <ul>
         <li>Improved Dump navigation.</li>
         <li>Added context sensitive information about dumps.</li>
@@ -35,7 +49,7 @@ See <a href="http://www.jroller.com/dumpster/entry/tda_as_jconsole_plugin">my bl
     </ul>
 </p>
 
-<p><b>[2007/05/07]</b> 1.2 relase of TDA finally done. This release includes: 
+<p><b>[2007/05/07]</b> 1.2 release of TDA finally done. This release includes: 
 <ul>
 <li>Ability to filter the threads display to be able to ignore e.g. idle threads.</li>
 <li>Improved gui layout for better navigation (three pane view instead of two).</li>
@@ -68,7 +82,7 @@ See <a href="http://www.jroller.com/dumpster/entry/tda_as_jconsole_plugin">my bl
 <p><b>[2006/03/29]</b> Fixed beta (updated download file) to work with JDK 1.4 and some other small bug fixes.</p>
 
 <h2>Launch TDA</h2>
-<p><a href="tda.jnlp"><img border="0" src="webstart.gif"></a> Launch the current TDA 1.4 release from the browser (requires Java Webstart). On Windows it will automatically create a shortcut on your desktop and in your Windows menu. Unfortuneately there is no way to tell Java Webstart to ask first if you want to install the shortcut.</p>
+<p><a href="tda.jnlp"><img border="0" src="webstart.gif"></a> Launch the current TDA 1.5 release from the browser (requires Java Webstart). On Windows it will automatically create a shortcut on your desktop and in your Windows menu. Unfortuneately there is no way to tell Java Webstart to ask first if you want to install the shortcut.</p>
 
 <h2>Background</h2>
 <p>There is a quite nice Thread Dump Analysis Tool for Websphere environments but which only works with IBM JDKs. Motivation for
@@ -88,8 +102,8 @@ Features are in detail:
 <li>displays deadlock information from the thread dump,
 <li>displays hints about possible problems in the analyzed dumps and
 <li>ability to add additional logfiles (useful if logfiles are rotated) or open many at once.
-<li>Session handling to be able to reopen a tda session (done for upcoming 1.5 release).
-<li>Integration into JConsole as plugin (done for upcoming 1.5 release).
+<li>Session handling to be able to reopen a tda session.
+<li>Integration into JConsole as plugin.
 </ul>
 </p>
 <p>Features planned:
@@ -106,18 +120,18 @@ The emphasis of the TDA is to provide analysis support of offline information ga
 <p>TDA includes a help overview giving detailed information on how to use the tool.</p>
 
 <h2>Screenshots</h2>
-<p><b>1.4 Final</b><br>
-<a href="./threaddump.png"><img src="./threaddump-small.png"></a> <a href="./info.png"><img src="./info-small.png"></a> <a href="./deadlock.png"><img src="./deadlock-small.png"></a> <a href="./histogram.png"><img src="./histogram-small.png"></a>
+<p><b>1.5 Final</b><br>
+<a href="./threaddump.png"><img src="./threaddump-small.png"></a> <a href="./info.png"><img src="./info-small.png"></a> <a href="./deadlock.png"><img src="./deadlock-small.png"></a> <a href="./histogram.png"><img src="./histogram-small.png"></a> <a href="./jconsole.png"><img src="./jconsole-small.png"></a>
 
 
 <h2>Download</h2>
 <p>
-You can either download the 1.4 Final release in the <a href="/servlets/ProjectDocumentList">files</a> section or install it through Java Webstart, which is prefered (see <a href="tda.jnlp">link</a> above). Look at the usage overview in the help menu for further information. Start scripts in zip distribution are quite basic, look inside them, you might need to adjust the memory settings if you want to parse very huge log files (>250MB).</p>
+You can either download the 1.5 Final release in the <a href="/servlets/ProjectDocumentList">files</a> section or install it through Java Webstart, which is prefered (see <a href="tda.jnlp">link</a> above). Look at the usage overview in the help menu for further information. Start scripts in zip distribution are quite basic, look inside them, you might need to adjust the memory settings if you want to parse very huge log files (>250MB).</p>
 
 <h2>Participation</h2>
 <p>Please reports problems, make suggestions and ask questions in the <a href="/servlets/ForumMessageList?forumID=1967">discussion forum</a>.</p>
 
-<p><i>Last Change: $Id: index.html,v 1.55 2007-11-01 15:45:01 irockel Exp $</i></p>
+<p><i>Last Change: $Id: index.html,v 1.56 2007-11-06 10:05:12 irockel Exp $</i></p>
 <!-- Start of StatCounter Code -->
 <script type="text/javascript">
 var sc_project=2795907; 
