@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAPlugin.java,v 1.2 2007-11-01 11:04:06 irockel Exp $
+ * $Id: TDAPlugin.java,v 1.3 2007-11-06 15:47:36 irockel Exp $
  */
 
 package com.pironet.tda.jconsole;
@@ -29,11 +29,8 @@ import com.sun.tools.jconsole.JConsolePlugin;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.management.MBeanServerConnection;
 import javax.swing.SwingWorker;
 
 /**
@@ -41,8 +38,7 @@ import javax.swing.SwingWorker;
  */
 public class TDAPlugin extends JConsolePlugin implements PropertyChangeListener
 {
-    private MBeanServerConnection server;
-    private ThreadMXBean tmbean;
+    private MBeanDumper mBeanDumper;
     private TDA tda = null;
     private Map tabs = null;
 
@@ -57,8 +53,7 @@ public class TDAPlugin extends JConsolePlugin implements PropertyChangeListener
     public synchronized Map getTabs() {
         if (tabs == null) {
             try {
-                setMBeanServerConnection(getContext().getMBeanServerConnection());
-                MBeanDumper mBeanDumper = new MBeanDumper(server);
+                mBeanDumper = new MBeanDumper(getContext().getMBeanServerConnection());
                 tda = new TDA(false, mBeanDumper);
                 
                 tda.init(true);
@@ -89,12 +84,12 @@ public class TDAPlugin extends JConsolePlugin implements PropertyChangeListener
             this.tda = tda;
         }
                                                                                 
-        // fire table data changed to trigger GUI update
-        // when doInBackground() is finished
         protected void done() {
+            // nothing to do atm
         }
 
         protected Object doInBackground() throws Exception {
+            // nothing to do atm
             return null;
         }
     }    
@@ -106,7 +101,6 @@ public class TDAPlugin extends JConsolePlugin implements PropertyChangeListener
     public void propertyChange(PropertyChangeEvent ev) {
         String prop = ev.getPropertyName();
         if (JConsoleContext.CONNECTION_STATE_PROPERTY.equals(prop)) {
-            ConnectionState oldState = (ConnectionState)ev.getOldValue();
             ConnectionState newState = (ConnectionState)ev.getNewValue();
             
             /* 
@@ -116,17 +110,10 @@ public class TDAPlugin extends JConsolePlugin implements PropertyChangeListener
                created at reconnection time. 
              */
             if (newState == ConnectionState.CONNECTED && tda != null) {
-                setMBeanServerConnection(getContext().getMBeanServerConnection());
+                mBeanDumper.setMBeanServerConnection(getContext().getMBeanServerConnection());
             }
         }
     }
 
-    private void setMBeanServerConnection(MBeanServerConnection mbs) {
-        this.server = mbs;
-        try {
-            this.tmbean = (ThreadMXBean) ManagementFactory.newPlatformMXBeanProxy(server, ManagementFactory.THREAD_MXBEAN_NAME, ThreadMXBean.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    
 }

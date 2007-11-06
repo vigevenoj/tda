@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.12 2007-11-06 09:42:47 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.13 2007-11-06 15:47:36 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -65,10 +65,7 @@ public class MBeanDumper {
      * in a remote JVM.
      */
     public MBeanDumper(MBeanServerConnection server) throws IOException {
-       this.server = server;
-       this.tmbean = (ThreadMXBean) ManagementFactory.newPlatformMXBeanProxy(server,
-                                            ManagementFactory.THREAD_MXBEAN_NAME,
-                                            ThreadMXBean.class);
+       setMBeanServerConnection(server);
        try {
            objname = new ObjectName(ManagementFactory.THREAD_MXBEAN_NAME);
         } catch (MalformedObjectNameException e) {
@@ -336,5 +333,18 @@ public class MBeanDumper {
             ie.initCause(e);
             throw ie;
         }
-    }    
+    }
+    
+    /**
+     * reset mbean server connection
+     * @param mbs
+     */
+    void setMBeanServerConnection(MBeanServerConnection mbs) {
+        this.server = mbs;
+        try {
+            this.tmbean = (ThreadMXBean) ManagementFactory.newPlatformMXBeanProxy(server, ManagementFactory.THREAD_MXBEAN_NAME, ThreadMXBean.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
