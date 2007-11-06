@@ -17,18 +17,20 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParserTest.java,v 1.1 2007-11-02 08:43:05 irockel Exp $
+ * $Id: SunJDKParserTest.java,v 1.2 2007-11-06 09:36:36 irockel Exp $
  */
 package com.pironet.tda;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
 import junit.framework.*;
 import java.util.Map;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
+import java.util.Vector;
 
 /**
- *
+ * test parsing of log files from sun vms.
  * @author irockel
  */
 public class SunJDKParserTest extends TestCase {
@@ -52,133 +54,60 @@ public class SunJDKParserTest extends TestCase {
     /**
      * Test of hasMoreDumps method, of class com.pironet.tda.SunJDKParser.
      */
-    public void testHasMoreDumps() {
-        System.out.println("hasMoreDumps");
+    public void testDumpLoad() throws FileNotFoundException, IOException {
+        System.out.println("dumpLoad");
+        FileInputStream fis = null;
+        DumpParser instance = null;
         
-        SunJDKParser instance = null;
-        
-        boolean expResult = true;
-        boolean result = instance.hasMoreDumps();
-        assertEquals(expResult, result);
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            fis = new FileInputStream("test/none/test.log");
+            Map dumpMap = new HashMap();
+            Vector topNodes = new Vector();
+            instance = DumpParserFactory.get().getDumpParserForVersion(System.getProperty("java.version"), fis, dumpMap, false);
+
+            while (instance.hasMoreDumps()) {
+                topNodes.add(instance.parseNext());
+            }
+
+            // check if three dumps are in it.
+            assertEquals(3, topNodes.size());
+        } finally {
+            if(instance != null) {
+                instance.close();
+            }
+            if(fis != null) {
+                fis.close();
+            }
+        }
     }
 
     /**
      * Test of isFoundClassHistograms method, of class com.pironet.tda.SunJDKParser.
      */
-    public void testIsFoundClassHistograms() {
+    public void testIsFoundClassHistograms() throws FileNotFoundException, IOException {
         System.out.println("isFoundClassHistograms");
-        
-        SunJDKParser instance = null;
-        
-        boolean expResult = true;
-        boolean result = instance.isFoundClassHistograms();
-        assertEquals(expResult, result);
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DumpParser instance = null;
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream("test/none/testwithhistogram.log");
+            Map dumpMap = new HashMap();
+            instance = DumpParserFactory.get().getDumpParserForVersion(System.getProperty("java.version"), fis, dumpMap, false);
+            
+            Vector topNodes = new Vector();
+            while (instance.hasMoreDumps()) {
+                topNodes.add(instance.parseNext());
+            }
+            
+            boolean expResult = true;
+            boolean result = instance.isFoundClassHistograms();
+            assertEquals(expResult, result);        
+        } finally {
+            if(instance != null) {
+                instance.close();
+            }
+            if(fis != null) {
+                fis.close();
+            }
+        }
     }
-
-    /**
-     * Test of parseNext method, of class com.pironet.tda.SunJDKParser.
-     */
-    public void testParseNext() {
-        System.out.println("parseNext");
-        
-        SunJDKParser instance = null;
-        
-        MutableTreeNode expResult = null;
-        MutableTreeNode result = instance.parseNext();
-        assertEquals(expResult, result);
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of parseLoggcFile method, of class com.pironet.tda.SunJDKParser.
-     */
-    public void testParseLoggcFile() {
-        System.out.println("parseLoggcFile");
-        
-        /*InputStream loggcFileStream = null;
-        DefaultMutableTreeNode root = null;
-        Map dumpStore = null;
-        SunJDKParser instance = null;
-        
-        instance.parseLoggcFile(loggcFileStream, root, dumpStore);*/
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setDumpHistogramCounter method, of class com.pironet.tda.SunJDKParser.
-     */
-    public void testSetDumpHistogramCounter() {
-        System.out.println("setDumpHistogramCounter");
-        
-        int value = 0;
-        SunJDKParser instance = null;
-        
-        instance.setDumpHistogramCounter(value);
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of findLongRunningThreads method, of class com.pironet.tda.SunJDKParser.
-     */
-    public void testFindLongRunningThreads() {
-        System.out.println("findLongRunningThreads");
-        
-        DefaultMutableTreeNode root = null;
-        Map dumpStore = null;
-        TreePath[] paths = null;
-        int minOccurence = 0;
-        String regex = "";
-        SunJDKParser instance = null;
-        
-        instance.findLongRunningThreads(root, dumpStore, paths, minOccurence, regex);
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of mergeDumps method, of class com.pironet.tda.SunJDKParser.
-     */
-    public void testMergeDumps() {
-        System.out.println("mergeDumps");
-        
-        DefaultMutableTreeNode root = null;
-        Map dumpStore = null;
-        TreePath[] dumps = null;
-        int minOccurence = 0;
-        String regex = "";
-        SunJDKParser instance = null;
-        
-        instance.mergeDumps(root, dumpStore, dumps, minOccurence, regex);
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of close method, of class com.pironet.tda.SunJDKParser.
-     */
-    public void testClose() throws Exception {
-        System.out.println("close");
-        
-        SunJDKParser instance = null;
-        
-        instance.close();
-        
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
 }
