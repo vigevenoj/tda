@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.10 2007-11-06 08:57:09 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.11 2007-11-06 09:37:08 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -129,6 +129,7 @@ public class MBeanDumper {
                 retries++;
             }
         }
+        dump.append("\n<EndOfDump>\n\n");
         
         return(dump.toString());
     }

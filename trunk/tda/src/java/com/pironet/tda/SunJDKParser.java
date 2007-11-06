@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.4 2007-11-05 14:12:12 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.5 2007-11-06 09:37:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -308,7 +308,8 @@ public class SunJDKParser implements DumpParser {
                     
                     // last thread reached?
                     if((line.indexOf("\"Suspend Checker Thread\"") >= 0) ||
-                       (line.indexOf("\"VM Periodic Task Thread\"") >= 0)) {
+                       (line.indexOf("\"VM Periodic Task Thread\"") >= 0) ||
+                       (line.indexOf("<EndOfDump>") >= 0)) {
                         finished = true;
                         bis.mark(markSize);
                         if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
