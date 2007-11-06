@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.8 2007-11-05 09:25:27 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.9 2007-11-06 08:45:46 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -46,6 +46,8 @@ import javax.management.ReflectionException;
  * @author irockel
  */
 public class MBeanDumper {
+    private static int CONNECT_RETRIES = 10;
+    
     private MBeanServerConnection server;
     private ThreadMXBean tmbean;
     private ObjectName objname;
@@ -114,7 +116,7 @@ public class MBeanDumper {
                 // finished
                 retries = 5;
             } catch (NullPointerException npe) {
-                if (retries >= 5) {
+                if (retries >= CONNECT_RETRIES) {
                     throw npe;
                 }
                 try {
