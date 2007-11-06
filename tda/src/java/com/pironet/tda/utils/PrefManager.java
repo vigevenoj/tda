@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.22 2007-11-01 15:35:25 irockel Exp $
+ * $Id: PrefManager.java,v 1.23 2007-11-06 08:45:22 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -27,8 +27,6 @@ import com.pironet.tda.filter.Filter;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.DefaultListModel;
