@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAPlugin.java,v 1.3 2007-11-06 15:47:36 irockel Exp $
+ * $Id: TDAPlugin.java,v 1.4 2007-11-07 17:02:05 irockel Exp $
  */
 
 package com.pironet.tda.jconsole;
@@ -56,7 +56,7 @@ public class TDAPlugin extends JConsolePlugin implements PropertyChangeListener
                 mBeanDumper = new MBeanDumper(getContext().getMBeanServerConnection());
                 tda = new TDA(false, mBeanDumper);
                 
-                tda.init(true);
+                tda.init(true, false);
                 tabs = new LinkedHashMap();
                 tabs.put("Thread Dumps", tda);
             } catch (IOException ex) {
