@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.123 2007-11-06 08:40:45 irockel Exp $
+ * $Id: TDA.java,v 1.124 2007-11-07 17:02:06 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -138,7 +138,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private LongThreadDialog longThreadDialog;
     private JTable histogramTable;
     private JMenuItem showDumpMenuItem;
-    private boolean runningAsPlugin;
+    boolean runningAsJConsolePlugin;
+    boolean runningAsNetbeansPlugin;
     private DefaultMutableTreeNode logFile;
     private MBeanDumper mBeanDumper;
     private MainMenu pluginMainMenu;
@@ -183,10 +184,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      * initializes tda panel
      * @param asPlugin specifies if tda is running as plugin
      */
-    public void init(boolean asPlugin) {
+    public void init(boolean asJConsolePlugin, boolean asNetbeansPlugin) {
         // init everything
         tree = new JTree();
-        runningAsPlugin = asPlugin;
+        runningAsJConsolePlugin = asJConsolePlugin;
+        runningAsNetbeansPlugin = asNetbeansPlugin;
         
         //Create the HTML viewing pane.
         htmlPane = new JEditorPane("text/html", getInfoText());
@@ -250,16 +252,21 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Add the split pane to this panel.
         add(htmlView, BorderLayout.CENTER);
         
-        statusBar = new StatusBar(!asPlugin);
+        statusBar = new StatusBar(!(asJConsolePlugin || asNetbeansPlugin));
         add(statusBar, BorderLayout.SOUTH);
 
         firstFile = true;
         setFileOpen(false);
         
-        //if(!asPlugin) {
-            // toolbar
-            setShowToolbar(PrefManager.get().getShowToolbar());        
-        //}
+        setShowToolbar(PrefManager.get().getShowToolbar());        
+        
+        
+        if(firstFile && runningAsNetbeansPlugin) {
+            // init filechooser
+            fc = new JFileChooser();
+            fc.setMultiSelectionEnabled(true);
+            fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
+        }
     }
 
     private void addMXBeanDump() {
@@ -492,7 +499,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         info.append("Version: <b>");
         info.append(AppInfo.getVersion());
         info.append("</b><p>");
-        if(runningAsPlugin) {
+        if(runningAsJConsolePlugin) {
             info.append("<a href=\"threaddump://\">Request Thread Dump...</a>");
         } else {
             info.append("Select File/Open to open your log file with thread dumps to start analyzing these thread dumps.<p>See Help/Overview for information on how to obtain a thread dump from your VM.</p></font></body></html>");
@@ -508,7 +515,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         dumpStore = new DumpStore();
 
         topNodes = new Vector();
-        if(!runningAsPlugin) {
+        if(!runningAsJConsolePlugin) {
             getMainMenu().getLongMenuItem().setEnabled(true);
             getMainMenu().getCloseMenuItem().setEnabled(true);
             getMainMenu().getSaveSessionMenuItem().setEnabled(true);
@@ -519,7 +526,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 addDumpFile();
             }
         }
-        if(runningAsPlugin || isFileOpen()) {
+        if(runningAsJConsolePlugin || isFileOpen()) {
             if(topSplitPane.getDividerLocation() <= 0) {
                 topSplitPane.setDividerLocation(200);
             }
@@ -579,7 +586,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         final InputStream parseFileStream = new ProgressMonitorInputStream(this, "Parsing " + file, inputStream);
 
         //Create the nodes.
-        if(!runningAsPlugin || topNodes.size() == 0) {
+        if(!runningAsJConsolePlugin || topNodes.size() == 0) {
             topNodes.add(new DefaultMutableTreeNode(new Logfile(file)));
         }
         final DefaultMutableTreeNode top = (DefaultMutableTreeNode) topNodes.get(topNodes.size()-1);
@@ -612,8 +619,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Create a tree that allows multiple selection at a time.
         if(topNodes.size() == 1) {
             tree = new JTree((DefaultMutableTreeNode) topNodes.get(0));
-            tree.setRootVisible(!runningAsPlugin);
-            if(!runningAsPlugin) {
+            tree.setRootVisible(!runningAsJConsolePlugin);
+            if(!runningAsJConsolePlugin && !runningAsNetbeansPlugin) {
                 frame.setTitle("TDA - Thread Dumps of " + dumpFile);
             }
         } else {
@@ -623,7 +630,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             tree = new JTree(root);
             tree.setRootVisible(false);
-            if(!runningAsPlugin) {
+            if(!runningAsJConsolePlugin && !runningAsNetbeansPlugin) {
                 frame.setTitle(frame.getTitle() + " ...");
             }
         }
@@ -898,7 +905,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             String fileName = top.getUserObject().toString();
             Map dumpMap = new HashMap();
             dumpStore.addFileToDumpFiles(fileName, dumpMap);
-            dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, dumpMap, runningAsPlugin);
+            dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, dumpMap, runningAsJConsolePlugin);
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
             }
@@ -1038,7 +1045,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             return((MainMenu) frame.getJMenuBar());
         } else {
             if(pluginMainMenu == null) {
-                pluginMainMenu = new MainMenu(this, runningAsPlugin);
+                pluginMainMenu = new MainMenu(this);
             }
             return(pluginMainMenu);
         }
@@ -1060,7 +1067,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         showDumpMenuItem = new JMenuItem("Show selected Dump in logfile");
         showDumpMenuItem.addActionListener(this);
         showDumpMenuItem.setEnabled(false);
-        if(!runningAsPlugin) {
+        if(!runningAsJConsolePlugin) {
             popup.addSeparator();
             menuItem = new JMenuItem("Parse loggc-logfile...");
             menuItem.addActionListener(this);
@@ -1517,7 +1524,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 removeAll();
                 revalidate();
                 
-                init(false);
+                init(runningAsJConsolePlugin, runningAsNetbeansPlugin);
                 getMainMenu().getLongMenuItem().setEnabled(false);
                 getMainMenu().getCloseMenuItem().setEnabled(false);
                 getMainMenu().getSaveSessionMenuItem().setEnabled(false);
@@ -1560,7 +1567,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         removeAll();
         revalidate();
         
-        init(false);
+        init(runningAsJConsolePlugin, runningAsNetbeansPlugin);
         revalidate();
         
         getMainMenu().getLongMenuItem().setEnabled(false);
@@ -1723,7 +1730,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         frame.getRootPane().setPreferredSize(PrefManager.get().getPreferredSize());
         
         frame.setJMenuBar(new MainMenu(TDA.get(true)));
-        TDA.get(true).init(false);
+        TDA.get(true).init(false, false);
         
         //Create and set up the content pane.
         if(dumpFile != null) {
