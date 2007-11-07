@@ -6,11 +6,9 @@
 package com.pironet.tda.netbeans;
 
 import com.pironet.tda.TDA;
-import com.pironet.tda.utils.PrefManager;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.openide.util.NbBundle;
