@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.13 2007-11-06 15:47:36 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.14 2007-11-07 10:24:02 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -95,7 +95,7 @@ public class MBeanDumper {
     public String threadDump() {
         StringBuilder dump = new StringBuilder();
         int retries = 0;
-        while(retries < 5) {
+        while(retries < CONNECT_RETRIES) {
             try {
                 if (canDumpLocks) {
                     if (tmbean.isObjectMonitorUsageSupported() &&
@@ -112,7 +112,7 @@ public class MBeanDumper {
                     dumpThreadInfo(dump);
                 }
                 // finished
-                retries = 5;
+                retries = CONNECT_RETRIES;
             } catch (NullPointerException npe) {
                 if (retries >= CONNECT_RETRIES) {
                     JOptionPane.showMessageDialog(null,
