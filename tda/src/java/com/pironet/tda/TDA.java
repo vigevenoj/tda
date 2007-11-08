@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.125 2007-11-08 15:16:38 irockel Exp $
+ * $Id: TDA.java,v 1.126 2007-11-08 17:04:22 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -143,6 +143,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private DefaultMutableTreeNode logFile;
     private MBeanDumper mBeanDumper;
     private MainMenu pluginMainMenu;
+    private boolean isFoundClassHistogram = false;
     
     private StatusBar statusBar;
     
@@ -908,6 +909,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, dumpMap, runningAsJConsolePlugin);
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
+                if(!isFoundClassHistogram) {
+                    isFoundClassHistogram = dp.isFoundClassHistograms();
+                }
             }
         } finally {
             if(dp != null) {
@@ -1073,7 +1077,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             popup.addSeparator();
             menuItem = new JMenuItem("Parse loggc-logfile...");
             menuItem.addActionListener(this);
+            if(!PrefManager.get().getForceLoggcLoading()) {
+                menuItem.setEnabled(!isFoundClassHistogram);
+            }
             popup.add(menuItem);
+            
             menuItem = new JMenuItem("Close logfile...");
             menuItem.addActionListener(this);
             popup.add(menuItem);
