@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.124 2007-11-07 17:02:06 irockel Exp $
+ * $Id: TDA.java,v 1.125 2007-11-08 15:16:38 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -976,10 +976,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         DefaultMutableTreeNode monitorWithoutLocksNode = null;
         while(childs.hasMoreElements()) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) childs.nextElement();
-            if(((Category) child.getUserObject()).getName().startsWith("Monitors (")) {
-                monitorNode = child;
-            } else if(((Category) child.getUserObject()).getName().startsWith("Monitors without")) {
-                monitorWithoutLocksNode = child;
+            if(child.getUserObject() instanceof Category) {
+                if (((Category) child.getUserObject()).getName().startsWith("Monitors (")) {
+                    monitorNode = child;
+                } else if (((Category) child.getUserObject()).getName().startsWith("Monitors without")) {
+                    monitorWithoutLocksNode = child;
+                }
             }
         }
         
