@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.5 2007-11-06 09:37:08 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.6 2007-11-08 16:51:43 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -555,14 +555,19 @@ public class SunJDKParser implements DumpParser {
                     lineCounter++;
                 }
             } else if(found) {
-                if(line.startsWith("Total ")) {
+                if(line.startsWith("Total ")) {                    
+                    // split string.
                     String newLine = line.replaceAll("(\\s)+", ";");
                     String[] elems = newLine.split(";");
                     classHistogram.setBytes(Long.parseLong(elems[2]));
                     classHistogram.setInstances(Long.parseLong(elems[1]));
                     finished = true;
                 } else if(!line.startsWith("-------")) {
-                    String newLine = line.replaceAll("(\\s)+", ";");
+                    // removed blank, breaks splitting using blank...
+                    String newLine = line.replaceAll("<no name>", "<no-name>");
+                    
+                    // split string.
+                    newLine = newLine.replaceAll("(\\s)+", ";");
                     String[] elems = newLine.split(";");
                     
                     if(elems.length == 4) {
