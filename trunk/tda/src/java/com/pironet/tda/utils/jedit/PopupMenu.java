@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PopupMenu.java,v 1.3 2007-10-04 13:01:12 irockel Exp $
+ * $Id: PopupMenu.java,v 1.4 2007-11-09 16:05:46 irockel Exp $
  */
 
 package com.pironet.tda.utils.jedit;
@@ -40,6 +40,8 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
     private JEditTextArea ref;
     private JPanel parent;
     private JMenuItem againMenuItem;
+    private JMenuItem copyMenuItem;
+    private JMenuItem selectNoneMenuItem;
     
     private String searchString;
     
@@ -57,12 +59,26 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
         againMenuItem.addActionListener(this);
         againMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
         add(againMenuItem);
+        this.addSeparator();
+        copyMenuItem = new JMenuItem("Copy to Clipboard");
+        copyMenuItem.addActionListener(this);
+        copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
+        add(copyMenuItem);
+        menuItem = new JMenuItem("Select All");
+        menuItem.addActionListener(this);
+        add(menuItem);
+        selectNoneMenuItem = new JMenuItem("Select None");
+        selectNoneMenuItem.addActionListener(this);
+        add(selectNoneMenuItem);
         
         this.ref = ref;
         this.parent = parent;
     }
 
     public void actionPerformed(ActionEvent e) {
+        System.out.println(e);
+        System.out.println(e.getActionCommand());
+        System.out.println(e.getModifiers());
         if(e.getSource() instanceof JMenuItem) {
             JMenuItem source = (JMenuItem) (e.getSource());
             if (source.getText().equals("Goto Line...")) {
@@ -71,11 +87,23 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
                 search();
             } else if (source.getText().startsWith("Search again")) {
                 search(searchString, ref.getCaretPosition() + 1);
+            } else if (source.getText().startsWith("Copy to Clipboard")) {
+                ref.copy();
+            } else if (source.getText().startsWith("Select All")) {
+                ref.selectAll();
+            } else if (source.getText().startsWith("Select None")) {
+                ref.selectNone();
             }
         } else if(e.getSource() instanceof JEditTextArea) {
-            // only one key binding.
-            if(searchString != null) {
-                search(searchString, ref.getCaretPosition() + 1);
+            // only one key binding
+            if (e.getModifiers() > 0) {
+                if(ref.getSelectionStart() >= 0) {
+                    ref.copy();
+                }
+            } else {
+                if (searchString != null) {
+                    search(searchString, ref.getCaretPosition() + 1);
+                }
             }
         }
     }
@@ -120,5 +148,9 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
     public void show(Component invoker, int x, int y) {
         super.show(invoker, x, y);
         againMenuItem.setEnabled(searchString != null);
+        
+        String selectedText = ref.getSelectedText();
+        copyMenuItem.setEnabled(selectedText != null && selectedText.length() > 0);
+        selectNoneMenuItem.setEnabled(copyMenuItem.isEnabled());
     }
 }

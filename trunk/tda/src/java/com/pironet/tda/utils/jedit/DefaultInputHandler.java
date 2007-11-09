@@ -19,7 +19,7 @@ import java.util.Map;
  * The default input handler. It maps sequences of keystrokes into actions
  * and inserts key typed events into the text area.
  * @author Slava Pestov
- * @version $Id: DefaultInputHandler.java,v 1.1 2007-10-03 12:50:26 irockel Exp $
+ * @version $Id: DefaultInputHandler.java,v 1.2 2007-11-09 16:05:46 irockel Exp $
  */
 public class DefaultInputHandler extends InputHandler {
     /**
@@ -193,7 +193,7 @@ public class DefaultInputHandler extends InputHandler {
                 currentBindings = bindings;
 
                 executeAction(((ActionListener)o),
-                              evt.getSource(),null);
+                              evt.getSource(), String.valueOf(evt.getKeyChar()), evt.getModifiers());
 
                 evt.consume();
                 return;
@@ -225,7 +225,7 @@ public class DefaultInputHandler extends InputHandler {
                     currentBindings = bindings;
                     executeAction((ActionListener)o,
                                   evt.getSource(),
-                                  String.valueOf(c));
+                                  String.valueOf(c), modifiers);
                     return;
                 }
 
@@ -244,7 +244,7 @@ public class DefaultInputHandler extends InputHandler {
                 }
 
                 executeAction(INSERT_CHAR,evt.getSource(),
-                              String.valueOf(evt.getKeyChar()));
+                              String.valueOf(evt.getKeyChar()), modifiers);
 
                 repeatCount = 0;
                 repeat = false;

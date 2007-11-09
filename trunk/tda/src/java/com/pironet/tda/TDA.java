@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.128 2007-11-09 12:14:48 irockel Exp $
+ * $Id: TDA.java,v 1.129 2007-11-09 16:05:47 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -753,6 +753,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         jeditPane.setCaretBlinkEnabled(false);
         jeditPane.setRightClickPopup(new PopupMenu(jeditPane, this));
         jeditPane.getInputHandler().addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), (ActionListener) jeditPane.getRightClickPopup());
+        jeditPane.getInputHandler().addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), (ActionListener) jeditPane.getRightClickPopup());
     }
     
     /**
