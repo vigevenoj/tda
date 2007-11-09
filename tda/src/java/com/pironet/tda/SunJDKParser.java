@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.6 2007-11-08 16:51:43 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.7 2007-11-09 11:54:33 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -45,7 +45,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
 /**
- * Parses JDK14 Thread Dumps.
+ * Parses SunJDK Thread Dumps.
  * Needs to be closed after use (so inner stream is closed).
  *
  * @author irockel
