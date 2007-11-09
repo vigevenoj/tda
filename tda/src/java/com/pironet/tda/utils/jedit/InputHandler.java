@@ -24,7 +24,7 @@ import javax.swing.*;
  * to the implementations of this class to do so.
  *
  * @author Slava Pestov
- * @version $Id: InputHandler.java,v 1.2 2007-10-14 07:34:50 irockel Exp $
+ * @version $Id: InputHandler.java,v 1.3 2007-11-09 16:05:46 irockel Exp $
  * @see org.jedit.syntax.DefaultInputHandler
  */
 public abstract class InputHandler extends KeyAdapter {
@@ -253,11 +253,11 @@ public abstract class InputHandler extends KeyAdapter {
      * @param actionCommand The action command
      */
     public void executeAction(ActionListener listener, Object source,
-                              String actionCommand) {
+                              String actionCommand, int modifiers) {
         // create event
         ActionEvent evt = new ActionEvent(source,
                                           ActionEvent.ACTION_PERFORMED,
-                                          actionCommand);
+                                          actionCommand, modifiers);
 
         // don't do anything if the action is a wrapper
         // (like EditAction.Wrapper)
@@ -342,7 +342,7 @@ public abstract class InputHandler extends KeyAdapter {
         ActionListener _grabAction = grabAction;
         grabAction = null;
         executeAction(_grabAction,evt.getSource(),
-                      String.valueOf(evt.getKeyChar()));
+                      String.valueOf(evt.getKeyChar()), evt.getModifiers());
     }
 
     // protected members
