@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.126 2007-11-08 17:04:22 irockel Exp $
+ * $Id: TDA.java,v 1.127 2007-11-09 10:17:28 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -397,6 +397,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     private void loadSession(File file, boolean isRecent) throws IOException {
         setFileOpen(true);
+        firstFile = false;
         initDumpDisplay();
         final ObjectInputStream ois = new ObjectInputStream(new ProgressMonitorInputStream(this, "Opening session " + file,
                 new GZIPInputStream(new FileInputStream(file))));
