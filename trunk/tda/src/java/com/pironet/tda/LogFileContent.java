@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogFileContent.java,v 1.5 2007-11-01 15:35:25 irockel Exp $
+ * $Id: LogFileContent.java,v 1.6 2007-11-09 10:18:40 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -40,9 +40,9 @@ public class LogFileContent implements Serializable {
     /**
      * stored as soft reference, as this content might get quite big.
      */
-    private SoftReference content;
+    private transient SoftReference content;
     
-    private StringBuffer contentBuffer;
+    private transient StringBuffer contentBuffer;
     
     /** 
      * Creates a new instance of LogFileContent 
