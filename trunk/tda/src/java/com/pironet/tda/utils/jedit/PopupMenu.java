@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PopupMenu.java,v 1.4 2007-11-09 16:05:46 irockel Exp $
+ * $Id: PopupMenu.java,v 1.5 2007-11-09 16:09:31 irockel Exp $
  */
 
 package com.pironet.tda.utils.jedit;
@@ -76,9 +76,6 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        System.out.println(e);
-        System.out.println(e.getActionCommand());
-        System.out.println(e.getModifiers());
         if(e.getSource() instanceof JMenuItem) {
             JMenuItem source = (JMenuItem) (e.getSource());
             if (source.getText().equals("Goto Line...")) {
