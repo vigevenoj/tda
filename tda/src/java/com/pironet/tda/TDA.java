@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.129 2007-11-09 16:05:47 irockel Exp $
+ * $Id: TDA.java,v 1.130 2007-11-10 08:21:14 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -773,7 +773,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         setThreadDisplay(true);
         if(cat.getLastView() == null) {
             JTree catTree = cat.getCatTree(this);
-            catTree.addMouseListener(getCatPopupMenu());
+            if(cat.getName().startsWith("Monitors")) {
+                catTree.addMouseListener(getMonitorsPopupMenu());
+            } else {
+                catTree.addMouseListener(getCatPopupMenu());
+            }
             dumpView = new JScrollPane(catTree);
             if(size != null) {
                 dumpView.setPreferredSize(size);
@@ -1139,6 +1143,29 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             menuItem = new JMenuItem("Search...");
             menuItem.addActionListener(this);
             popup.add(menuItem);
+            
+            //Add listener to the text area so the popup menu can come up.
+            catPopupListener = new PopupListener(popup);
+        }
+        
+        return(catPopupListener);
+    }
+    
+    private PopupListener monitorsPopupListener = null;
+    
+    /**
+     * create a instance of this menu for a category
+     */
+    private PopupListener getMonitorsPopupMenu() {
+        if(monitorsPopupListener == null) {
+            JMenuItem menuItem;
+            
+            //Create the popup menu.
+            JPopupMenu popup = new JPopupMenu();
+            
+            menuItem = new JMenuItem("Search...");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
             popup.addSeparator();
             menuItem = new JMenuItem("Expand all nodes");
             menuItem.addActionListener(this);
@@ -1148,12 +1175,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             popup.add(menuItem);
             
             //Add listener to the text area so the popup menu can come up.
-            catPopupListener = new PopupListener(popup);
+            monitorsPopupListener = new PopupListener(popup);
         }
         
-        return(catPopupListener);
+        return(monitorsPopupListener);
     }
-    
+
     class PopupListener extends MouseAdapter {
         JPopupMenu popup;
         
