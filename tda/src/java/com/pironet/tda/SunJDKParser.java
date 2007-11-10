@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.8 2007-11-09 12:14:48 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.9 2007-11-10 10:40:57 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -715,12 +715,10 @@ public class SunJDKParser implements DumpParser {
                     ">Threads locking monitor</td><td><b><font face=System>");
             statData.append(locks);
             statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td>");
-            statData.append("<font face=System>Threads sleeping on monitor</td><td><b><font face=System size=" + 
-                    TDA.getFontSizeModifier(-1) +">");
+            statData.append("<font face=System>Threads sleeping on monitor</td><td><b><font face=System>");
             statData.append(sleeps);
             statData.append("</b></td></tr>\n\n<tr><td>");
-            statData.append("<font face=System>Threads waiting to lock monitor</td><td><b><font face=System size=" + 
-                    TDA.getFontSizeModifier(-1) + ">");
+            statData.append("<font face=System>Threads waiting to lock monitor</td><td><b><font face=System>");
             statData.append(waits);
             statData.append("</b></td></tr>\n\n");
             if(locks == 0) {
@@ -740,8 +738,8 @@ public class SunJDKParser implements DumpParser {
             }
             statData.append("</table>");
             mi.content = statData.toString();
-            mi.threadName = "<html><body>" + mi.threadName + " " + (sleeps) + 
-                    " <b>Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking</b>";
+            mi.threadName += ":    " + (sleeps) + 
+                    " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking";
                         
             ((Category)catMonitors.getUserObject()).addToCatTree(monitorNode);
             if(locks == 0) {
