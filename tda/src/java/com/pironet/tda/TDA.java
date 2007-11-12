@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.130 2007-11-10 08:21:14 irockel Exp $
+ * $Id: TDA.java,v 1.131 2007-11-12 20:56:31 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -328,6 +328,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         sessionFc.setFileFilter(getSessionFilter());
             
         sessionFc.setSelectedFile(null);
+    }
+
+    /**
+     * expand all nodes of the currently selected category.
+     */
+    private void expandAllCatNodes() {
     }
     
     private void saveSession() {
@@ -1290,6 +1296,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 setShowToolbar(((JCheckBoxMenuItem) source).getState());
             } else if ("Request Thread Dump...".equals(source.getText())) {
                 addMXBeanDump();
+            } else if ("Expand all nodes".equals(source.getText())) {
+                expandAllCatNodes();
             }
         } else if (e.getSource() instanceof JButton) {
             JButton source = (JButton) e.getSource();
