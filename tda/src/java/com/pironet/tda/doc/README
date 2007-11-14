@@ -8,6 +8,7 @@ Note: This is the 1.6 release of the software, for an usage overview see Help/Ov
 Changes from 1.5 are:
 * Added clipboard operation in logfile view.
 * Enhanced Monitor View, added expand all nodes and sort by thread count to popup.
+* Added View operations for root tree.
 * Bugfixing.
 
 Changes from 1.4 are:
