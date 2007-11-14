@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.131 2007-11-12 20:56:31 irockel Exp $
+ * $Id: TDA.java,v 1.132 2007-11-14 17:34:16 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -99,6 +99,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 /**
@@ -333,8 +334,39 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     /**
      * expand all nodes of the currently selected category.
      */
-    private void expandAllCatNodes() {
+    private void expandAllCatNodes(boolean expand) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        JTree catTree = ((Category) node.getUserObject()).getCatTree(this);
+        TreeNode root = (TreeNode)catTree.getModel().getRoot();
+        
+        expandAll(catTree, new TreePath(root), expand);
+        catTree.setRootVisible(true);
     }
+    
+    /**
+     * expand or collapse all nodes of the specified tree
+     * @param tree the tree to expand all/collapse all
+     * @param parent the parent to start with
+     * @param expand expand=true, collapse=false
+     */
+    private void expandAll(JTree catTree, TreePath parent, boolean expand) {
+        // Traverse children
+        TreeNode node = (TreeNode)parent.getLastPathComponent();
+        if (node.getChildCount() >= 0) {
+            for (Enumeration e=node.children(); e.hasMoreElements(); ) {
+                TreeNode n = (TreeNode)e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                expandAll(catTree, path, expand);
+            }
+        }
+    
+        // Expansion or collapse must be done bottom-up
+        if (expand) {
+            catTree.expandPath(parent);
+        } else {
+            catTree.collapsePath(parent);
+        }
+    }    
     
     private void saveSession() {
         initSessionFc();
@@ -1176,6 +1208,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             menuItem = new JMenuItem("Expand all nodes");
             menuItem.addActionListener(this);
             popup.add(menuItem);
+            menuItem = new JMenuItem("Collapse all nodes");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
             menuItem = new JMenuItem("Sort by thread amount");
             menuItem.addActionListener(this);
             popup.add(menuItem);
@@ -1297,7 +1332,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             } else if ("Request Thread Dump...".equals(source.getText())) {
                 addMXBeanDump();
             } else if ("Expand all nodes".equals(source.getText())) {
-                expandAllCatNodes();
+                expandAllCatNodes(true);
+            } else if ("Collapse all nodes".equals(source.getText())) {
+                expandAllCatNodes(false);
             }
         } else if (e.getSource() instanceof JButton) {
             JButton source = (JButton) e.getSource();
