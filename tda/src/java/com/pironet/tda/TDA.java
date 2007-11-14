@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.132 2007-11-14 17:34:16 irockel Exp $
+ * $Id: TDA.java,v 1.133 2007-11-14 20:09:01 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -330,6 +330,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             
         sessionFc.setSelectedFile(null);
     }
+    
+    /**
+     * expand all dump nodes in the root tree
+     * @param expand true=expand, false=collapse.
+     */
+    private void expandAllDumpNodes(boolean expand) {
+        TreeNode root = (TreeNode)tree.getModel().getRoot();
+        expandAll(tree, new TreePath(root), expand);
+    }
 
     /**
      * expand all nodes of the currently selected category.
@@ -339,8 +348,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         JTree catTree = ((Category) node.getUserObject()).getCatTree(this);
         TreeNode root = (TreeNode)catTree.getModel().getRoot();
         
-        expandAll(catTree, new TreePath(root), expand);
-        catTree.setRootVisible(true);
+        for (int i = 0; i < root.getChildCount(); i++) {
+            if(expand) {
+                catTree.expandRow(i);
+            } else {
+                catTree.collapseRow(i);
+            }
+        }
     }
     
     /**
@@ -360,11 +374,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
         }
     
-        // Expansion or collapse must be done bottom-up
-        if (expand) {
-            catTree.expandPath(parent);
-        } else {
-            catTree.collapsePath(parent);
+        if(parent.getPathCount() > 1) {
+            // Expansion or collapse must be done bottom-up
+            if (expand) {
+                catTree.expandPath(parent);
+            } else {
+                catTree.collapsePath(parent);
+            }
         }
     }    
     
@@ -562,6 +578,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             getMainMenu().getCloseToolBarButton().setEnabled(true);
             getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
             getMainMenu().getCloseAllMenuItem().setEnabled(true);
+            getMainMenu().getExpandAllMenuItem().setEnabled(true);
+            getMainMenu().getCollapseAllMenuItem().setEnabled(true);
             if(dumpFile != null) {
                 addDumpFile();
             }
@@ -1211,6 +1229,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             menuItem = new JMenuItem("Collapse all nodes");
             menuItem.addActionListener(this);
             popup.add(menuItem);
+            popup.addSeparator();
             menuItem = new JMenuItem("Sort by thread amount");
             menuItem.addActionListener(this);
             popup.add(menuItem);
@@ -1335,6 +1354,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 expandAllCatNodes(true);
             } else if ("Collapse all nodes".equals(source.getText())) {
                 expandAllCatNodes(false);
+            } else if ("Expand all Dump nodes".equals(source.getText())) {
+                expandAllDumpNodes(true);
+            } else if ("Collapse all Dump nodes".equals(source.getText())) {
+                expandAllDumpNodes(false);
             }
         } else if (e.getSource() instanceof JButton) {
             JButton source = (JButton) e.getSource();
@@ -1622,6 +1645,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 getMainMenu().getCloseToolBarButton().setEnabled(false);
                 getMainMenu().getFindLRThreadsToolBarButton().setEnabled(false);
                 getMainMenu().getCloseAllMenuItem().setEnabled(false);
+                getMainMenu().getExpandAllMenuItem().setEnabled(false);
+                getMainMenu().getCollapseAllMenuItem().setEnabled(false);
+
             } else {
                 // rebuild jtree
                 createTree();
@@ -1667,6 +1693,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         getMainMenu().getCloseToolBarButton().setEnabled(false);
         getMainMenu().getFindLRThreadsToolBarButton().setEnabled(false);
         getMainMenu().getCloseAllMenuItem().setEnabled(false);
+        getMainMenu().getExpandAllMenuItem().setEnabled(false);
+        getMainMenu().getCollapseAllMenuItem().setEnabled(false);
+
     }
     
     /**

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.25 2007-11-14 17:34:16 irockel Exp $
+ * $Id: MainMenu.java,v 1.26 2007-11-14 20:09:01 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -45,6 +45,8 @@ public class MainMenu extends JMenuBar {
     private JMenuItem recentFilesMenu;
     private JMenuItem recentSessionsMenu;
     private JMenuItem closeAllMenuItem;
+    private JMenuItem expandAllMenuItem;
+    private JMenuItem collapseAllMenuItem;
     
     private TDA listener;
     private JToolBar toolBar;
@@ -94,6 +96,17 @@ public class MainMenu extends JMenuBar {
         return(longMenuItem);
     }
     
+    /**
+     * get the close all file menu item
+     */
+    public JMenuItem getExpandAllMenuItem() {
+        return(expandAllMenuItem);
+    }
+    
+    public JMenuItem getCollapseAllMenuItem() {
+        return(collapseAllMenuItem);
+    }
+
     public JMenuItem getSaveSessionMenuItem() {
         return(saveSessionMenuItem);
     }
@@ -198,24 +211,25 @@ public class MainMenu extends JMenuBar {
                 "View Menu");
         add(menu);
         
-        menuItem = new JMenuItem("Expand all nodes",
+        expandAllMenuItem = new JMenuItem("Expand all Dump nodes",
                 KeyEvent.VK_E);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        expandAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_E, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Expand all nodes");
-        menuItem.addActionListener(listener);
-        menuItem.setEnabled(false);
-        menu.add(menuItem);
+        expandAllMenuItem.getAccessibleContext().setAccessibleDescription(
+                "Expand all Dumps nodes");
+        expandAllMenuItem.addActionListener(listener);
+        expandAllMenuItem.setEnabled(false);
+        menu.add(expandAllMenuItem);
 
-        menuItem = new JMenuItem("Collapse all nodes",
+        collapseAllMenuItem = new JMenuItem("Collapse all Dump nodes",
                 KeyEvent.VK_C);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        collapseAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_C, ActionEvent.ALT_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                "Collapse all nodes");
-        menuItem.addActionListener(listener);
-        menu.add(menuItem);
+        collapseAllMenuItem.getAccessibleContext().setAccessibleDescription(
+                "Collapse all Dump nodes");
+        collapseAllMenuItem.setEnabled(false);
+        collapseAllMenuItem.addActionListener(listener);
+        menu.add(collapseAllMenuItem);
                 
         menu.addSeparator();
         menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
