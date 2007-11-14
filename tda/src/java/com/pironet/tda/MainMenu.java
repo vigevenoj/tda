@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.24 2007-11-07 17:02:06 irockel Exp $
+ * $Id: MainMenu.java,v 1.25 2007-11-14 17:34:16 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -103,6 +103,7 @@ public class MainMenu extends JMenuBar {
      */
     private void createMenuBar() {
         add(createFileMenu());
+        add(createViewMenu());
         add(createToolsMenu());
         add(createHelpMenu());
     }
@@ -188,6 +189,45 @@ public class MainMenu extends JMenuBar {
     /**
      * Build tools menu in the menu bar.
      */
+    private JMenu createViewMenu() {
+        JMenuItem menuItem;
+        JMenu menu;
+        menu = new JMenu("View");
+        menu.setMnemonic(KeyEvent.VK_V);
+        menu.getAccessibleContext().setAccessibleDescription(
+                "View Menu");
+        add(menu);
+        
+        menuItem = new JMenuItem("Expand all nodes",
+                KeyEvent.VK_E);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_E, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Expand all nodes");
+        menuItem.addActionListener(listener);
+        menuItem.setEnabled(false);
+        menu.add(menuItem);
+
+        menuItem = new JMenuItem("Collapse all nodes",
+                KeyEvent.VK_C);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_C, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Collapse all nodes");
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+                
+        menu.addSeparator();
+        menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+        
+        return(menu);
+    }
+    
+    /**
+     * Build tools menu in the menu bar.
+     */
     private JMenu createToolsMenu() {
         JMenuItem menuItem;
         JMenu menu;
@@ -213,11 +253,6 @@ public class MainMenu extends JMenuBar {
                 KeyEvent.VK_F, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Setup Filter");
-        menuItem.addActionListener(listener);
-        menu.add(menuItem);
-        
-        menu.addSeparator();
-        menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         
