@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterChecker.java,v 1.5 2007-01-18 09:49:46 irockel Exp $
+ * $Id: FilterChecker.java,v 1.6 2007-11-21 21:02:48 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -104,6 +104,8 @@ public class FilterChecker {
             Filter filter = (Filter) iter.next();
             if(!filter.isEnabled()) {
                 filters.remove(filter.getName());
+                iter = filters.values().iterator();
+                
             }
         }
 
