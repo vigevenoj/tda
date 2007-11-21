@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.12 2007-11-02 15:29:13 irockel Exp $
+ * $Id: Category.java,v 1.13 2007-11-21 20:39:10 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -27,6 +27,8 @@ import com.pironet.tda.utils.IconFactory;
 import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.TreeRenderer;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Comparator;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -69,7 +71,31 @@ public class Category implements Serializable {
         filterEnabled = filtering;
         this.iconID = iconID;
     }
-    
+
+    /**
+     * sorts the category tree by the given comparator.
+     * @param nodeComp 
+     */
+    public void sort(Comparator nodeComp) {
+        Object[] arrayCat = new Object[rootNode.getChildCount()];
+        for(int i = 0; i < rootNode.getChildCount(); i++) {
+            // add nodes to sorting tree
+            arrayCat[i] = rootNode.getChildAt(i);
+        }
+        rootNode = new DefaultMutableTreeNode("root");
+
+        Arrays.sort(arrayCat, nodeComp);
+        for(int i = 0; i < arrayCat.length; i++) {
+            rootNode.add((DefaultMutableTreeNode) arrayCat[i]);
+        }
+
+        // reset filter.
+        setLastView(null);
+        filteredCatTree = null;
+        filteredRootNode = null;
+        
+    }
+
     public void setName(String value) {
        name = value;
     }
