@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.133 2007-11-14 20:09:01 irockel Exp $
+ * $Id: TDA.java,v 1.134 2007-11-21 20:39:10 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -25,6 +25,7 @@ import com.pironet.tda.jconsole.MBeanDumper;
 import com.pironet.tda.utils.AppInfo;
 import com.pironet.tda.utils.Browser;
 import com.pironet.tda.utils.HistogramTableModel;
+import com.pironet.tda.utils.MonitorComparator;
 import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.StatusBar;
 import com.pironet.tda.utils.SwingWorker;
@@ -355,6 +356,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 catTree.collapseRow(i);
             }
         }
+    }
+    
+    /**
+     * sort monitors by thread amount
+     */
+    private void sortCatByThreads() {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        ((Category) node.getUserObject()).sort(new MonitorComparator());
+        displayCategory(node.getUserObject());
     }
     
     /**
@@ -1230,7 +1240,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             menuItem.addActionListener(this);
             popup.add(menuItem);
             popup.addSeparator();
-            menuItem = new JMenuItem("Sort by thread amount");
+            menuItem = new JMenuItem("Sort by thread count");
             menuItem.addActionListener(this);
             popup.add(menuItem);
             
@@ -1354,6 +1364,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 expandAllCatNodes(true);
             } else if ("Collapse all nodes".equals(source.getText())) {
                 expandAllCatNodes(false);
+            } else if ("Sort by thread count".equals(source.getText())) {
+                sortCatByThreads();
             } else if ("Expand all Dump nodes".equals(source.getText())) {
                 expandAllDumpNodes(true);
             } else if ("Collapse all Dump nodes".equals(source.getText())) {
