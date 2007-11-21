@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.13 2007-11-21 20:39:10 irockel Exp $
+ * $Id: Category.java,v 1.14 2007-11-21 21:12:07 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -114,7 +114,7 @@ public class Category implements Serializable {
      * return category tree with filtered child nodes
      */
     public JTree getCatTree(TreeSelectionListener listener) {
-        if(filterEnabled && (filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
+        if(filterEnabled && ((filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged()))) {
             // first refresh filter checker with current filters
             setFilterChecker(FilterChecker.getFilterChecker());
             
