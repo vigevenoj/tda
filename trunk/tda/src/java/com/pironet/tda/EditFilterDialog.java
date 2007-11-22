@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.6 2007-04-14 06:31:45 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.7 2007-11-22 13:38:29 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -149,7 +149,7 @@ public class EditFilterDialog extends JDialog {
             JPanel innerInnerSettingsPanel = new JPanel(fl);
             innerInnerSettingsPanel.add(new JLabel("Filter rule"));
             innerInnerSettingsPanel.add(filterRule = new JComboBox(new String[] {"has in title", "matches title", "has in stack",
-               "matches stack", "waiting on", "waiting for", "locking", "sleeping"}));
+               "matches stack", "waiting on", "waiting for", "locking", "sleeping", "stack line count >"}));
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.NORTH);
             
             innerInnerSettingsPanel = new JPanel(fl);

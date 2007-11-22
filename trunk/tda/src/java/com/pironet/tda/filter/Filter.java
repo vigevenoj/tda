@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.7 2007-11-02 15:38:18 irockel Exp $
+ * $Id: Filter.java,v 1.8 2007-11-22 13:38:30 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -47,6 +47,8 @@ public class Filter {
     public static final int LOCKING_RULE = 6;
     
     public static final int SLEEPING_RULE = 7;
+    
+    public static final int STACK_IS_LONGER_THAN_RULE = 8;
     
     /**
      * name of this filter, just something describing for this filter
@@ -215,6 +217,9 @@ public class Filter {
                     break;
                 case SLEEPING_RULE :
                     result = (ti.threadName.indexOf("Object.wait()") >= 0);
+                    break;
+                case STACK_IS_LONGER_THAN_RULE :
+                    result = (ti.lineCount == 0) || ((ti.lineCount -2) > Integer.parseInt(filterExpression));
                     break;
             }
             //System.out.println("Filter " + getFilterExpression() + " result = " + result + " // content" + ti.content);
