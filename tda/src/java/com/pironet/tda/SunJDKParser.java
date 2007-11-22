@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.9 2007-11-10 10:40:57 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.10 2007-11-22 13:38:29 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -141,9 +141,9 @@ public class SunJDKParser implements DumpParser {
                 bis = new BufferedReader(new InputStreamReader(dumpFileStream));
             }
             if(withCurrentTimeStamp) {
-                overallTDI = new ThreadInfo("Full Thread Dump at " + new Date(System.currentTimeMillis()), null, "");
+                overallTDI = new ThreadInfo("Full Thread Dump at " + new Date(System.currentTimeMillis()), null, "", 0);
             } else {
-                overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "");
+                overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "", 0);
             }
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
@@ -176,11 +176,13 @@ public class SunJDKParser implements DumpParser {
             MonitorMap mmap = new MonitorMap();
             Stack monitorStack = new Stack();
             long startTime = 0;
+            int singleLineCounter = 0;
             Matcher matched = null;
             
             while(bis.ready() && !finished) {
                 String line = bis.readLine();
                 lineCounter++;
+                singleLineCounter++;
                 if(locked) {
                     if(line.indexOf("Full thread dump") >= 0) {
                         locked = false;
@@ -233,27 +235,28 @@ public class SunJDKParser implements DumpParser {
                         if(title != null) {
                             threads.put(title, content.toString());
                             content.append("</pre></pre>");
-                            createCategoryNode(catThreads, title, null, content);
+                            createCategoryNode(catThreads, title, null, content, singleLineCounter);
                             threadCount++;
                         }
                         if(wContent != null) {
                             wContent.append("</b><hr>");
-                            createCategoryNode(catWaiting, title, wContent, content);
+                            createCategoryNode(catWaiting, title, wContent, content, singleLineCounter);
                             wContent = null;
                             waiting++;
                         }
                         if(sContent != null) {
                             sContent.append("</b><hr>");
-                            createCategoryNode(catSleeping, title, sContent, content);
+                            createCategoryNode(catSleeping, title, sContent, content, singleLineCounter);
                             sContent = null;
                             sleeping++;
                         }
                         if(lContent != null) {
                             lContent.append("</b><hr>");
-                            createCategoryNode(catLocking, title, lContent, content);
+                            createCategoryNode(catLocking, title, lContent, content, singleLineCounter);
                             lContent = null;
                             locking++;
                         }
+                        singleLineCounter = 0;
                         while(!monitorStack.empty()) {
                             mmap.parseAndAddThread((String)monitorStack.pop(), title, content.toString());
                         }
@@ -328,24 +331,24 @@ public class SunJDKParser implements DumpParser {
             if(title != null) {
                 threads.put(title, content.toString());
                 content.append("</pre></pre>");
-                createCategoryNode(catThreads, title, null, content);
+                createCategoryNode(catThreads, title, null, content, singleLineCounter);
                 threadCount++;
             }
             if(wContent != null) {
                 wContent.append("</b><hr>");
-                createCategoryNode(catWaiting, title, null, wContent);
+                createCategoryNode(catWaiting, title, null, wContent, singleLineCounter);
                 wContent = null;
                 waiting++;
             }
             if(sContent != null) {
                 sContent.append("</b><hr>");
-                createCategoryNode(catSleeping, title, sContent, content);
+                createCategoryNode(catSleeping, title, sContent, content, singleLineCounter);
                 sContent = null;
                 sleeping++;
             }
             if(lContent != null) {
                 lContent.append("</b><hr>");
-                createCategoryNode(catLocking, title, null, lContent);
+                createCategoryNode(catLocking, title, null, lContent, singleLineCounter);
                 lContent = null;
                 locking++;
             }
@@ -617,7 +620,7 @@ public class SunJDKParser implements DumpParser {
                 if(line.startsWith("Found one Java-level deadlock")) {
                     if(dContent.length() > 0) {
                         deadlocks++;
-                        createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent);
+                        createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
                     }
                     dContent = new StringBuffer();
                     dContent.append("</pre><b><font size=" + TDA.getFontSizeModifier(-1) + ">");
@@ -661,7 +664,7 @@ public class SunJDKParser implements DumpParser {
         }
         if(dContent.length() > 0) {
             deadlocks++;
-            createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent);
+            createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
         }
         
         if(deadlocks > 0) {
@@ -679,7 +682,7 @@ public class SunJDKParser implements DumpParser {
         while(iter.hasNext()) {
             String monitor = (String) iter.next();
             Map[] threads = mmap.getFromMonitorMap(monitor);
-            ThreadInfo mi = new ThreadInfo(monitor, null, "");
+            ThreadInfo mi = new ThreadInfo(monitor, null, "", 0);
             
             DefaultMutableTreeNode monitorNode = new DefaultMutableTreeNode(mi);
             
@@ -691,13 +694,13 @@ public class SunJDKParser implements DumpParser {
             while(iterLocks.hasNext()) {
                 String thread = (String) iterLocks.next();
                 if(threads[2].containsKey(thread)) {
-                    createNode(monitorNode, "locks and sleeps on monitor: " + thread, null, (String) threads[0].get(thread));
+                    createNode(monitorNode, "locks and sleeps on monitor: " + thread, null, (String) threads[0].get(thread), 0);
                     sleeps++;
                 } else if(threads[1].containsKey(thread)) {
-                    createNode(monitorNode, "locks and waits on monitor: " + thread, null, (String) threads[0].get(thread));
+                    createNode(monitorNode, "locks and waits on monitor: " + thread, null, (String) threads[0].get(thread), 0);
                     sleeps++;
                 } else {
-                    createNode(monitorNode, "locked by " + thread, null, (String) threads[0].get(thread));
+                    createNode(monitorNode, "locked by " + thread, null, (String) threads[0].get(thread), 0);
                 }
                 locks++;
             }
@@ -706,7 +709,7 @@ public class SunJDKParser implements DumpParser {
             while(iterWaits.hasNext()) {
                 String thread = (String) iterWaits.next();
                 if(!threads[0].containsKey(thread)) {
-                    createNode(monitorNode, "waits on monitor: " + thread, null, (String) threads[1].get(thread));
+                    createNode(monitorNode, "waits on monitor: " + thread, null, (String) threads[1].get(thread), 0);
                     waits++;
                 }
             }
@@ -759,9 +762,9 @@ public class SunJDKParser implements DumpParser {
      * @param content the content part of the new node
      * @see ThreadInfo 
      */
-    private void createNode(DefaultMutableTreeNode top, String title, String info, String content) {
+    private void createNode(DefaultMutableTreeNode top, String title, String info, String content, int lineCount) {
         DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content));
+        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content, lineCount));
         top.add(threadInfo);
     }
     
@@ -774,9 +777,9 @@ public class SunJDKParser implements DumpParser {
      * @param content the content part of the new node
      * @see ThreadInfo 
      */
-    private void createCategoryNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content) {
+    private void createCategoryNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount) {
         DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString()));
+        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString(), lineCount));
         ((Category)category.getUserObject()).addToCatTree(threadInfo);
     }
     
@@ -893,7 +896,7 @@ public class SunJDKParser implements DumpParser {
                                 content.append((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey));
                             }
                         }
-                        createCategoryNode(catMerge, threadKey, null, content);
+                        createCategoryNode(catMerge, threadKey, null, content, 0);
                     }
                 }
             }
