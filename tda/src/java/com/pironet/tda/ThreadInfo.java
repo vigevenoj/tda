@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadInfo.java,v 1.4 2007-11-22 13:38:29 irockel Exp $
+ * $Id: ThreadInfo.java,v 1.5 2007-11-23 10:12:27 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -30,11 +30,11 @@ import java.io.Serializable;
  * @author irockel
  */
 public class ThreadInfo implements Serializable {
-    public String threadName;
-    public String content;
-    public String info;
+    private String threadName;
+    private String content;
+    private String info;
     
-    public int lineCount;
+    private int lineCount;
     
     public ThreadInfo(String name, String info, String content, int lineCount) {
         threadName = name;
@@ -44,6 +44,38 @@ public class ThreadInfo implements Serializable {
     }
     
     public String toString() {
+        return getThreadName();
+    }
+
+    public String getThreadName() {
         return threadName;
+    }
+
+    public void setThreadName(String threadName) {
+        this.threadName = threadName;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    public int getLineCount() {
+        return lineCount;
+    }
+
+    public void setLineCount(int lineCount) {
+        this.lineCount = lineCount;
     }
 }

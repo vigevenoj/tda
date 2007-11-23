@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.8 2007-11-22 13:38:30 irockel Exp $
+ * $Id: Filter.java,v 1.9 2007-11-23 10:12:27 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -194,32 +194,32 @@ public class Filter {
         if(isEnabled()) {
             switch(getFilterRule()) {
                 case HAS_IN_TITLE_RULE :
-                    result = getFilterExpressionPattern().matcher(ti.threadName).find();
+                    result = getFilterExpressionPattern().matcher(ti.getThreadName()).find();
                     break;
                 case MATCHES_TITLE_RULE :
-                    result = getFilterExpressionPattern().matcher(ti.threadName).matches();
+                    result = getFilterExpressionPattern().matcher(ti.getThreadName()).matches();
                     break;
                 case HAS_IN_STACK_RULE : 
-                    result = getFilterExpressionPattern().matcher(ti.content).find();
+                    result = getFilterExpressionPattern().matcher(ti.getContent()).find();
                     break;
                 case MATCHES_STACK_RULE :
-                    result = getFilterExpressionPattern().matcher(ti.content).matches();
+                    result = getFilterExpressionPattern().matcher(ti.getContent()).matches();
                     break;
                 case WAITING_ON_RULE :
-                    result = (ti.content.indexOf("- waiting on") >= 0) && checkLine(ti, "- waiting on", '<', ')');
+                    result = (ti.getContent().indexOf("- waiting on") >= 0) && checkLine(ti, "- waiting on", '<', ')');
                     break;
                 case WAITING_FOR_RULE :
-                    result = (ti.threadName.indexOf("waiting for monitor entry") >= 0) &&
+                    result = (ti.getThreadName().indexOf("waiting for monitor entry") >= 0) &&
                             checkLine(ti, "- waiting to lock", '<', ')');
                     break;
                 case LOCKING_RULE :
-                    result = (ti.content.indexOf("- locked") >= 0) && checkLine(ti, "- locked", '<', ')');
+                    result = (ti.getContent().indexOf("- locked") >= 0) && checkLine(ti, "- locked", '<', ')');
                     break;
                 case SLEEPING_RULE :
-                    result = (ti.threadName.indexOf("Object.wait()") >= 0);
+                    result = (ti.getThreadName().indexOf("Object.wait()") >= 0);
                     break;
                 case STACK_IS_LONGER_THAN_RULE :
-                    result = (ti.lineCount == 0) || ((ti.lineCount -2) > Integer.parseInt(filterExpression));
+                    result = (ti.getLineCount() == 0) || ((ti.getLineCount() -2) > Integer.parseInt(filterExpression));
                     break;
             }
             //System.out.println("Filter " + getFilterExpression() + " result = " + result + " // content" + ti.content);
@@ -236,10 +236,10 @@ public class Filter {
      * checks a sub line for a lock handler (for waiting, locking, monitor entry)
      */
     private boolean checkLine(ThreadInfo ti, String contains, char beginChar, char endChar) {
-        int beginFrom = ti.content.indexOf(contains);
-        int beginIndex = ti.content.indexOf(beginChar, beginFrom);
-        int endIndex = ti.content.indexOf(endChar, beginIndex);
-        String matchLine = ti.content.substring(beginIndex, endIndex);
+        int beginFrom = ti.getContent().indexOf(contains);
+        int beginIndex = ti.getContent().indexOf(beginChar, beginFrom);
+        int endIndex = ti.getContent().indexOf(endChar, beginIndex);
+        String matchLine = ti.getContent().substring(beginIndex, endIndex);
         
         return getFilterExpressionPattern().matcher(matchLine).matches();
     }

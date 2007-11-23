@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.134 2007-11-21 20:39:10 irockel Exp $
+ * $Id: TDA.java,v 1.135 2007-11-23 10:12:27 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -773,12 +773,12 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     private void displayThreadInfo(Object nodeInfo) {
         ThreadInfo ti = (ThreadInfo)nodeInfo;
-        if(ti.info != null) {
-            StringBuffer sb = new StringBuffer(ti.info);
-            sb.append(ti.content);
+        if(ti.getInfo() != null) {
+            StringBuffer sb = new StringBuffer(ti.getInfo());
+            sb.append(ti.getContent());
             displayContent(sb.toString());
         } else {
-            displayContent(ti.content);
+            displayContent(ti.getContent());
         }
     }
     
@@ -1003,10 +1003,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         Object userObject = ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).getUserObject();
         if(userObject instanceof ThreadInfo) {
             ThreadInfo ti = (ThreadInfo) userObject;
-            int lineNumber = ti.threadName.indexOf("around") >= 0 ? 
-                Integer.parseInt(ti.threadName.substring(ti.threadName.lastIndexOf(" line ")+6, 
-                ti.threadName.lastIndexOf(" around "))) : 
-                Integer.parseInt(ti.threadName.substring(ti.threadName.lastIndexOf(' ')+1));
+            int lineNumber = ti.getThreadName().indexOf("around") >= 0 ? 
+                Integer.parseInt(ti.getThreadName().substring(ti.getThreadName().lastIndexOf(" line ")+6, 
+                ti.getThreadName().lastIndexOf(" around "))) : 
+                Integer.parseInt(ti.getThreadName().substring(ti.getThreadName().lastIndexOf(' ')+1));
             
             // find log file node.
             TreePath selPath = tree.getSelectionPath();
@@ -1717,7 +1717,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         Object info = node.getUserObject();
         String result = null;
         if(info instanceof ThreadInfo) {
-            result = ((ThreadInfo) info).threadName;
+            result = ((ThreadInfo) info).getThreadName();
         } else if (info instanceof DumpsBaseNode) {
             result = (String) ((DumpsBaseNode) info).getContent();
         }
