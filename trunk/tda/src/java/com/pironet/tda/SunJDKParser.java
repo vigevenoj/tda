@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.10 2007-11-22 13:38:29 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.11 2007-11-23 10:12:26 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -187,7 +187,7 @@ public class SunJDKParser implements DumpParser {
                     if(line.indexOf("Full thread dump") >= 0) {
                         locked = false;
                         if(!withCurrentTimeStamp) {
-                            overallTDI.threadName += " at line " + lineCounter;
+                            overallTDI.setThreadName(overallTDI.getThreadName() + " at line " + lineCounter);
                             if (startTime != 0) {
                                 startTime = 0;
                             } else if (matched != null && matched.matches()) {
@@ -204,14 +204,14 @@ public class SunJDKParser implements DumpParser {
                                     } catch (NumberFormatException nfe) {
                                         startTime = 0;
                                     }
-                                    overallTDI.threadName += " around " + new Date(startTime);
+                                    overallTDI.setThreadName(overallTDI.getThreadName() + " around " + new Date(startTime));
                                 } else {
-                                    overallTDI.threadName += " around " + parsedStartTime;
+                                    overallTDI.setThreadName(overallTDI.getThreadName() + " around " + parsedStartTime);
                                 }
                                 parsedStartTime = null;
                             }
                         }
-                        dumpKey = overallTDI.threadName;
+                        dumpKey = overallTDI.getThreadName();
                     } else if(!patternError && (regexPattern != null)) {
                         try {
                             Matcher m = regexPattern.matcher(line);
@@ -470,7 +470,7 @@ public class SunJDKParser implements DumpParser {
             }
             statData.append("</table>");
             
-            overallTDI.content = statData.toString();
+            overallTDI.setContent(statData.toString());
             return(threadCount > 0? threadDump : null);
             
         } catch (FileNotFoundException e) {
@@ -740,9 +740,8 @@ public class SunJDKParser implements DumpParser {
                 statData.append("for this monitor as there might be much more threads waiting for it.<br></td></tr>");                
             }
             statData.append("</table>");
-            mi.content = statData.toString();
-            mi.threadName += ":    " + (sleeps) + 
-                    " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking";
+            mi.setContent(statData.toString());
+            mi.setThreadName(mi.getThreadName() + ":    " + (sleeps) + " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking");
                         
             ((Category)catMonitors.getUserObject()).addToCatTree(monitorNode);
             if(locks == 0) {
