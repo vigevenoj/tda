@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.135 2007-11-23 10:12:27 irockel Exp $
+ * $Id: TDA.java,v 1.136 2007-11-26 16:17:01 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -35,7 +35,10 @@ import com.pironet.tda.utils.jedit.JEditTextArea;
 import com.pironet.tda.utils.jedit.PopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DropTargetDropEvent;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -59,6 +62,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -74,8 +80,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
@@ -146,6 +154,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private MBeanDumper mBeanDumper;
     private MainMenu pluginMainMenu;
     private boolean isFoundClassHistogram = false;
+    private DropTarget dt = null;
+    private DropTarget hdt = null;
+
     
     private StatusBar statusBar;
     
@@ -196,6 +207,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Create the HTML viewing pane.
         htmlPane = new JEditorPane("text/html", getInfoText());
         htmlPane.setEditable(false);
+        hdt = new DropTarget(htmlPane, new FileDropTargetListener());
         
         JEditorPane emptyPane = new JEditorPane("text/html", "");
         emptyPane.setEditable(false);
@@ -682,7 +694,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 };
         worker.start();
     }
-        
+    
     protected void createTree() {
         //Create a tree that allows multiple selection at a time.
         if(topNodes.size() == 1) {
@@ -719,6 +731,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
+        
+        dt = new DropTarget(tree, new FileDropTargetListener());
         
         createPopupMenu();
         
@@ -1972,6 +1986,38 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     
     public static void setFontSizeModifier(int value) {
         fontSizeModifier = value;
+    }
+    
+    /**
+     * handles dragging events for new files to open.
+     */
+    private class FileDropTargetListener extends DropTargetAdapter {
+
+        public void drop(DropTargetDropEvent dtde) {
+            try {
+                DataFlavor[] df = dtde.getTransferable().getTransferDataFlavors();
+                for (int i = 0; i < df.length; i++) {
+                    if (df[i].isMimeTypeEqual("application/x-java-serialized-object")) {
+                        dtde.acceptDrop(dtde.getDropAction());
+                        String[] fileStrings = ((String) dtde.getTransferable().getTransferData(df[i])).split("\n");
+                        File[] files = new File[fileStrings.length];
+                        for (int j = 0; j < fileStrings.length; j++) {
+                            files[j] = new File(fileStrings[j].substring(7));
+                            System.out.println("files=" + files[j]);
+                        }
+                        openFiles(files, false);
+                        dtde.dropComplete(true);
+                    }
+                }
+            } catch (UnsupportedFlavorException ex) {
+                ex.printStackTrace();
+                dtde.rejectDrop();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                dtde.rejectDrop();
+            }
+
+        }
     }
 
     
