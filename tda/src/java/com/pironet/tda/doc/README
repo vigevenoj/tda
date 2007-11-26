@@ -10,6 +10,7 @@ Changes from 1.5 are:
 * Added clipboard operation in logfile view.
 * Enhanced Monitor View, added expand all nodes and sort by thread count to popup.
 * Added View operations for root tree.
+* Added Drag and Drop for new files to open.
 * Bugfixing.
 
 Changes from 1.4 are:
