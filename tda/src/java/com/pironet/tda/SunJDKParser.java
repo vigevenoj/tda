@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.12 2007-11-27 09:42:20 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.13 2007-11-27 13:19:19 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -50,12 +50,11 @@ import javax.swing.tree.TreePath;
  *
  * @author irockel
  */
-public class SunJDKParser implements DumpParser {
+public class SunJDKParser extends AbstractDumpParser {
     private int markSize = 16384;
     private int maxCheckLines = 10;
     
     private MutableTreeNode nextDump = null;
-    private BufferedReader bis = null;
     private Map threadStore = null;
     private Pattern regexPattern = null;
     private boolean millisTimeStamp = false;
@@ -73,7 +72,7 @@ public class SunJDKParser implements DumpParser {
      * Creates a new instance of SunJDKParser 
      */
     public SunJDKParser(BufferedReader dumpBis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp) {
-        this.bis = dumpBis;
+        setBis(dumpBis);
         this.threadStore = threadStore;
         this.withCurrentTimeStamp = withCurrentTimeStamp;
         this.lineCounter = lineCounter;
@@ -176,8 +175,8 @@ public class SunJDKParser implements DumpParser {
             int singleLineCounter = 0;
             Matcher matched = null;
             
-            while(bis.ready() && !finished) {
-                String line = bis.readLine();
+            while(getBis().ready() && !finished) {
+                String line = getBis().readLine();
                 lineCounter++;
                 singleLineCounter++;
                 if(locked) {
@@ -311,15 +310,15 @@ public class SunJDKParser implements DumpParser {
                        (line.indexOf("\"VM Periodic Task Thread\"") >= 0) ||
                        (line.indexOf("<EndOfDump>") >= 0)) {
                         finished = true;
-                        bis.mark(markSize);
+                        getBis().mark(markSize);
                         if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
                             // no deadlocks found, set back original position.
-                            bis.reset();
+                            getBis().reset();
                         }
                         
-                        bis.mark(markSize);
+                        getBis().mark(markSize);
                         if(!(foundClassHistograms = checkForClassHistogram(threadDump))) {
-                            bis.reset();
+                            getBis().reset();
                         }
                     }
                 }
@@ -517,7 +516,7 @@ public class SunJDKParser implements DumpParser {
      * @param threadDump which tree node to add the histogram.
      */
     private boolean checkForClassHistogram(DefaultMutableTreeNode threadDump) throws IOException {
-        HistogramTableModel classHistogram = parseNextClassHistogram(bis);
+        HistogramTableModel classHistogram = parseNextClassHistogram(getBis());
         
         if(classHistogram.getRowCount() > 0) {
             addHistogramToDump(threadDump, classHistogram);            
@@ -599,8 +598,8 @@ public class SunJDKParser implements DumpParser {
         DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(deadlockCat);
         boolean first = true;
         
-        while(bis.ready() && !finished) {            
-            String line = bis.readLine();
+        while(getBis().ready() && !finished) {            
+            String line = getBis().readLine();
             
             if(!found && !line.equals("")) {
                 if (line.trim().startsWith("Found one Java-level deadlock")) {
@@ -750,44 +749,7 @@ public class SunJDKParser implements DumpParser {
         return new int[]{monitorsWithoutLocksCount, overallThreadsWaiting};
     }
     
-    /**
-     * create a tree node with the provided information
-     * @param top the parent node the new node should be added to.
-     * @param title the title of the new node
-     * @param info the info part of the new node
-     * @param content the content part of the new node
-     * @see ThreadInfo 
-     */
-    private void createNode(DefaultMutableTreeNode top, String title, String info, String content, int lineCount) {
-        DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content, lineCount));
-        top.add(threadInfo);
-    }
-    
-    /**
-     * create a node for a category (categories are "Monitors", "Threads waiting", e.g.). A ThreadInfo
-     * instance will be created with the passed information.
-     * @param category the category the node should be added to.
-     * @param title the title of the new node
-     * @param info the info part of the new node
-     * @param content the content part of the new node
-     * @see ThreadInfo 
-     */
-    private void createCategoryNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount) {
-        DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString(), lineCount));
-        ((Category)category.getUserObject()).addToCatTree(threadInfo);
-    }
-    
-    private String getDumpStringFromTreePath(TreePath path) {
-        String[] elems = path.toString().split(",");
-        if(elems.length > 1) {
-            return(elems[1].substring(0, elems[1].lastIndexOf(']')).trim());
-        } else {
-            return null;
-        }
-    }
-    
+        
     /**
      * parses a loggc file stream and reads any found class histograms and adds the to the dump store
      * @param loggcFileStream the stream to read
@@ -846,67 +808,6 @@ public class SunJDKParser implements DumpParser {
      */
     public void setDumpHistogramCounter(int value) {
        dumpHistogramCounter = value; 
-    }
-    
-    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths, int minOccurence, String regex) {
-        diffDumps("Long running thread detection", root, dumpStore, paths, minOccurence, regex);
-    }
-    
-    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence, String regex) {
-        diffDumps("Merge", root, dumpStore, dumps, minOccurence, regex);
-    }
-    
-    private void diffDumps(String prefix, DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence, String regex) {
-        Vector keys = new Vector(dumps.length);        
-        
-        for(int i = 0; i < dumps.length; i++) {
-            keys.add(getDumpStringFromTreePath(dumps[i]));
-        }
-           
-        String info = prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1); 
-        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new Category(info, IconFactory.DIFF_DUMPS));
-        root.add(catMerge);
-        
-        if(dumpStore.get(keys.get(0)) != null) {
-            Iterator dumpIter = ((Map) dumpStore.get(keys.get(0))).keySet().iterator();
-            
-            while(dumpIter.hasNext()) {
-                String threadKey = ((String) dumpIter.next()).trim();
-                int occurence = 0;
-                
-                if(regex == null || regex.equals("") || threadKey.matches(regex)) {
-                    for(int i = 1; i < dumps.length; i++) {
-                        Map threads = (Map) dumpStore.get(keys.get(i));
-                        if(threads.containsKey(threadKey)) {
-                            occurence++;
-                        }
-                    }
-                
-                    if(occurence >= (minOccurence-1)) {
-                        StringBuffer content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=").append(TDA.getFontSizeModifier(-1)).append(">").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
-                        for(int i = 1; i < dumps.length; i++) {
-                            if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
-                                content.append("\n\n---------------------------------\n\n");
-                                content.append(keys.get(i));
-                                content.append("\n\n");
-                                content.append((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey));
-                            }
-                        }
-                        createCategoryNode(catMerge, threadKey, null, content, 0);
-                    }
-                }
-            }
-        }
-        
-    }
-    
-    /**
-     * close this dump parser, also closes the passed dump stream
-     */
-    public void close() throws IOException {
-        if(bis != null) {
-            bis.close();
-        }        
     }
     
     /**

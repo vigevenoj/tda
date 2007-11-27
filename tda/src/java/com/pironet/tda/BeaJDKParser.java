@@ -15,25 +15,23 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.1 2007-11-27 09:42:20 irockel Exp $
+ * $Id: BeaJDKParser.java,v 1.2 2007-11-27 13:19:19 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
 
 /**
  * Parses Bea/JRockit Thread Dumps
  * 
  * @author irockel
  */
-public class BeaJDKParser implements DumpParser {
+public class BeaJDKParser extends AbstractDumpParser {
 
     /**
      * constructs a new instance of a bea jdk parser
@@ -51,20 +49,9 @@ public class BeaJDKParser implements DumpParser {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void close() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void findLongRunningThreads(DefaultMutableTreeNode root, Map dumpStore, TreePath[] paths, int minOccurence, String regex) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void mergeDumps(DefaultMutableTreeNode root, Map dumpStore, TreePath[] dumps, int minOccurence, String regex) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     public boolean isFoundClassHistograms() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // bea parser doesn't support class histograms
+        return false;
     }
 
     public void parseLoggcFile(InputStream loggcFileStream, DefaultMutableTreeNode root) {
