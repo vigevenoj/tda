@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactory.java,v 1.7 2007-11-27 09:42:20 irockel Exp $
+ * $Id: DumpParserFactory.java,v 1.8 2007-11-27 12:29:05 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -30,7 +30,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 /**
- * Provides Factory Interface for dump parsers.
+ * Factory for the dump parsers.
  *
  * @author irockel
  */
@@ -39,10 +39,16 @@ public class DumpParserFactory {
     
     private DumpParser currentDumpParser = null;
     
-    /** singleton private constructor */
+    /** 
+     * singleton private constructor 
+     */
     private DumpParserFactory() {
     }
     
+    /**
+     * get the singleton instance of the factory
+     * @return singleton instance
+     */
     public static DumpParserFactory get() {
         if(instance == null) {
             instance = new DumpParserFactory();
@@ -51,6 +57,15 @@ public class DumpParserFactory {
         return(instance);
     }
     
+    /**
+     * parses the given logfile for thread dumps and return a proper jdk parser (either for Sun VM's or
+     * for JRockit/Bea VM's) and initializes the DumpParser with the stream.
+     * @param dumpFileStream the file stream to use for dump parsing.
+     * @param threadStore the map to store the found thread dumps.
+     * @param withCurrentTimeStamp only used by SunJDKParser for running in JConsole-Plugin-Mode,  it then uses
+     *                             the current time stamp instead of a parsed one.
+     * @return a proper dump parser for the given log file, null if no proper parser was found.
+     */
     public DumpParser getDumpParserForLogfile(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
         BufferedReader bis = null;
         int readAheadLimit = PrefManager.get().getStreamResetBuffer();
@@ -80,6 +95,11 @@ public class DumpParserFactory {
         return currentDumpParser;
     }
     
+    /**
+     * returns the currently used dump parser. Will be null if getDumpParserForLogfile hasn't been
+     * called before.
+     * @return the currently used dump parser.
+     */
     public DumpParser getCurrentDumpParser() {
         return(currentDumpParser);
     }
