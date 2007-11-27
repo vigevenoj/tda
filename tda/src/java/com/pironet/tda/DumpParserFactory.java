@@ -17,12 +17,16 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactory.java,v 1.6 2007-11-02 08:42:41 irockel Exp $
+ * $Id: DumpParserFactory.java,v 1.7 2007-11-27 09:42:20 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.PrefManager;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 /**
@@ -47,10 +51,33 @@ public class DumpParserFactory {
         return(instance);
     }
     
-    public DumpParser getDumpParserForVersion(String javaVersion, InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
-        // currently only one parser supported.
-        currentDumpParser = new SunJDKParser(dumpFileStream, threadStore, withCurrentTimeStamp);
-        return(currentDumpParser);
+    public DumpParser getDumpParserForLogfile(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
+        BufferedReader bis = null;
+        int readAheadLimit = PrefManager.get().getStreamResetBuffer();
+        int lineCounter = 0;
+        try {
+            bis = new BufferedReader(new InputStreamReader(dumpFileStream));
+            
+            // reset current dump parser
+            currentDumpParser = null;
+            while (bis.ready() && (currentDumpParser == null)) {
+                bis.mark(readAheadLimit);
+                String line = bis.readLine();
+                if(SunJDKParser.checkForSupportedThreadDump(line)) {
+                    currentDumpParser = new SunJDKParser(bis, threadStore, lineCounter, withCurrentTimeStamp);
+                } else if(BeaJDKParser.checkForSupportedThreadDump(line)) {
+                    currentDumpParser = new BeaJDKParser(bis, threadStore, lineCounter);
+                }
+                lineCounter++;
+            }
+            //System.out.println("Selected Dump Parser: " + currentDumpParser.getClass().getName());
+            if ((currentDumpParser != null) && (bis != null)) {
+                bis.reset();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return currentDumpParser;
     }
     
     public DumpParser getCurrentDumpParser() {

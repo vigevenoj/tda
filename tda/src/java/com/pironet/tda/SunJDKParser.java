@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.11 2007-11-23 10:12:26 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.12 2007-11-27 09:42:20 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -54,7 +54,6 @@ public class SunJDKParser implements DumpParser {
     private int markSize = 16384;
     private int maxCheckLines = 10;
     
-    private InputStream dumpFileStream = null;
     private MutableTreeNode nextDump = null;
     private BufferedReader bis = null;
     private Map threadStore = null;
@@ -73,10 +72,11 @@ public class SunJDKParser implements DumpParser {
     /** 
      * Creates a new instance of SunJDKParser 
      */
-    public SunJDKParser(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
-        this.dumpFileStream = dumpFileStream;
+    public SunJDKParser(BufferedReader dumpBis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp) {
+        this.bis = dumpBis;
         this.threadStore = threadStore;
         this.withCurrentTimeStamp = withCurrentTimeStamp;
+        this.lineCounter = lineCounter;
         maxCheckLines = PrefManager.get().getMaxRows();
         markSize = PrefManager.get().getStreamResetBuffer();
         millisTimeStamp = PrefManager.get().getMillisTimeStamp();
@@ -137,9 +137,6 @@ public class SunJDKParser implements DumpParser {
         
         try {
             Map threads = new HashMap();
-            if(bis == null) {
-                bis = new BufferedReader(new InputStreamReader(dumpFileStream));
-            }
             if(withCurrentTimeStamp) {
                 overallTDI = new ThreadInfo("Full Thread Dump at " + new Date(System.currentTimeMillis()), null, "", 0);
             } else {
@@ -909,10 +906,16 @@ public class SunJDKParser implements DumpParser {
     public void close() throws IOException {
         if(bis != null) {
             bis.close();
-        }
-        
-        if(dumpFileStream != null) {
-            dumpFileStream.close();
-        }
+        }        
+    }
+    
+    /**
+     * check if the passed logline contains the beginning of a sun jdk thread
+     * dump.
+     * @param logLine the line of the logfile to test
+     * @return true, if the start of a sun thread dump is detected.
+     */
+    public static boolean checkForSupportedThreadDump(String logLine) {
+        return (logLine.trim().contains("Full thread dump Java HotSpot(TM)"));
     }
 }

@@ -17,10 +17,12 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactoryTest.java,v 1.2 2007-10-29 19:43:11 irockel Exp $
+ * $Id: DumpParserFactoryTest.java,v 1.3 2007-11-27 09:42:19 irockel Exp $
  */
 package com.pironet.tda;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import junit.framework.*;
 import java.io.InputStream;
 import java.util.Map;
@@ -60,16 +62,33 @@ public class DumpParserFactoryTest extends TestCase {
     /**
      * Test of getDumpParserForVersion method, of class com.pironet.tda.DumpParserFactory.
      */
-    public void testGetDumpParserForVersion() {
+    public void testGetDumpParserForSunLogfile() throws FileNotFoundException {
         System.out.println("getDumpParserForVersion");
         
-        String javaVersion = "1.4";
-        InputStream dumpFileStream = null;
+        InputStream dumpFileStream = new FileInputStream("test/none/test.log");
         Map threadStore = null;
         DumpParserFactory instance = DumpParserFactory.get();
         
-        DumpParser result = instance.getDumpParserForVersion(javaVersion, dumpFileStream, threadStore, false);
+        DumpParser result = instance.getDumpParserForLogfile(dumpFileStream, threadStore, false);
         assertNotNull(result);
+        
+        assertTrue(result instanceof com.pironet.tda.SunJDKParser);
+    }
+
+    /**
+     * Test of getDumpParserForVersion method, of class com.pironet.tda.DumpParserFactory.
+     */
+    public void testGetDumpParserForBeaLogfile() throws FileNotFoundException {
+        System.out.println("getDumpParserForVersion");
+        
+        InputStream dumpFileStream = new FileInputStream("test/none/jrockit_15_dump.txt");
+        Map threadStore = null;
+        DumpParserFactory instance = DumpParserFactory.get();
+        
+        DumpParser result = instance.getDumpParserForLogfile(dumpFileStream, threadStore, false);
+        assertNotNull(result);
+        
+        assertTrue(result instanceof com.pironet.tda.BeaJDKParser);
     }
 
     /**
