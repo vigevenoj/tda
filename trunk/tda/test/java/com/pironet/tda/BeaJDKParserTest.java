@@ -1,6 +1,4 @@
 /*
- * SunJDKParserTest.java
- *
  * This file is part of TDA - Thread Dump Analysis Tool.
  *
  * Foobar is free software; you can redistribute it and/or modify
@@ -17,40 +15,46 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParserTest.java,v 1.3 2007-11-27 09:42:19 irockel Exp $
+ * $Id: BeaJDKParserTest.java,v 1.1 2007-11-27 09:42:19 irockel Exp $
  */
+
 package com.pironet.tda;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-import junit.framework.*;
 import java.util.Map;
 import java.util.Vector;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
- * test parsing of log files from sun vms.
+ *
  * @author irockel
  */
-public class SunJDKParserTest extends TestCase {
+public class BeaJDKParserTest extends TestCase {
     
-    public SunJDKParserTest(String testName) {
+    public BeaJDKParserTest(String testName) {
         super(testName);
-    }
+    }            
 
     protected void setUp() throws Exception {
+        super.setUp();
     }
 
     protected void tearDown() throws Exception {
+        super.tearDown();
     }
-
+    
     public static Test suite() {
-        TestSuite suite = new TestSuite(SunJDKParserTest.class);
+        TestSuite suite = new TestSuite(BeaJDKParserTest.class);
         
         return suite;
     }
-
+    
     /**
      * Test of hasMoreDumps method, of class com.pironet.tda.SunJDKParser.
      */
@@ -60,12 +64,12 @@ public class SunJDKParserTest extends TestCase {
         DumpParser instance = null;
         
         try {
-            fis = new FileInputStream("test/none/test.log");
+            fis = new FileInputStream("test/none/jrockit_15_dump.txt");
             Map dumpMap = new HashMap();
             Vector topNodes = new Vector();
             instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false);
             
-            assertTrue(instance instanceof SunJDKParser);
+            assertTrue(instance instanceof BeaJDKParser);
 
             while (instance.hasMoreDumps()) {
                 topNodes.add(instance.parseNext());
@@ -83,33 +87,4 @@ public class SunJDKParserTest extends TestCase {
         }
     }
 
-    /**
-     * Test of isFoundClassHistograms method, of class com.pironet.tda.SunJDKParser.
-     */
-    public void testIsFoundClassHistograms() throws FileNotFoundException, IOException {
-        System.out.println("isFoundClassHistograms");
-        DumpParser instance = null;
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream("test/none/testwithhistogram.log");
-            Map dumpMap = new HashMap();
-            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false);
-            
-            Vector topNodes = new Vector();
-            while (instance.hasMoreDumps()) {
-                topNodes.add(instance.parseNext());
-            }
-            
-            boolean expResult = true;
-            boolean result = instance.isFoundClassHistograms();
-            assertEquals(expResult, result);        
-        } finally {
-            if(instance != null) {
-                instance.close();
-            }
-            if(fis != null) {
-                fis.close();
-            }
-        }
-    }
 }

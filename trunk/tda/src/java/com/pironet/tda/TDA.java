@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.136 2007-11-26 16:17:01 irockel Exp $
+ * $Id: TDA.java,v 1.137 2007-11-27 09:42:20 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -992,7 +992,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             String fileName = top.getUserObject().toString();
             Map dumpMap = new HashMap();
             dumpStore.addFileToDumpFiles(fileName, dumpMap);
-            dp = DumpParserFactory.get().getDumpParserForVersion("1.4", dumpFileStream, dumpMap, runningAsJConsolePlugin);
+            dp = DumpParserFactory.get().getDumpParserForLogfile(dumpFileStream, dumpMap, runningAsJConsolePlugin);
             while(dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
                 if(!isFoundClassHistogram) {
