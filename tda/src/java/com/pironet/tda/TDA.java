@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.137 2007-11-27 09:42:20 irockel Exp $
+ * $Id: TDA.java,v 1.138 2007-11-28 12:27:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -207,7 +207,10 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Create the HTML viewing pane.
         htmlPane = new JEditorPane("text/html", getInfoText());
         htmlPane.setEditable(false);
-        hdt = new DropTarget(htmlPane, new FileDropTargetListener());
+        
+        if(!asJConsolePlugin) {
+            hdt = new DropTarget(htmlPane, new FileDropTargetListener());
+        }
         
         JEditorPane emptyPane = new JEditorPane("text/html", "");
         emptyPane.setEditable(false);
@@ -732,7 +735,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
         
-        dt = new DropTarget(tree, new FileDropTargetListener());
+        if(!runningAsJConsolePlugin) {
+            dt = new DropTarget(tree, new FileDropTargetListener());
+        }
         
         createPopupMenu();
         
