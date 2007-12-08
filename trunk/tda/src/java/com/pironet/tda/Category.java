@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.14 2007-11-21 21:12:07 irockel Exp $
+ * $Id: Category.java,v 1.15 2007-12-08 07:49:18 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -29,7 +29,9 @@ import com.pironet.tda.utils.TreeRenderer;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EventListener;
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionListener;
@@ -113,7 +115,7 @@ public class Category implements Serializable {
     /**
      * return category tree with filtered child nodes
      */
-    public JTree getCatTree(TreeSelectionListener listener) {
+    public JComponent getCatComponent(EventListener listener) {
         if(filterEnabled && ((filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged()))) {
             // first refresh filter checker with current filters
             setFilterChecker(FilterChecker.getFilterChecker());
@@ -125,7 +127,7 @@ public class Category implements Serializable {
             }
             filteredCatTree.setCellRenderer(new TreeRenderer());
             filteredCatTree.setRootVisible(false);
-            filteredCatTree.addTreeSelectionListener(listener);
+            filteredCatTree.addTreeSelectionListener((TreeSelectionListener) listener);
             setLastUpdated();
         } else if (!filterEnabled && (filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
             filteredCatTree = new JTree(rootNode);
@@ -134,7 +136,7 @@ public class Category implements Serializable {
             }
             filteredCatTree.setCellRenderer(new TreeRenderer());
             filteredCatTree.setRootVisible(false);
-            filteredCatTree.addTreeSelectionListener(listener);            
+            filteredCatTree.addTreeSelectionListener((TreeSelectionListener) listener);
         }
         return(filteredCatTree);
     }
