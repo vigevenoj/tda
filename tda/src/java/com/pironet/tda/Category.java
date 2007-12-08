@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.15 2007-12-08 07:49:18 irockel Exp $
+ * $Id: Category.java,v 1.16 2007-12-08 13:30:02 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -146,6 +146,10 @@ public class Category implements Serializable {
      */
     public int howManyFiltered() {
        return(filteredRootNode != null && rootNode != null ? rootNode.getChildCount() - filteredRootNode.getChildCount() : 0); 
+    }
+    
+    public int getNodeCount() {
+        return(rootNode.getChildCount());
     }
     
     public int showing() {
