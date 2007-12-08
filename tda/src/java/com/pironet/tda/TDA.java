@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.141 2007-12-08 09:58:34 irockel Exp $
+ * $Id: TDA.java,v 1.142 2007-12-08 10:27:52 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1056,9 +1056,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                 tree.scrollPathToVisible(monitorPath);
                 displayLogFileContent(logfileContent.getUserObject());
                 jeditPane.setFirstLine(lineNumber-1);
-            }
-           
-            //System.out.println("lineNumber " + lineNumber);
+            }           
         }
     }
     
@@ -1296,7 +1294,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
                         e.getX(), e.getY());
                 showDumpMenuItem.setEnabled((tree.getSelectionPath() != null) 
                         && ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).
-                        getUserObject() instanceof ThreadInfo);
+                        getUserObject() instanceof ThreadDumpInfo);
             }
         }
     }
@@ -1741,7 +1739,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         Object info = node.getUserObject();
         String result = null;
         if(info != null) {
-            ((AbstractInfo) info).getName();
+            result = ((AbstractInfo) info).getName();
         }
         
         return(result != null && result.startsWith(startsWith));
