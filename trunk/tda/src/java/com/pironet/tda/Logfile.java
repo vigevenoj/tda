@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Logfile.java,v 1.5 2007-12-08 09:58:34 irockel Exp $
+ * $Id: Logfile.java,v 1.6 2007-12-08 10:27:52 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -34,6 +34,7 @@ public class Logfile extends AbstractInfo {
      */
     public Logfile(String value) {
         content = value;
+        setName(value);
     }
     
     /**
