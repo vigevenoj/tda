@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.9 2007-11-23 10:12:27 irockel Exp $
+ * $Id: Filter.java,v 1.10 2007-12-08 09:58:35 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -194,10 +194,10 @@ public class Filter {
         if(isEnabled()) {
             switch(getFilterRule()) {
                 case HAS_IN_TITLE_RULE :
-                    result = getFilterExpressionPattern().matcher(ti.getThreadName()).find();
+                    result = getFilterExpressionPattern().matcher(ti.getName()).find();
                     break;
                 case MATCHES_TITLE_RULE :
-                    result = getFilterExpressionPattern().matcher(ti.getThreadName()).matches();
+                    result = getFilterExpressionPattern().matcher(ti.getName()).matches();
                     break;
                 case HAS_IN_STACK_RULE : 
                     result = getFilterExpressionPattern().matcher(ti.getContent()).find();
@@ -209,17 +209,17 @@ public class Filter {
                     result = (ti.getContent().indexOf("- waiting on") >= 0) && checkLine(ti, "- waiting on", '<', ')');
                     break;
                 case WAITING_FOR_RULE :
-                    result = (ti.getThreadName().indexOf("waiting for monitor entry") >= 0) &&
+                    result = (ti.getName().indexOf("waiting for monitor entry") >= 0) &&
                             checkLine(ti, "- waiting to lock", '<', ')');
                     break;
                 case LOCKING_RULE :
                     result = (ti.getContent().indexOf("- locked") >= 0) && checkLine(ti, "- locked", '<', ')');
                     break;
                 case SLEEPING_RULE :
-                    result = (ti.getThreadName().indexOf("Object.wait()") >= 0);
+                    result = (ti.getName().indexOf("Object.wait()") >= 0);
                     break;
                 case STACK_IS_LONGER_THAN_RULE :
-                    result = (ti.getLineCount() == 0) || ((ti.getLineCount() -2) > Integer.parseInt(filterExpression));
+                    result = (ti.getStackLines() == 0) || ((ti.getStackLines() -2) > Integer.parseInt(filterExpression));
                     break;
             }
             //System.out.println("Filter " + getFilterExpression() + " result = " + result + " // content" + ti.content);

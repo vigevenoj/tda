@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TreeRenderer.java,v 1.8 2007-11-23 10:12:26 irockel Exp $
+ * $Id: TreeRenderer.java,v 1.9 2007-12-08 09:58:35 irockel Exp $
  */
 
 package com.pironet.tda.utils;
@@ -92,8 +92,7 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
     
     private boolean isThreadInfo(Object value) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-        return((node.getUserObject() instanceof ThreadInfo) && 
-                !((ThreadInfo) node.getUserObject()).getThreadName().startsWith("Full"));
+        return((node.getUserObject() instanceof ThreadInfo));
     }
     
     private boolean isLogfile(Object value) {

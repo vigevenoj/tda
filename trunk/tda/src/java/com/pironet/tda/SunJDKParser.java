@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.13 2007-11-27 13:19:19 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.14 2007-12-08 09:58:34 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -126,7 +126,7 @@ public class SunJDKParser extends AbstractDumpParser {
         }
         
         DefaultMutableTreeNode threadDump = null;
-        ThreadInfo overallTDI = null;
+        ThreadDumpInfo overallTDI = null;
         DefaultMutableTreeNode catMonitors = null;
         DefaultMutableTreeNode catMonitorsLocks = null;
         DefaultMutableTreeNode catThreads = null;
@@ -137,9 +137,9 @@ public class SunJDKParser extends AbstractDumpParser {
         try {
             Map threads = new HashMap();
             if(withCurrentTimeStamp) {
-                overallTDI = new ThreadInfo("Full Thread Dump at " + new Date(System.currentTimeMillis()), null, "", 0);
+                overallTDI = new ThreadDumpInfo("Full Thread Dump at " + new Date(System.currentTimeMillis()), 0);
             } else {
-                overallTDI = new ThreadInfo("Full Thread Dump No. " + counter++, null, "", 0);
+                overallTDI = new ThreadDumpInfo("Full Thread Dump No. " + counter++, 0);
             }
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
@@ -183,7 +183,8 @@ public class SunJDKParser extends AbstractDumpParser {
                     if(line.indexOf("Full thread dump") >= 0) {
                         locked = false;
                         if(!withCurrentTimeStamp) {
-                            overallTDI.setThreadName(overallTDI.getThreadName() + " at line " + lineCounter);
+                            overallTDI.setLogLine(lineCounter);
+                            
                             if (startTime != 0) {
                                 startTime = 0;
                             } else if (matched != null && matched.matches()) {
@@ -200,14 +201,14 @@ public class SunJDKParser extends AbstractDumpParser {
                                     } catch (NumberFormatException nfe) {
                                         startTime = 0;
                                     }
-                                    overallTDI.setThreadName(overallTDI.getThreadName() + " around " + new Date(startTime));
+                                    overallTDI.setStartTime((new Date(startTime)).toString());
                                 } else {
-                                    overallTDI.setThreadName(overallTDI.getThreadName() + " around " + parsedStartTime);
+                                    overallTDI.setStartTime(parsedStartTime);
                                 }
                                 parsedStartTime = null;
                             }
                         }
-                        dumpKey = overallTDI.getThreadName();
+                        dumpKey = overallTDI.getName();
                     } else if(!patternError && (regexPattern != null)) {
                         try {
                             Matcher m = regexPattern.matcher(line);
@@ -466,7 +467,7 @@ public class SunJDKParser extends AbstractDumpParser {
             }
             statData.append("</table>");
             
-            overallTDI.setContent(statData.toString());
+            overallTDI.setOverview(statData.toString());
             return(threadCount > 0? threadDump : null);
             
         } catch (FileNotFoundException e) {
@@ -737,7 +738,7 @@ public class SunJDKParser extends AbstractDumpParser {
             }
             statData.append("</table>");
             mi.setContent(statData.toString());
-            mi.setThreadName(mi.getThreadName() + ":    " + (sleeps) + " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking");
+            mi.setName(mi.getName() + ":    " + (sleeps) + " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking");
                         
             ((Category)catMonitors.getUserObject()).addToCatTree(monitorNode);
             if(locks == 0) {
