@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadDumpInfo.java,v 1.5 2007-12-08 09:58:34 irockel Exp $
+ * $Id: ThreadDumpInfo.java,v 1.6 2007-12-08 10:36:14 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -30,6 +30,12 @@ public class ThreadDumpInfo extends AbstractInfo {
     private int logLine;
     private String startTime;
     private String overview;
+    
+    private Category waitingThreads;
+    private Category sleepingThreads;
+    private Category lockingThreads;
+    private Category monitors;
+    private Category monitorsWithoutLocks;
     
     ThreadDumpInfo(String name, int lineCount) {
         setName(name);
@@ -87,6 +93,46 @@ public class ThreadDumpInfo extends AbstractInfo {
         this.overview = overview;
     }
 
+    public Category getWaitingThreads() {
+        return waitingThreads;
+    }
+
+    public void setWaitingThreads(Category waitingThreads) {
+        this.waitingThreads = waitingThreads;
+    }
+
+    public Category getSleepingThreads() {
+        return sleepingThreads;
+    }
+
+    public void setSleepingThreads(Category sleepingThreads) {
+        this.sleepingThreads = sleepingThreads;
+    }
+
+    public Category getLockingThreads() {
+        return lockingThreads;
+    }
+
+    public void setLockingThreads(Category lockingThreads) {
+        this.lockingThreads = lockingThreads;
+    }
+
+    public Category getMonitors() {
+        return monitors;
+    }
+
+    public void setMonitors(Category monitors) {
+        this.monitors = monitors;
+    }
+
+    public Category getMonitorsWithoutLockingThreads() {
+        return monitorsWithoutLocks;
+    }
+
+    public void setMonitorsWithoutLocks(Category monitorsWithoutLocks) {
+        this.monitorsWithoutLocks = monitorsWithoutLocks;
+    }
+
     /**
      * string representation of this node, is used to displayed the node info
      * in the tree.
@@ -102,5 +148,4 @@ public class ThreadDumpInfo extends AbstractInfo {
         }
         return(getName() +  postFix);
     }
-
 }
