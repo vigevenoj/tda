@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.15 2007-12-08 10:36:14 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.16 2007-12-08 13:30:02 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -42,7 +42,6 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
 
 /**
  * Parses SunJDK Thread Dumps.
@@ -51,20 +50,10 @@ import javax.swing.tree.TreePath;
  * @author irockel
  */
 public class SunJDKParser extends AbstractDumpParser {
-    private int markSize = 16384;
-    private int maxCheckLines = 10;
-    
     private MutableTreeNode nextDump = null;
     private Map threadStore = null;
-    private Pattern regexPattern = null;
-    private boolean millisTimeStamp = false;
-    
     private int counter = 1;
-    
     private int lineCounter = 0;
-    
-    private boolean patternError = false;
-    
     private boolean foundClassHistograms = false;
     private boolean withCurrentTimeStamp = false;
     
@@ -72,30 +61,11 @@ public class SunJDKParser extends AbstractDumpParser {
      * Creates a new instance of SunJDKParser 
      */
     public SunJDKParser(BufferedReader dumpBis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp) {
+        super();
         setBis(dumpBis);
         this.threadStore = threadStore;
         this.withCurrentTimeStamp = withCurrentTimeStamp;
         this.lineCounter = lineCounter;
-        maxCheckLines = PrefManager.get().getMaxRows();
-        markSize = PrefManager.get().getStreamResetBuffer();
-        millisTimeStamp = PrefManager.get().getMillisTimeStamp();
-        
-        if((PrefManager.get().getDateParsingRegex() != null) && !PrefManager.get().getDateParsingRegex().trim().equals("")) {
-            try {
-                regexPattern = Pattern.compile(PrefManager.get().getDateParsingRegex().trim());
-                patternError = false;
-            } catch (PatternSyntaxException pe) {
-                JOptionPane.showMessageDialog(null,
-                        "Error during parsing line for timestamp regular expression!\n" +
-                        "Please check regular expression in your preferences. Deactivating\n" +
-                        "parsing for the rest of the file! Error Message is " + pe.getMessage() + " \n",
-                        "Error during Parsing", JOptionPane.ERROR_MESSAGE);
-                
-                //System.out.println("Failed parsing! " + pe.getMessage());
-                //pe.printStackTrace();
-                patternError = true;
-            }
-        }        
     }
     
     /**
@@ -190,7 +160,7 @@ public class SunJDKParser extends AbstractDumpParser {
                             } else if (matched != null && matched.matches()) {
 
                                 String parsedStartTime = matched.group(1);
-                                if (millisTimeStamp) {
+                                if (isMillisTimeStamp()) {
                                     try {
                                         // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=2342342340)
                                         if (parsedStartTime.length() < 13) {
@@ -209,9 +179,9 @@ public class SunJDKParser extends AbstractDumpParser {
                             }
                         }
                         dumpKey = overallTDI.getName();
-                    } else if(!patternError && (regexPattern != null)) {
+                    } else if(!isPatternError() && (getRegexPattern() != null)) {
                         try {
-                            Matcher m = regexPattern.matcher(line);
+                            Matcher m = getRegexPattern().matcher(line);
                             if(m.matches()) {
                                 matched = m;
                             }
@@ -224,7 +194,7 @@ public class SunJDKParser extends AbstractDumpParser {
                             
                             //System.out.println("Failed parsing! " + ex.getMessage());
                             //ex.printStackTrace();
-                            patternError = true;
+                            setPatternError(true);
                         }
                     }
                 } else {
@@ -311,13 +281,13 @@ public class SunJDKParser extends AbstractDumpParser {
                        (line.indexOf("\"VM Periodic Task Thread\"") >= 0) ||
                        (line.indexOf("<EndOfDump>") >= 0)) {
                         finished = true;
-                        getBis().mark(markSize);
+                        getBis().mark(getMarkSize());
                         if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
                             // no deadlocks found, set back original position.
                             getBis().reset();
                         }
                         
-                        getBis().mark(markSize);
+                        getBis().mark(getMarkSize());
                         if(!(foundClassHistograms = checkForClassHistogram(threadDump))) {
                             getBis().reset();
                         }
@@ -351,40 +321,13 @@ public class SunJDKParser extends AbstractDumpParser {
             }
             
             int monitorCount = mmap.size();
-            StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System " +
-                    "><table border=0><tr bgcolor=\"#dddddd\"><td><font face=System " + 
-                    ">Overall Thread Count</td><td width=\"150\"></td><td><b><font face=System>");
-            statData.append(threadCount);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System" + 
-                    ">Overall Monitor Count</td><td></td><td><b><font face=System>");
-            statData.append(monitorCount);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System " + 
-                    ">Number of threads waiting for a monitor</td><td></td><td><b><font face=System>");
-            statData.append(waiting);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System " + 
-                    ">Number of threads locking a monitor</td><td></td><td><b><font face=System size>");
-            statData.append(locking);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System " + 
-                    ">Number of threads sleeping on a monitor</td><td></td><td><b><font face=System>");
-            statData.append(sleeping);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td><font face=System " + 
-                    ">Number of deadlocks</td><td></td><td><b><font face=System>");
-            statData.append(deadlocks);
-            
-            ((Category) catThreads.getUserObject()).setName(((Category) catThreads.getUserObject()) + " (" + threadCount + " Threads overall)");
-            ((Category) catWaiting.getUserObject()).setName(((Category) catWaiting.getUserObject()) + " (" + waiting + " Threads waiting)");
-            ((Category) catSleeping.getUserObject()).setName(((Category) catSleeping.getUserObject()) + " (" + sleeping + " Threads sleeping)");
-            ((Category) catLocking.getUserObject()).setName(((Category) catLocking.getUserObject()) + " (" + locking + " Threads locking)");
-            ((Category) catMonitors.getUserObject()).setName(((Category) catMonitors.getUserObject()) + " (" + monitorCount + " Monitors)");
-            
-            
+                        
             int monitorsWithoutLocksCount = 0;
-            int overallThreadsWaitingWithoutLocks = 0; 
             // dump monitors 
             if(mmap.size() > 0) {
                 int[] result = dumpMonitors(catMonitors, catMonitorsLocks, mmap);
                 monitorsWithoutLocksCount = result[0];
-                overallThreadsWaitingWithoutLocks = result[1];
+                overallTDI.setOverallThreadsWaitingWithoutLocksCount(result[1]);
             }
             
             // display nodes with stuff to display
@@ -412,11 +355,13 @@ public class SunJDKParser extends AbstractDumpParser {
                 overallTDI.setMonitorsWithoutLocks((Category) catMonitorsLocks.getUserObject());
                 threadDump.add(catMonitorsLocks);
             }
+            overallTDI.setThreads((Category) catThreads.getUserObject());
             
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#dddddd\"><td><font face=System " +
-                    ">Number of Monitors without locking threads</td><td></td><td><b><font face=System>");
-            statData.append(monitorsWithoutLocksCount);
-            statData.append("</b></td></tr>");
+            ((Category) catThreads.getUserObject()).setName(((Category) catThreads.getUserObject()) + " (" + threadCount + " Threads overall)");
+            ((Category) catWaiting.getUserObject()).setName(((Category) catWaiting.getUserObject()) + " (" + waiting + " Threads waiting)");
+            ((Category) catSleeping.getUserObject()).setName(((Category) catSleeping.getUserObject()) + " (" + sleeping + " Threads sleeping)");
+            ((Category) catLocking.getUserObject()).setName(((Category) catLocking.getUserObject()) + " (" + locking + " Threads locking)");
+            ((Category) catMonitors.getUserObject()).setName(((Category) catMonitors.getUserObject()) + " (" + monitorCount + " Monitors)");
             ((Category) catMonitorsLocks.getUserObject()).setName(((Category) catMonitorsLocks.getUserObject()) + " (" + monitorsWithoutLocksCount + 
                     " Monitors)");
             // add thread dump to passed dump store.
@@ -424,55 +369,6 @@ public class SunJDKParser extends AbstractDumpParser {
                 threadStore.put(dumpKey.trim(), threads);
             }
             
-            // check for possible hot spots concerning this thread dump
-            
-            // check if a lot of threads are in state "waiting"
-            if((deadlocks == 0) && (threadCount > 0) && ((waiting / (threadCount / 100.0)) > 10.0)) {
-                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " +
-                        "><p>" + (int)(waiting / (threadCount / 100.0)) + "% of all threads are waiting for a monitor to become available again.</p><br>");
-                statData.append("This might indicate a congestion or even a deadlock. If a monitor doesn't have a locking thread, it might be<br>");
-                statData.append("hold by some external resource or system thread. You should check the <a href=\"wait://\">waiting threads</a>.<br></td></tr>");
-            } else if(deadlocks > 0) {
-                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " +
-                        "><p>The JVM has detected " + deadlocks + " deadlock(s) in the thread dump. You should check the <br><a href=\"dead://\">deadlocks</a> for further information.</p><br>");                
-            }
-            
-            // check if a lot of threads are in state "waiting"
-            if((threadCount > 0) && ((sleeping / (threadCount / 100.0)) > 25.0)) {
-                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System" +
-                        "><p>" + (int)(sleeping / (threadCount / 100.0)) + "% of all threads are sleeping on a monitor.</p><br>");
-                statData.append("This might indicate they are waiting for some external resource (e.g. database) which is overloaded<br>");
-                statData.append("or not available or are just waiting to get to do something (idle threads).<br>");
-                statData.append("You should check the <a href=\"sleep://\">sleeping threads</a> with a filter excluding all idle threads.</td></tr>");
-            }
-            
-            // display an info if there are monitors without locking threads
-            if(monitorsWithoutLocksCount > 0) {
-                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System" +
-                        "><p>This thread dump contains monitors without a locking thread information.<br>");
-                statData.append("This means, the monitor is hold by a system thread or some external resource.</p<br>");
-                statData.append("You should check the monitors without locking threads for more information.<br></td></tr>");
-            }
-            
-            // check for indications for running garbage collector
-            if((threadCount > 0) && (overallThreadsWaitingWithoutLocks / (threadCount / 100.0) > 50.0)) {
-                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " + 
-                        "<p>" + (int)(overallThreadsWaitingWithoutLocks / (threadCount / 100.0)) + "% of all threads are waiting for a monitor without a application");
-                statData.append("thread holding it.<br> This indicates a congestion. It is very likely the garbage collector is running");
-                statData.append("and is blocking the monitors.</p<br>");
-                statData.append("You should check the monitors without locking threads for more information on the blocked threads.<br>");
-                statData.append("You also should analyze the garbage collector behaviour. Go to the ");
-                statData.append("<a href=\"http://www.tagtraum.com/gcviewer.html\">GCViewer-Homepage</a> for more<br>");
-                statData.append(" information on how to do this.</td></tr>");
-            }
-            statData.append("</table>");
-            
-            overallTDI.setOverview(statData.toString());
             return(threadCount > 0? threadDump : null);
             
         } catch (FileNotFoundException e) {
@@ -554,7 +450,7 @@ public class SunJDKParser extends AbstractDumpParser {
             if(!found && !line.equals("")) {
                 if (line.startsWith("num   #instances    #bytes  class name")) {
                     found = true;
-                } else if(lineCounter >= maxCheckLines) {
+                } else if(lineCounter >= getMaxCheckLines()) {
                     finished = true;
                 } else {
                     lineCounter++;
@@ -613,7 +509,7 @@ public class SunJDKParser extends AbstractDumpParser {
                     dContent.append("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
                     dContent.append("Found one Java-level deadlock");
                     dContent.append("</b><hr></font><pre>\n");
-                } else if(lineCounter >= maxCheckLines) {
+                } else if(lineCounter >= getMaxCheckLines()) {
                     finished = true;
                 } else {
                     lineCounter++;
@@ -671,12 +567,20 @@ public class SunJDKParser extends AbstractDumpParser {
         
         if(deadlocks > 0) {
             threadDump.add(catDeadlocks);
+            ((ThreadDumpInfo) threadDump.getUserObject()).setDeadlocks((Category) catDeadlocks.getUserObject());
             deadlockCat.setName("Deadlocks (" + deadlocks + (deadlocks == 1 ? " deadlock)" : " deadlocks)"));
         }
         
         return(deadlocks);
     }
     
+    /**
+     * dump the monitor information
+     * @param catMonitors
+     * @param catMonitorsLocks
+     * @param mmap
+     * @return
+     */
     private int[] dumpMonitors(DefaultMutableTreeNode catMonitors, DefaultMutableTreeNode catMonitorsLocks, MonitorMap mmap) {
         Iterator iter = mmap.iterOfKeys();
         int monitorsWithoutLocksCount = 0;
@@ -716,33 +620,8 @@ public class SunJDKParser extends AbstractDumpParser {
                 }
             }
             
-            StringBuffer statData = new StringBuffer ("<body bgcolor=\"ffffff\"><table border=0 bgcolor=\"#dddddd\"><tr><td><font face=System" + 
-                    ">Threads locking monitor</td><td><b><font face=System>");
-            statData.append(locks);
-            statData.append("</b></td></tr>\n\n<tr bgcolor=\"#eeeeee\"><td>");
-            statData.append("<font face=System>Threads sleeping on monitor</td><td><b><font face=System>");
-            statData.append(sleeps);
-            statData.append("</b></td></tr>\n\n<tr><td>");
-            statData.append("<font face=System>Threads waiting to lock monitor</td><td><b><font face=System>");
-            statData.append(waits);
-            statData.append("</b></td></tr>\n\n");
-            if(locks == 0) {
-                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System " + 
-                        "<p>This monitor doesn't have a thread locking it. This means a VM Thread is holding it.</p><br>");
-                statData.append("If you see many monitors having no locking thread, this usually means, the garbage collector is running.<br>");
-                statData.append("In this case you should consider analyzing the Garbage Collector output. If the dump has many monitors with no locking thread<br>");
-                statData.append("a click on the <a href=\"dump://\">dump node</a> will give you additional information.<br></td></tr>");
-            }
-            if(waits > 5) {
-                statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-                statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System " + 
-                        "<p>A lot of threads are waiting for this monitor to become available again.</p><br>");
-                statData.append("This might indicate a congestion. You also should analyze other locks blocked by threads waiting<br>");
-                statData.append("for this monitor as there might be much more threads waiting for it.<br></td></tr>");                
-            }
-            statData.append("</table>");
-            mi.setContent(statData.toString());
+            
+            mi.setContent(ThreadDumpInfo.getMonitorInfo(locks, waits, sleeps));
             mi.setName(mi.getName() + ":    " + (sleeps) + " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking");
                         
             ((Category)catMonitors.getUserObject()).addToCatTree(monitorNode);
@@ -767,7 +646,7 @@ public class SunJDKParser extends AbstractDumpParser {
         
         try {
             while(bis.ready()) {
-                bis.mark(markSize);
+                bis.mark(getMarkSize());
                 String nextLine = bis.readLine();
                 if(nextLine.startsWith("num   #instances    #bytes  class name")) {
                     bis.reset();
@@ -785,35 +664,6 @@ public class SunJDKParser extends AbstractDumpParser {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-    
-    /**
-     * this counter counts backwards for adding class histograms to the thread dumpss
-     * beginning with the last dump.
-     */
-    private int dumpHistogramCounter = -1;
-    
-    private DefaultMutableTreeNode getNextDumpForHistogram(DefaultMutableTreeNode root) {
-        if(dumpHistogramCounter == -1) {
-            // -1 as index starts with 0.
-            dumpHistogramCounter = root.getChildCount()-1;
-        }
-        DefaultMutableTreeNode result = null;
-        
-        if(dumpHistogramCounter > 0) {
-            result = (DefaultMutableTreeNode) root.getChildAt(dumpHistogramCounter);
-            dumpHistogramCounter--;
-        }
-        
-        return result;
-    }
-    
-    /**
-     * set the dump histogram counter to the specified value to force to start (bottom to top)
-     * from the specified thread dump.
-     */
-    public void setDumpHistogramCounter(int value) {
-       dumpHistogramCounter = value; 
     }
     
     /**

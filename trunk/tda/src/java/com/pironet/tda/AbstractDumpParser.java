@@ -15,16 +15,20 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.1 2007-11-27 13:19:19 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.2 2007-12-08 13:30:02 irockel Exp $
  */
 package com.pironet.tda;
 
 import com.pironet.tda.utils.IconFactory;
+import com.pironet.tda.utils.PrefManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -39,8 +43,38 @@ import javax.swing.tree.TreePath;
  */
 public abstract class AbstractDumpParser implements DumpParser {
     private BufferedReader bis = null;
+    
+    private int markSize = 16384;
+    private int maxCheckLines = 10;
+    private boolean millisTimeStamp = false;
+    private Pattern regexPattern = null;
+    private boolean patternError = false;
 
 
+    protected AbstractDumpParser() {
+        maxCheckLines = PrefManager.get().getMaxRows();
+        markSize = PrefManager.get().getStreamResetBuffer();   
+        millisTimeStamp = PrefManager.get().getMillisTimeStamp();
+        
+        // set date parsing pattern.
+        if((PrefManager.get().getDateParsingRegex() != null) && !PrefManager.get().getDateParsingRegex().trim().equals("")) {
+            try {
+                regexPattern = Pattern.compile(PrefManager.get().getDateParsingRegex().trim());
+                patternError = false;
+            } catch (PatternSyntaxException pe) {
+                JOptionPane.showMessageDialog(null,
+                        "Error during parsing line for timestamp regular expression!\n" +
+                        "Please check regular expression in your preferences. Deactivating\n" +
+                        "parsing for the rest of the file! Error Message is " + pe.getMessage() + " \n",
+                        "Error during Parsing", JOptionPane.ERROR_MESSAGE);
+                
+                //System.out.println("Failed parsing! " + pe.getMessage());
+                //pe.printStackTrace();
+                patternError = true;
+            }
+        }      
+    }
+    
     /**
      * strip the dump string from a given path
      * @param path the treepath to check
@@ -169,12 +203,104 @@ public abstract class AbstractDumpParser implements DumpParser {
     }
     
     /**
+     * this counter counts backwards for adding class histograms to the thread dumpss
+     * beginning with the last dump.
+     */
+    private int dumpHistogramCounter = -1;
+    
+    /**
+     * set the dump histogram counter to the specified value to force to start (bottom to top)
+     * from the specified thread dump.
+     */
+    public void setDumpHistogramCounter(int value) {
+        dumpHistogramCounter = value;
+    }
+    
+        
+    /**
+     * retrieve the next node for adding histogram information into the tree.
+     * @param root the root to use for search.
+     * @return node to use for append.
+     */
+    protected DefaultMutableTreeNode getNextDumpForHistogram(DefaultMutableTreeNode root) {
+        if(dumpHistogramCounter == -1) {
+            // -1 as index starts with 0.
+            dumpHistogramCounter = root.getChildCount()-1;
+        }
+        DefaultMutableTreeNode result = null;
+        
+        if(dumpHistogramCounter > 0) {
+            result = (DefaultMutableTreeNode) root.getChildAt(dumpHistogramCounter);
+            dumpHistogramCounter--;
+        }
+        
+        return result;
+    }
+    
+    /**
      * close this dump parser, also closes the passed dump stream
      */
     public void close() throws IOException {
         if(getBis() != null) {
             getBis().close();
         }        
+    }
+
+    /**
+     * get the maximum size for the mark buffer while reading 
+     * the log file stream.
+     * @return size, default is 16KB.
+     */
+    protected int getMarkSize() {
+        return markSize;
+    }
+
+    /**
+     * set the maximum mark size.
+     * @param markSize the size to use, default is 16KB.
+     */
+    protected void setMarkSize(int markSize) {
+        this.markSize = markSize;
+    }
+
+    /**
+     * specifies the maximum amounts of lines to check if the dump is followed
+     * by a class histogram or a deadlock.
+     * @return the amount of lines to check, defaults to 10.
+     */
+    protected int getMaxCheckLines() {
+        return maxCheckLines;
+    }
+
+    public void setMaxCheckLines(int maxCheckLines) {
+        this.maxCheckLines = maxCheckLines;
+    }
+
+    /**
+     * @return true, if the time stamp is in milliseconds.
+     */
+    public boolean isMillisTimeStamp() {
+        return millisTimeStamp;
+    }
+
+    public void setMillisTimeStamp(boolean millisTimeStamp) {
+        this.millisTimeStamp = millisTimeStamp;
+    }
+
+    public Pattern getRegexPattern() {
+        return regexPattern;
+    }
+
+    public void setRegexPattern(Pattern regexPattern) {
+        this.regexPattern = regexPattern;
+    }
+
+    public boolean isPatternError() {
+        return patternError;
+    }
+
+    public void setPatternError(boolean patternError) {
+        this.patternError = patternError;
     }
 
 }
