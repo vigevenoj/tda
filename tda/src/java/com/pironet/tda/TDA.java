@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.140 2007-12-08 07:49:18 irockel Exp $
+ * $Id: TDA.java,v 1.141 2007-12-08 09:58:34 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -769,6 +769,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         if (nodeInfo instanceof ThreadInfo) {
             displayThreadInfo(nodeInfo);
             setThreadDisplay(true);
+        } else if (nodeInfo instanceof ThreadDumpInfo) {
+            displayThreadDumpInfo(nodeInfo);
         } else if (nodeInfo instanceof HistogramInfo) {
             HistogramInfo tdi = (HistogramInfo)nodeInfo;
             displayTable((HistogramTableModel) tdi.content);
@@ -798,6 +800,15 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
+    /**
+     * display thread dump information for the give node object.
+     * @param nodeInfo
+     */
+    private void displayThreadDumpInfo(Object nodeInfo) {
+        ThreadDumpInfo ti = (ThreadDumpInfo)nodeInfo;
+        displayContent(ti.getOverview());
+    }
+
     private void displayLogFile() {
         if(splitPane.getBottomComponent() != htmlView) {
             splitPane.setBottomComponent(htmlView);
@@ -1017,12 +1028,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     private void navigateToDumpInLogfile() {
         Object userObject = ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).getUserObject();
-        if(userObject instanceof ThreadInfo) {
-            ThreadInfo ti = (ThreadInfo) userObject;
-            int lineNumber = ti.getThreadName().indexOf("around") >= 0 ? 
-                Integer.parseInt(ti.getThreadName().substring(ti.getThreadName().lastIndexOf(" line ")+6, 
-                ti.getThreadName().lastIndexOf(" around "))) : 
-                Integer.parseInt(ti.getThreadName().substring(ti.getThreadName().lastIndexOf(' ')+1));
+        if(userObject instanceof ThreadDumpInfo) {
+            ThreadDumpInfo ti = (ThreadDumpInfo) userObject;
+            int lineNumber = ti.getLogLine();
             
             // find log file node.
             TreePath selPath = tree.getSelectionPath();
@@ -1615,7 +1623,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     private DefaultMutableTreeNode getDumpRootNode(DefaultMutableTreeNode node) {
         // search for starting node
-        while(node != null && !checkNameFromNode(node, "Full Thread Dump")) {
+        while(node != null && !(node.getUserObject() instanceof ThreadDumpInfo)) {
             node = (DefaultMutableTreeNode) node.getParent();
         }
         
@@ -1732,10 +1740,8 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private boolean checkNameFromNode(DefaultMutableTreeNode node, String startsWith) {
         Object info = node.getUserObject();
         String result = null;
-        if(info instanceof ThreadInfo) {
-            result = ((ThreadInfo) info).getThreadName();
-        } else if (info instanceof DumpsBaseNode) {
-            result = (String) ((DumpsBaseNode) info).getContent();
+        if(info != null) {
+            ((AbstractInfo) info).getName();
         }
         
         return(result != null && result.startsWith(startsWith));
