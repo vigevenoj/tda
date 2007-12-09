@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.3 2007-12-09 17:00:20 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.4 2007-12-09 17:08:23 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -150,7 +150,7 @@ public abstract class AbstractDumpParser implements DumpParser {
                                 content.append((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey));
                             }
                         }
-                        createCategoryNode(catMerge, threadKey, null, content, 0);
+                        addToCategory(catMerge, threadKey, null, content, 0);
                     }
                 }
             }
@@ -160,6 +160,7 @@ public abstract class AbstractDumpParser implements DumpParser {
     
     /**
      * create a tree node with the provided information
+     * FIXME: this method needs rework for creating a JXTreeTable
      * @param top the parent node the new node should be added to.
      * @param title the title of the new node
      * @param info the info part of the new node
@@ -173,15 +174,17 @@ public abstract class AbstractDumpParser implements DumpParser {
     }
     
     /**
-     * create a node for a category (categories are "Monitors", "Threads waiting", e.g.). A ThreadInfo
+     * create a category entry for a category (categories are "Monitors", "Threads waiting", e.g.). A ThreadInfo
      * instance will be created with the passed information.
+     * FIXME: this method needs rework for creating a JXTable for the categories, except monitors
      * @param category the category the node should be added to.
      * @param title the title of the new node
      * @param info the info part of the new node
      * @param content the content part of the new node
+     * @param lineCount the line count of the thread stack, 0 if not applicable for this element.
      * @see ThreadInfo 
      */
-    protected void createCategoryNode(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount) {
+    protected void addToCategory(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount) {
         DefaultMutableTreeNode threadInfo = null;
         threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString(), lineCount));
         ((Category)category.getUserObject()).addToCatTree(threadInfo);
