@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.2 2007-12-08 13:30:02 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.3 2007-12-09 17:00:20 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -51,10 +51,11 @@ public abstract class AbstractDumpParser implements DumpParser {
     private boolean patternError = false;
 
 
-    protected AbstractDumpParser() {
+    protected AbstractDumpParser(BufferedReader bis) {
         maxCheckLines = PrefManager.get().getMaxRows();
         markSize = PrefManager.get().getStreamResetBuffer();   
         millisTimeStamp = PrefManager.get().getMillisTimeStamp();
+        setBis(bis);
         
         // set date parsing pattern.
         if((PrefManager.get().getDateParsingRegex() != null) && !PrefManager.get().getDateParsingRegex().trim().equals("")) {

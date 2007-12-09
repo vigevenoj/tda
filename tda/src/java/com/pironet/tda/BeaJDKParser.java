@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.3 2007-12-09 07:54:46 irockel Exp $
+ * $Id: BeaJDKParser.java,v 1.4 2007-12-09 17:00:21 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -39,6 +39,7 @@ public class BeaJDKParser extends AbstractDumpParser {
      * @param threadStore the thread store to store the thread informations in.
      */
     public BeaJDKParser(BufferedReader bis, Map threadStore, int lineCounter) {
+        super(bis);
     }
     
     public boolean hasMoreDumps() {
