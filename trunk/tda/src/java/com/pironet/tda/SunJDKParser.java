@@ -17,14 +17,13 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.17 2007-12-09 07:53:45 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.18 2007-12-09 17:00:20 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.HistogramTableModel;
 import com.pironet.tda.utils.IconFactory;
-import com.pironet.tda.utils.PrefManager;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,8 +36,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
@@ -60,9 +57,8 @@ public class SunJDKParser extends AbstractDumpParser {
     /** 
      * Creates a new instance of SunJDKParser 
      */
-    public SunJDKParser(BufferedReader dumpBis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp) {
-        super();
-        setBis(dumpBis);
+    public SunJDKParser(BufferedReader bis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp) {
+        super(bis);
         this.threadStore = threadStore;
         this.withCurrentTimeStamp = withCurrentTimeStamp;
         this.lineCounter = lineCounter;
@@ -136,7 +132,6 @@ public class SunJDKParser extends AbstractDumpParser {
             int waiting = 0;
             int locking = 0;
             int sleeping = 0;
-            int deadlocks = 0;
             boolean locked = true;
             boolean finished = false;
             MonitorMap mmap = new MonitorMap();
@@ -282,7 +277,7 @@ public class SunJDKParser extends AbstractDumpParser {
                        (line.indexOf("<EndOfDump>") >= 0)) {
                         finished = true;
                         getBis().mark(getMarkSize());
-                        if((deadlocks = checkForDeadlocks(threadDump)) == 0) {
+                        if((checkForDeadlocks(threadDump)) == 0) {
                             // no deadlocks found, set back original position.
                             getBis().reset();
                         }
@@ -392,7 +387,6 @@ public class SunJDKParser extends AbstractDumpParser {
         String end = line.substring(line.indexOf('>')+1);
         monitor = monitor.replaceAll("<", "<a href=\"monitor://"+ monitor + "\">&lt;");
         monitor = monitor.substring(0, monitor.length()-1) + "&gt;</a>";
-        //System.out.println("link="+ begin + monitor + end);
         return(begin + monitor + end);
     }
     
@@ -443,17 +437,17 @@ public class SunJDKParser extends AbstractDumpParser {
         boolean finished = false;
         boolean found = false;
         HistogramTableModel classHistogram = new HistogramTableModel();
-        int lineCounter = 0;
+        int maxLinesCounter = 0;
         
         while(bis.ready() && !finished) {
             String line = bis.readLine().trim();
             if(!found && !line.equals("")) {
                 if (line.startsWith("num   #instances    #bytes  class name")) {
                     found = true;
-                } else if(lineCounter >= getMaxCheckLines()) {
+                } else if(maxLinesCounter >= getMaxCheckLines()) {
                     finished = true;
                 } else {
-                    lineCounter++;
+                    maxLinesCounter++;
                 }
             } else if(found) {
                 if(line.startsWith("Total ")) {                    
