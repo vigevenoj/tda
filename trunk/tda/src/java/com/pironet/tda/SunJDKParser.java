@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.18 2007-12-09 17:00:20 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.19 2007-12-09 17:08:24 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -197,24 +197,24 @@ public class SunJDKParser extends AbstractDumpParser {
                         if(title != null) {
                             threads.put(title, content.toString());
                             content.append("</pre></pre>");
-                            createCategoryNode(catThreads, title, null, content, singleLineCounter);
+                            addToCategory(catThreads, title, null, content, singleLineCounter);
                             threadCount++;
                         }
                         if(wContent != null) {
                             wContent.append("</b><hr>");
-                            createCategoryNode(catWaiting, title, wContent, content, singleLineCounter);
+                            addToCategory(catWaiting, title, wContent, content, singleLineCounter);
                             wContent = null;
                             waiting++;
                         }
                         if(sContent != null) {
                             sContent.append("</b><hr>");
-                            createCategoryNode(catSleeping, title, sContent, content, singleLineCounter);
+                            addToCategory(catSleeping, title, sContent, content, singleLineCounter);
                             sContent = null;
                             sleeping++;
                         }
                         if(lContent != null) {
                             lContent.append("</b><hr>");
-                            createCategoryNode(catLocking, title, lContent, content, singleLineCounter);
+                            addToCategory(catLocking, title, lContent, content, singleLineCounter);
                             lContent = null;
                             locking++;
                         }
@@ -293,24 +293,24 @@ public class SunJDKParser extends AbstractDumpParser {
             if(title != null) {
                 threads.put(title, content.toString());
                 content.append("</pre></pre>");
-                createCategoryNode(catThreads, title, null, content, singleLineCounter);
+                addToCategory(catThreads, title, null, content, singleLineCounter);
                 threadCount++;
             }
             if(wContent != null) {
                 wContent.append("</b><hr>");
-                createCategoryNode(catWaiting, title, null, wContent, singleLineCounter);
+                addToCategory(catWaiting, title, null, wContent, singleLineCounter);
                 wContent = null;
                 waiting++;
             }
             if(sContent != null) {
                 sContent.append("</b><hr>");
-                createCategoryNode(catSleeping, title, sContent, content, singleLineCounter);
+                addToCategory(catSleeping, title, sContent, content, singleLineCounter);
                 sContent = null;
                 sleeping++;
             }
             if(lContent != null) {
                 lContent.append("</b><hr>");
-                createCategoryNode(catLocking, title, null, lContent, singleLineCounter);
+                addToCategory(catLocking, title, null, lContent, singleLineCounter);
                 lContent = null;
                 locking++;
             }
@@ -512,7 +512,7 @@ public class SunJDKParser extends AbstractDumpParser {
                 if(line.startsWith("Found one Java-level deadlock")) {
                     if(dContent.length() > 0) {
                         deadlocks++;
-                        createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
+                        addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
                     }
                     dContent = new StringBuffer();
                     dContent.append("</pre><b><font size=" + TDA.getFontSizeModifier(-1) + ">");
@@ -556,7 +556,7 @@ public class SunJDKParser extends AbstractDumpParser {
         }
         if(dContent.length() > 0) {
             deadlocks++;
-            createCategoryNode(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
+            addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
         }
         
         if(deadlocks > 0) {
