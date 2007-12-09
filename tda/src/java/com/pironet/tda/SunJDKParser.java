@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.16 2007-12-08 13:30:02 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.17 2007-12-09 07:53:45 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -673,6 +673,6 @@ public class SunJDKParser extends AbstractDumpParser {
      * @return true, if the start of a sun thread dump is detected.
      */
     public static boolean checkForSupportedThreadDump(String logLine) {
-        return (logLine.trim().contains("Full thread dump Java HotSpot(TM)"));
+        return (logLine.trim().indexOf("Full thread dump Java HotSpot(TM)") >= 0);
     }
 }
