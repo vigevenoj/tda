@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.2 2007-11-27 13:19:19 irockel Exp $
+ * $Id: BeaJDKParser.java,v 1.3 2007-12-09 07:54:46 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -69,6 +69,6 @@ public class BeaJDKParser extends AbstractDumpParser {
      * @return true, if the start of a bea thread dump is detected.
      */
     public static boolean checkForSupportedThreadDump(String logLine) {
-        return (logLine.trim().contains("===== FULL THREAD DUMP ==============="));
+        return (logLine.trim().indexOf("===== FULL THREAD DUMP ===============") >= 0);
     }
 }
