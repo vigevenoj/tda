@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.19 2007-12-09 17:08:24 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.20 2007-12-14 13:17:09 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -256,7 +256,7 @@ public class SunJDKParser extends AbstractDumpParser {
                         monitorStack.push(line);
                         wContent.append("\n");
                         content.append("\n");
-                    } else if (line.indexOf("- locked") >= 0) {
+                    } else if (line.indexOf("- locked <") >= 0) {
                         String newLine = linkifyMonitor(line);
                         content.append(newLine);
                         if(lContent == null) {
@@ -382,12 +382,17 @@ public class SunJDKParser extends AbstractDumpParser {
      * @param line containing monitor
      */
     private String linkifyMonitor(String line) {
-        String begin = line.substring(0, line.indexOf('<'));
-        String monitor = line.substring(line.indexOf('<'),line.indexOf('>')+1);
-        String end = line.substring(line.indexOf('>')+1);
-        monitor = monitor.replaceAll("<", "<a href=\"monitor://"+ monitor + "\">&lt;");
-        monitor = monitor.substring(0, monitor.length()-1) + "&gt;</a>";
-        return(begin + monitor + end);
+        System.out.println("line=" +line);
+        if(line != null && line.indexOf('<') >= 0) {
+            String begin = line.substring(0, line.indexOf('<'));
+            String monitor = line.substring(line.indexOf('<'), line.indexOf('>') + 1);
+            String end = line.substring(line.indexOf('>') + 1);
+            monitor = monitor.replaceAll("<", "<a href=\"monitor://" + monitor + "\">&lt;");
+            monitor = monitor.substring(0, monitor.length() - 1) + "&gt;</a>";
+            return(begin + monitor + end);
+        } else {
+            return(line);
+        }
     }
     
     /**
@@ -395,16 +400,20 @@ public class SunJDKParser extends AbstractDumpParser {
      * @param line containing monitor
      */
     private String linkifyDeadlockInfo(String line) {
-        String begin = line.substring(0, line.indexOf("0x"));
-        int objectBegin = line.lastIndexOf("0x");
-        int monitorBegin = line.indexOf("0x");
-        String monitorHex = line.substring(monitorBegin, monitorBegin + 10);
-        
-        String monitor = line.substring(objectBegin, objectBegin + 10);
-        String end = line.substring(line.indexOf("0x")+10);
-        
-        monitor = "<a href=\"monitor://<"+ monitor + ">\">" + monitorHex + "</a>";
-        return(begin + monitor + end);
+        if(line != null && line.indexOf("Ox") >= 0) {
+            String begin = line.substring(0, line.indexOf("0x"));
+            int objectBegin = line.lastIndexOf("0x");
+            int monitorBegin = line.indexOf("0x");
+            String monitorHex = line.substring(monitorBegin, monitorBegin + 10);
+
+            String monitor = line.substring(objectBegin, objectBegin + 10);
+            String end = line.substring(line.indexOf("0x") + 10);
+
+            monitor = "<a href=\"monitor://<" + monitor + ">\">" + monitorHex + "</a>";
+            return(begin + monitor + end);
+        } else {
+            return(line);
+        }
     }
     
     /**

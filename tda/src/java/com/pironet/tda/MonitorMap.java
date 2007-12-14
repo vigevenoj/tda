@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MonitorMap.java,v 1.5 2007-11-01 14:59:39 irockel Exp $
+ * $Id: MonitorMap.java,v 1.6 2007-12-14 13:17:09 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -91,13 +91,15 @@ public class MonitorMap implements Serializable {
     }
     
     public void parseAndAddThread(String line, String threadTitle, String currentThread) {
-        String monitor = line.substring(line.indexOf('<'));
-        if(line.trim().startsWith("- waiting to lock")) {
-            addWaitToMonitor(monitor, threadTitle, currentThread);
-        } else if (line.trim().startsWith("- waiting on")) {
-            addSleepToMonitor(monitor, threadTitle, currentThread);
-        } else {
-            addLockToMonitor(monitor, threadTitle, currentThread);
+        if(line != null && (line.indexOf('<') > 0)) {
+            String monitor = line.substring(line.indexOf('<'));
+            if (line.trim().startsWith("- waiting to lock")) {
+                addWaitToMonitor(monitor, threadTitle, currentThread);
+            } else if (line.trim().startsWith("- waiting on")) {
+                addSleepToMonitor(monitor, threadTitle, currentThread);
+            } else {
+                addLockToMonitor(monitor, threadTitle, currentThread);
+            }
         }
     }
     
