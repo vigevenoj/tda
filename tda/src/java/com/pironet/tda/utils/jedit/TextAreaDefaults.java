@@ -1,5 +1,5 @@
 /*
- * $Id: TextAreaDefaults.java,v 1.1 2007-10-03 12:50:26 irockel Exp $
+ * $Id: TextAreaDefaults.java,v 1.2 2007-12-14 13:20:19 irockel Exp $
  *
  * TextAreaDefaults.java - Encapsulates default values for various settings
  * Copyright (C) 1999 Slava Pestov
@@ -67,7 +67,7 @@ public class TextAreaDefaults
 			DEFAULTS.electricScroll = 3;
 
 			DEFAULTS.cols = 80;
-			DEFAULTS.rows = 25;
+			DEFAULTS.rows = 5;
 			DEFAULTS.styles = SyntaxUtilities.getDefaultSyntaxStyles();
 			DEFAULTS.caretColor = Color.red;
 			DEFAULTS.selectionColor = new Color(0xccccff);
