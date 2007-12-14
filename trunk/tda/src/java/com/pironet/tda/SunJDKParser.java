@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.20 2007-12-14 13:17:09 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.21 2007-12-14 13:19:51 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -382,7 +382,6 @@ public class SunJDKParser extends AbstractDumpParser {
      * @param line containing monitor
      */
     private String linkifyMonitor(String line) {
-        System.out.println("line=" +line);
         if(line != null && line.indexOf('<') >= 0) {
             String begin = line.substring(0, line.indexOf('<'));
             String monitor = line.substring(line.indexOf('<'), line.indexOf('>') + 1);
