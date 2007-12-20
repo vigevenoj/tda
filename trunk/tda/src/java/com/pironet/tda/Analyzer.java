@@ -17,17 +17,19 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Analyzer.java,v 1.1 2007-12-08 13:30:01 irockel Exp $
+ * $Id: Analyzer.java,v 1.2 2007-12-20 09:03:33 irockel Exp $
  */
 
 package com.pironet.tda;
+
+import java.io.Serializable;
 
 /**
  * analyze the given thread dump.
  * 
  * @author irockel
  */
-public class Analyzer {
+public class Analyzer implements Serializable {
     ThreadDumpInfo tdi;
     
     /**
