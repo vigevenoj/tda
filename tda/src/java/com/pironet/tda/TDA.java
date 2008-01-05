@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.143 2007-12-11 11:56:02 irockel Exp $
+ * $Id: TDA.java,v 1.144 2008-01-05 08:55:18 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -30,6 +30,8 @@ import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.StatusBar;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
+import com.pironet.tda.utils.ThreadsTableModel;
+import com.pironet.tda.utils.ThreadsTableSelectionModel;
 import com.pironet.tda.utils.TreeRenderer;
 import com.pironet.tda.utils.jedit.JEditTextArea;
 import com.pironet.tda.utils.jedit.PopupMenu;
@@ -48,6 +50,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.FontUIResource;
@@ -89,6 +92,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -104,6 +108,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -113,7 +118,7 @@ import javax.swing.tree.TreePath;
  *
  * @author irockel
  */
-public class TDA extends JPanel implements TreeSelectionListener, ActionListener, MenuListener {
+public class TDA extends JPanel implements ListSelectionListener, TreeSelectionListener, ActionListener, MenuListener {
     private static JFileChooser fc;
     private static JFileChooser sessionFc;
     private static int DIVIDER_SIZE = 4;
@@ -354,11 +359,11 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
 
     /**
-     * expand all nodes of the currently selected category.
+     * expand all nodes of the currently selected category, only works for tree categories.
      */
     private void expandAllCatNodes(boolean expand) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-        JTree catTree = (JTree) ((Category) node.getUserObject()).getCatComponent(this);
+        JTree catTree = (JTree) ((TreeCategory) node.getUserObject()).getCatComponent(this);
         TreeNode root = (TreeNode)catTree.getModel().getRoot();
         
         for (int i = 0; i < root.getChildCount(); i++) {
@@ -375,7 +380,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
      */
     private void sortCatByThreads() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-        ((Category) node.getUserObject()).sort(new MonitorComparator());
+        ((TreeCategory) node.getUserObject()).sort(new MonitorComparator());
         displayCategory(node.getUserObject());
     }
     
@@ -637,9 +642,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     }
 
     private boolean isLogfileSizeOk(String fileName) {
-        File logFile = new File(fileName);
-        return(logFile.isFile() && ((PrefManager.get().getMaxLogfileSize() == 0) || 
-                (logFile.length() <= (PrefManager.get().getMaxLogfileSize() * 1024))));
+        File file = new File(fileName);
+        return(file.isFile() && ((PrefManager.get().getMaxLogfileSize() == 0) || 
+                (file.length() <= (PrefManager.get().getMaxLogfileSize() * 1024))));
     }
     
     /**
@@ -789,6 +794,23 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
     
+    /**
+     * process table selection events (thread display)
+     * @param e the event to process.
+     */
+    public void valueChanged(ListSelectionEvent e) {
+        //displayCategory(e.getFirstIndex());
+        ThreadsTableSelectionModel ttsm = (ThreadsTableSelectionModel) e.getSource();
+        TableSorter ts = (TableSorter) ttsm.getTable().getModel();
+        
+        if(ttsm.getTable().getSelectedRow() >= 0) {
+            displayThreadInfo(((ThreadsTableModel) ts.getTableModel()).
+                    getInfoObjectAtRow(ts.modelIndex(ttsm.getTable().getSelectedRow())));
+            setThreadDisplay(true);
+        }
+    }
+
+    
     private void displayThreadInfo(Object nodeInfo) {
         ThreadInfo ti = (ThreadInfo)nodeInfo;
         if(ti.getInfo() != null) {
@@ -865,13 +887,13 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
         setThreadDisplay(true);
         if(cat.getLastView() == null) {
-            JTree catTree = (JTree) cat.getCatComponent(this);
+            JComponent catComp = cat.getCatComponent(this);
             if(cat.getName().startsWith("Monitors")) {
-                catTree.addMouseListener(getMonitorsPopupMenu());
+                catComp.addMouseListener(getMonitorsPopupMenu());
             } else {
-                catTree.addMouseListener(getCatPopupMenu());
+                //catComp.addMouseListener(getCatPopupMenu());
             }
-            dumpView = new JScrollPane(catTree);
+            dumpView = new JScrollPane(catComp);
             if(size != null) {
                 dumpView.setPreferredSize(size);
             }
@@ -884,8 +906,9 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
             }
             topSplitPane.setRightComponent(cat.getLastView());
         }
-        if(((JTree)cat.getCatComponent(this)).getSelectionPath() != null) {
-            displayThreadInfo(((DefaultMutableTreeNode) ((JTree) cat.getCatComponent(this)).getSelectionPath().getLastPathComponent()).getUserObject());
+        
+        if(cat.getCurrentlySelectedUserObject() != null) {
+            displayThreadInfo(cat.getCurrentlySelectedUserObject());
         } else {
             displayContent(null);
         }
@@ -1074,20 +1097,20 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         DefaultMutableTreeNode monitorWithoutLocksNode = null;
         while(childs.hasMoreElements()) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) childs.nextElement();
-            if(child.getUserObject() instanceof Category) {
-                if (((Category) child.getUserObject()).getName().startsWith("Monitors (")) {
+            if(child.getUserObject() instanceof TreeCategory) {
+                if (((TreeCategory) child.getUserObject()).getName().startsWith("Monitors (")) {
                     monitorNode = child;
-                } else if (((Category) child.getUserObject()).getName().startsWith("Monitors without")) {
+                } else if (((TreeCategory) child.getUserObject()).getName().startsWith("Monitors without")) {
                     monitorWithoutLocksNode = child;
                 }
             }
         }
         
         // highlight chosen monitor
-        JTree searchTree = (JTree) ((Category) monitorNode.getUserObject()).getCatComponent(this);
+        JTree searchTree = (JTree) ((TreeCategory) monitorNode.getUserObject()).getCatComponent(this);
         TreePath searchPath = searchTree.getNextMatch(monitor,0,Position.Bias.Forward);
         if((searchPath == null) && (monitorWithoutLocksNode != null)) {
-            searchTree = (JTree) ((Category) monitorWithoutLocksNode.getUserObject()).getCatComponent(this);
+            searchTree = (JTree) ((TreeCategory) monitorWithoutLocksNode.getUserObject()).getCatComponent(this);
             searchPath = searchTree.getNextMatch(monitor,0,Position.Bias.Forward);
             monitorNode = monitorWithoutLocksNode;
         }
@@ -1927,7 +1950,7 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
     private void showSearchDialog() {
         // get the currently select category tree
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-        JTree catTree = (JTree) ((Category) node.getUserObject()).getCatComponent(this);
+        JTree catTree = (JTree) ((TreeCategory) node.getUserObject()).getCatComponent(this);
         
         //Create and set up the window.
         searchDialog = new SearchDialog(getFrame(), catTree);
@@ -2026,5 +2049,6 @@ public class TDA extends JPanel implements TreeSelectionListener, ActionListener
         }
     }
 
+    
     
 }
