@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.4 2007-12-09 17:08:23 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.5 2008-01-05 08:55:17 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -122,7 +122,7 @@ public abstract class AbstractDumpParser implements DumpParser {
         }
            
         String info = prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1); 
-        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new Category(info, IconFactory.DIFF_DUMPS));
+        DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new TreeCategory(info, IconFactory.DIFF_DUMPS));
         root.add(catMerge);
         
         if(dumpStore.get(keys.get(0)) != null) {
@@ -187,7 +187,7 @@ public abstract class AbstractDumpParser implements DumpParser {
     protected void addToCategory(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount) {
         DefaultMutableTreeNode threadInfo = null;
         threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString(), lineCount));
-        ((Category)category.getUserObject()).addToCatTree(threadInfo);
+        ((Category)category.getUserObject()).addToCatNodes(threadInfo);
     }
 
     /**

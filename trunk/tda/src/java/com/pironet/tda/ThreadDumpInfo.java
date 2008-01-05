@@ -17,11 +17,9 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadDumpInfo.java,v 1.7 2007-12-08 13:30:02 irockel Exp $
+ * $Id: ThreadDumpInfo.java,v 1.8 2008-01-05 08:55:18 irockel Exp $
  */
 package com.pironet.tda;
-
-import javax.swing.tree.MutableTreeNode;
 
 /**
  * Thread Dump Information Node. It stores struturial data about the thread dump

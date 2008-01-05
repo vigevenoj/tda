@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadInfo.java,v 1.6 2007-12-08 09:58:34 irockel Exp $
+ * $Id: ThreadInfo.java,v 1.7 2008-01-05 08:55:18 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -31,6 +31,7 @@ public class ThreadInfo extends AbstractInfo {
     private String content;
     private String info;
     private int stackLines;
+    private String[] tokens;
     
     public ThreadInfo(String name, String info, String content, int stackLines) {
         setName(name);
@@ -64,5 +65,29 @@ public class ThreadInfo extends AbstractInfo {
 
     public void setStackLines(int stackLines) {
         this.stackLines = stackLines;
+    }
+    
+    //FIXME: no clean abstraction of sun thread dump specific code.
+    public String[] getTokens() {
+        if(tokens == null) {
+            tokens = new String[7];
+            
+            tokens[0] = getName().substring(1, getName().lastIndexOf('"'));
+            tokens[1] = getName().indexOf("daemon") > 0 ? "Daemon" : "Task";
+            tokens[2] = getName().substring(getName().indexOf("prio=") +5, getName().indexOf("tid=")-1);
+            tokens[3] = String.valueOf(Integer.parseInt(getName().substring(getName().indexOf("tid=") +6, getName().indexOf("nid=") -1), 16)); 
+            tokens[4] = String.valueOf(Integer.parseInt(getName().substring(getName().indexOf("nid=") +6, 
+                    getName().indexOf(" ", getName().indexOf("nid="))), 16));
+            if(getName().indexOf('[') > 0) {
+                tokens[5] = getName().substring(getName().indexOf(" ", getName().indexOf("nid=")) + 1, getName().indexOf('[',
+                        getName().indexOf("nid=")) - 1);
+                tokens[6] = getName().substring(getName().indexOf('['));
+            } else {
+                tokens[5] = getName().substring(getName().indexOf(" ", getName().indexOf("nid=")) + 1);
+                tokens[6] = "<no address range>";
+            }
+        }
+        
+        return(tokens);
     }
 }

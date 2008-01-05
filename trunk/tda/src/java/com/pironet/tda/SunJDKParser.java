@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.21 2007-12-14 13:19:51 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.22 2008-01-05 08:55:18 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -109,18 +109,18 @@ public class SunJDKParser extends AbstractDumpParser {
             }
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
-            catThreads = new DefaultMutableTreeNode(new Category("Threads", IconFactory.THREADS));
+            catThreads = new DefaultMutableTreeNode(new TableCategory("Threads", IconFactory.THREADS));
             threadDump.add(catThreads);
             
-            catWaiting = new DefaultMutableTreeNode(new Category("Threads waiting for Monitors", IconFactory.THREADS_WAITING));
+            catWaiting = new DefaultMutableTreeNode(new TableCategory("Threads waiting for Monitors", IconFactory.THREADS_WAITING));
             
-            catSleeping = new DefaultMutableTreeNode(new Category("Threads sleeping on Monitors", IconFactory.THREADS_SLEEPING));
+            catSleeping = new DefaultMutableTreeNode(new TableCategory("Threads sleeping on Monitors", IconFactory.THREADS_SLEEPING));
 
-            catLocking = new DefaultMutableTreeNode(new Category("Threads locking Monitors", IconFactory.THREADS_LOCKING));
+            catLocking = new DefaultMutableTreeNode(new TableCategory("Threads locking Monitors", IconFactory.THREADS_LOCKING));
             
             // create category for monitors with disabled filtering.
-            catMonitors = new DefaultMutableTreeNode(new Category("Monitors", IconFactory.MONITORS, false));
-            catMonitorsLocks = new DefaultMutableTreeNode(new Category("Monitors without locking thread", IconFactory.MONITORS_NOLOCKS, false));
+            catMonitors = new DefaultMutableTreeNode(new TreeCategory("Monitors", IconFactory.MONITORS, false));
+            catMonitorsLocks = new DefaultMutableTreeNode(new TreeCategory("Monitors without locking thread", IconFactory.MONITORS_NOLOCKS, false));
             
             String title = null;
             String dumpKey = null;
@@ -498,7 +498,7 @@ public class SunJDKParser extends AbstractDumpParser {
         int deadlocks = 0;
         int lineCounter = 0;
         StringBuffer dContent = new StringBuffer();
-        Category deadlockCat = new Category("Deadlocks", IconFactory.DEADLOCKS);
+        TreeCategory deadlockCat = new TreeCategory("Deadlocks", IconFactory.DEADLOCKS);
         DefaultMutableTreeNode catDeadlocks = new DefaultMutableTreeNode(deadlockCat);
         boolean first = true;
         
@@ -569,7 +569,7 @@ public class SunJDKParser extends AbstractDumpParser {
         
         if(deadlocks > 0) {
             threadDump.add(catDeadlocks);
-            ((ThreadDumpInfo) threadDump.getUserObject()).setDeadlocks((Category) catDeadlocks.getUserObject());
+            ((ThreadDumpInfo) threadDump.getUserObject()).setDeadlocks((TreeCategory) catDeadlocks.getUserObject());
             deadlockCat.setName("Deadlocks (" + deadlocks + (deadlocks == 1 ? " deadlock)" : " deadlocks)"));
         }
         
@@ -626,11 +626,11 @@ public class SunJDKParser extends AbstractDumpParser {
             mi.setContent(ThreadDumpInfo.getMonitorInfo(locks, waits, sleeps));
             mi.setName(mi.getName() + ":    " + (sleeps) + " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking");
                         
-            ((Category)catMonitors.getUserObject()).addToCatTree(monitorNode);
+            ((Category)catMonitors.getUserObject()).addToCatNodes(monitorNode);
             if(locks == 0) {
                 monitorsWithoutLocksCount++;
                 overallThreadsWaiting+=waits;
-                ((Category)catMonitorsLocks.getUserObject()).addToCatTree(monitorNode);
+                ((Category)catMonitorsLocks.getUserObject()).addToCatNodes(monitorNode);
             }
         }
         return new int[]{monitorsWithoutLocksCount, overallThreadsWaiting};
