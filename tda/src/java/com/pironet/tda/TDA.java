@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.144 2008-01-05 08:55:18 irockel Exp $
+ * $Id: TDA.java,v 1.145 2008-01-07 16:35:44 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -135,9 +135,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     
     private JEditorPane htmlPane;
     private JEditTextArea jeditPane;
-    private JTree tree;
+    protected JTree tree;
     private JSplitPane splitPane;
-    private JSplitPane topSplitPane;
+    protected JSplitPane topSplitPane;
     private DumpStore dumpStore;
     private Vector topNodes;
     private JScrollPane htmlView;
@@ -536,7 +536,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             // retrieve plaf param.
             String plaf = "Mac,Windows,Metal";
             if(PrefManager.get().isUseGTKLF()) {
-                plaf = "Nimbus,GTK,Mac,Windows,Metal";
+                plaf = "GTK,Mac,Windows,Metal";
             }
             
             // this line needs to be implemented in order to make L&F work properly
@@ -686,12 +686,12 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
 
                     public Object construct() {
                         synchronized (syncObject) {
-                            int divider = splitPane.getDividerLocation();
+                            int divider = topSplitPane.getDividerLocation();
                             addThreadDumps(top, parseFileStream);
                             createTree();
                             tree.expandRow(1);
 
-                            splitPane.setDividerLocation(divider);
+                            topSplitPane.setDividerLocation(divider);
                         }
 
                         return null;
@@ -829,7 +829,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private void displayThreadDumpInfo(Object nodeInfo) {
         ThreadDumpInfo ti = (ThreadDumpInfo)nodeInfo;
         displayContent(ti.getOverview());
-    }
+    } 
 
     private void displayLogFile() {
         if(splitPane.getBottomComponent() != htmlView) {
