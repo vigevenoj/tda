@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.5 2008-01-05 08:55:17 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.6 2008-01-07 14:54:41 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -84,7 +84,7 @@ public abstract class AbstractDumpParser implements DumpParser {
     protected String getDumpStringFromTreePath(TreePath path) {
         String[] elems = path.toString().split(",");
         if (elems.length > 1) {
-            return (elems[1].substring(0, elems[1].lastIndexOf(']')).trim());
+            return (elems[elems.length-1].substring(0, elems[elems.length-1].lastIndexOf(']')).trim());
         } else {
             return null;
         }
