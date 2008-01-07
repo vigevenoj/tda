@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.17 2008-01-05 08:55:18 irockel Exp $
+ * $Id: Category.java,v 1.18 2008-01-07 17:25:52 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -79,5 +79,9 @@ public interface Category {
      * @param nodeComp
      */
     void sort(Comparator nodeComp);
+    
+    void setInfo(String info);
+    
+    String getInfo();
 
 }

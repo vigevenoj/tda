@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.145 2008-01-07 16:35:44 irockel Exp $
+ * $Id: TDA.java,v 1.146 2008-01-07 17:25:52 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -920,6 +920,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         } else {
             statusBar.setInfoText(AppInfo.getStatusBarInfo());
         }
+        
+        displayContent(cat.getInfo());
     }
     
     private void displayContent(String text) {

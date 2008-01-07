@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.6 2008-01-07 14:54:41 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.7 2008-01-07 17:25:52 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -124,6 +124,7 @@ public abstract class AbstractDumpParser implements DumpParser {
         String info = prefix + " between " + keys.get(0) + " and " + keys.get(keys.size()-1); 
         DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new TreeCategory(info, IconFactory.DIFF_DUMPS));
         root.add(catMerge);
+        int threadCount = 0;
         
         if(dumpStore.get(keys.get(0)) != null) {
             Iterator dumpIter = ((Map) dumpStore.get(keys.get(0))).keySet().iterator();
@@ -141,6 +142,7 @@ public abstract class AbstractDumpParser implements DumpParser {
                     }
                 
                     if(occurence >= (minOccurence-1)) {
+                        threadCount++;
                         StringBuffer content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=").append(TDA.getFontSizeModifier(-1)).append(">").append((String) keys.get(0)).append("\n\n").append((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey));
                         for(int i = 1; i < dumps.length; i++) {
                             if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
@@ -155,6 +157,26 @@ public abstract class AbstractDumpParser implements DumpParser {
                 }
             }
         }
+        
+        StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System " +
+                "><b><font face=System> " + 
+                ((Category) catMerge.getUserObject()).getName() + " </b></td></tr><hr/><br/>" +
+                "<table border=0><tr bgcolor=\"#dddddd\"><td><font face=System " +
+                ">Overall Thread Count</td><td width=\"150\"></td><td><b><font face=System>");
+        statData.append(threadCount);
+        statData.append("</b></td></tr>");
+        
+        if(threadCount == 0) {
+            statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
+            statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " +
+                    "><p>No threads were found which occured at least " + minOccurence + " times.<br>" +
+                    "You should check your dumps for long running threads " +
+                    "or adjust the minimum occurence.</p><br>");
+        }
+                
+        statData.append("</table>");
+        
+        ((Category) catMerge.getUserObject()).setInfo(statData.toString());
         
     }
     
