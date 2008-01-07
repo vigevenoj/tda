@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TreeCategory.java,v 1.1 2008-01-05 08:55:18 irockel Exp $
+ * $Id: TreeCategory.java,v 1.2 2008-01-07 14:55:06 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -87,11 +87,11 @@ public class TreeCategory extends AbstractCategory implements Serializable {
     }
     
     /**
-     * get the currently selected user object.
-     * @return
+     * get the currently selected user object. 
+     * @return the currently selected user object, null if nothing is selected.
      */
     public ThreadInfo getCurrentlySelectedUserObject() {
-        return(getFilteredCatTree() == null ? null : 
+        return(getFilteredCatTree() == null || getFilteredCatTree().getSelectionPath() == null ? null : 
             (ThreadInfo) ((DefaultMutableTreeNode) ((JTree) getFilteredCatTree()).getSelectionPath().getLastPathComponent()).getUserObject());
     }
     
