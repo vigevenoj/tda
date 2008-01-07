@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractCategory.java,v 1.1 2008-01-05 08:55:18 irockel Exp $
+ * $Id: AbstractCategory.java,v 1.2 2008-01-07 17:25:52 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -34,14 +34,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @author irockel
  */
 public abstract class AbstractCategory implements Category {
+    private String info;
     private String name = null;
     
     private DefaultMutableTreeNode rootNode = null;
     private DefaultMutableTreeNode filteredRootNode = null;
     
     private transient JScrollPane lastView = null;
-    
-    
     
     private transient FilterChecker filterChecker = null;
     
@@ -192,5 +191,13 @@ public abstract class AbstractCategory implements Category {
 
     protected void setFilteredRootNode(DefaultMutableTreeNode filteredRootNode) {
         this.filteredRootNode = filteredRootNode;
+    }
+    
+    public void setInfo(String info) {
+        this.info = info;
+    }
+    
+    public String getInfo() {
+        return(info);
     }
 }
