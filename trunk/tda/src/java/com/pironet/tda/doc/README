@@ -11,6 +11,8 @@ Changes from 1.5 are:
 * Enhanced Monitor View, added expand all nodes and sort by thread count to popup.
 * Added View operations for root tree.
 * Added Drag and Drop for new files to open.
+* Threads are now displayed in a table, the thread ids and native ids are 
+  transfered from hexadecimal to decimal.
 * Bugfixing.
 
 Changes from 1.4 are:
