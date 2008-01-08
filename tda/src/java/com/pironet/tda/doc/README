@@ -13,6 +13,7 @@ Changes from 1.5 are:
 * Added Drag and Drop for new files to open.
 * Threads are now displayed in a table, the thread ids and native ids are 
   transfered from hexadecimal to decimal.
+* Bugfixed and reworked long running thread detection.
 * Bugfixing.
 
 Changes from 1.4 are:
