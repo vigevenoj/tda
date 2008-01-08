@@ -1,22 +1,33 @@
 /*
  * LongThreadDialog.java
  *
- * Created on 30. März 2006, 10:04
+ * This file is part of TDA - Thread Dump Analysis Tool.
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * TDA is free software; you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * TDA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Lesser GNU General Public License for more details.
+ *
+ * TDA should have received a copy of the Lesser GNU General Public License
+ * along with Foobar; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * $Id: LongThreadDialog.java,v 1.6 2008-01-08 19:47:27 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -27,7 +38,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 /**
- *
+ * long running thread detection dialog.
+ * 
  * @author irockel
  */
 public class LongThreadDialog extends JDialog {
@@ -104,23 +116,26 @@ public class LongThreadDialog extends JDialog {
         JTextField threadRegExField;
         
         public SettingsPanel() {
-            //super(new GridLayout(3,2, 10, 10));
-            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setPreferredSize(new Dimension(420, 100));
+            setLayout(new BorderLayout());
             
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));            
             layoutPanel.add(new JLabel("Minimum occurence of a thread"));
             minOccurenceField = new JTextField(3);
             minOccurenceField.setText(String.valueOf(dumps.length));
             layoutPanel.add(minOccurenceField);
+            add(layoutPanel, BorderLayout.NORTH);
             
-            layoutPanel.add(new JLabel("Regular Expression thread identifier matches"));
+            layoutPanel = new JPanel(new BorderLayout());
+            layoutPanel.add(new JLabel("Regular Expression thread identifier matches"), BorderLayout.NORTH);
             threadRegExField = new JTextField(30);
-            layoutPanel.add(threadRegExField);
+            layoutPanel.add(threadRegExField, BorderLayout.CENTER);
+            add(layoutPanel, BorderLayout.CENTER);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             JLabel example = new JLabel("<html><body>Example is <b>\"AJPRequestHandler(.*)</b>");
             example.setFont(new Font("SansSerif", Font.PLAIN, 10));
             layoutPanel.add(example);
-            add(layoutPanel);            
+            add(layoutPanel, BorderLayout.SOUTH);
         }
     }
     
@@ -128,7 +143,6 @@ public class LongThreadDialog extends JDialog {
      * Must be called from the event-dispatching thread.
      */
     public void resetFocus() {
-        //searchField.requestFocusInWindow();
     }
     
 }
