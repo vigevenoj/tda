@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.23 2008-01-08 08:37:03 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.24 2008-01-08 14:12:07 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -57,11 +57,12 @@ public class SunJDKParser extends AbstractDumpParser {
     /** 
      * Creates a new instance of SunJDKParser 
      */
-    public SunJDKParser(BufferedReader bis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp) {
+    public SunJDKParser(BufferedReader bis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp, int startCounter) {
         super(bis);
         this.threadStore = threadStore;
         this.withCurrentTimeStamp = withCurrentTimeStamp;
         this.lineCounter = lineCounter;
+        this.counter = startCounter;
     }
     
     /**
@@ -103,7 +104,8 @@ public class SunJDKParser extends AbstractDumpParser {
         try {
             Map threads = new HashMap();
             if(withCurrentTimeStamp) {
-                overallTDI = new ThreadDumpInfo("Dump at " + new Date(System.currentTimeMillis()), 0);
+                overallTDI = new ThreadDumpInfo("Dump No. " + counter + " at " + new Date(System.currentTimeMillis()), 0);
+                counter++;
             } else {
                 overallTDI = new ThreadDumpInfo("Dump No. " + counter++, 0);
             }
@@ -590,7 +592,7 @@ public class SunJDKParser extends AbstractDumpParser {
         while(iter.hasNext()) {
             String monitor = (String) iter.next();
             Map[] threads = mmap.getFromMonitorMap(monitor);
-            ThreadInfo mi = new ThreadInfo(monitor, null, "", 0);
+            ThreadInfo mi = new ThreadInfo(monitor, null, "", 0, null);
             
             DefaultMutableTreeNode monitorNode = new DefaultMutableTreeNode(mi);
             
@@ -668,6 +670,42 @@ public class SunJDKParser extends AbstractDumpParser {
         }
     }
     
+    
+    /**
+     * generate thread info token for table view.
+     * @param name the thread info.
+     * @return thread tokens.
+     */
+    public String[] getThreadTokens(String name) {
+        String[] tokens = null;
+
+        if(name.indexOf("prio") > 0) {
+            tokens = new String[7];
+
+            tokens[0] = name.substring(1, name.lastIndexOf('"'));
+            tokens[1] = name.indexOf("daemon") > 0 ? "Daemon" : "Task";
+            tokens[2] = name.substring(name.indexOf("prio=") + 5, name.indexOf("tid=") - 1);
+            tokens[3] = String.valueOf(Integer.parseInt(name.substring(name.indexOf("tid=") + 6, name.indexOf("nid=") - 1), 16));
+            tokens[4] = String.valueOf(Integer.parseInt(name.substring(name.indexOf("nid=") + 6,
+                    name.indexOf(" ", name.indexOf("nid="))), 16));
+            if (name.indexOf('[') > 0) {
+                tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1, name.indexOf('[',
+                        name.indexOf("nid=")) - 1);
+                tokens[6] = name.substring(name.indexOf('['));
+            } else {
+                tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1);
+                tokens[6] = "<no address range>";
+            }
+        } else {
+            tokens = new String[3];
+            tokens[0] = name.substring(1, name.lastIndexOf('"'));
+            tokens[1] = name.substring(name.indexOf("nid=") + 4, name.indexOf("state=") - 1);
+            tokens[2] = name.substring(name.indexOf("state=") +6);
+        }
+
+        return (tokens);
+    }
+
     /**
      * check if the passed logline contains the beginning of a sun jdk thread
      * dump.
@@ -677,4 +715,5 @@ public class SunJDKParser extends AbstractDumpParser {
     public static boolean checkForSupportedThreadDump(String logLine) {
         return (logLine.trim().indexOf("Full thread dump Java HotSpot(TM)") >= 0);
     }
+    
 }

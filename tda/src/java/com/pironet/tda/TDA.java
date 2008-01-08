@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.147 2008-01-08 12:05:19 irockel Exp $
+ * $Id: TDA.java,v 1.148 2008-01-08 14:12:07 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -158,6 +158,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private boolean isFoundClassHistogram = false;
     private DropTarget dt = null;
     private DropTarget hdt = null;
+    private int dumpCounter;
 
     
     private StatusBar statusBar;
@@ -302,6 +303,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             initDumpDisplay();
         }
         addDumpStream(new ByteArrayInputStream(dump.getBytes()), "Logfile", false);
+        dumpCounter++;
         addToLogfile(dump);
         
         this.getRootPane().revalidate();
@@ -658,6 +660,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private void addDumpFiles(String[] files) {
         for(int i = 0; i < files.length; i++) {
             try {
+                dumpCounter = 1;
                 addDumpStream(new FileInputStream(files[i]), files[i], true);
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(this.getRootPane(),
@@ -1030,7 +1033,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             String fileName = top.getUserObject().toString();
             Map dumpMap = new HashMap();
             dumpStore.addFileToDumpFiles(fileName, dumpMap);
-            dp = DumpParserFactory.get().getDumpParserForLogfile(dumpFileStream, dumpMap, runningAsJConsolePlugin);
+            dp = DumpParserFactory.get().getDumpParserForLogfile(dumpFileStream, dumpMap, runningAsJConsolePlugin, dumpCounter);
             while((dp != null) && dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
                 if(!isFoundClassHistogram) {
@@ -1872,7 +1875,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 longThreadDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             }
             
-            frame.setEnabled(false);
+            if(frame != null) {
+                frame.setEnabled(false);
+            }
             //Display the window.
             longThreadDialog.reset();
             longThreadDialog.pack();

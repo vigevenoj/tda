@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactory.java,v 1.8 2007-11-27 12:29:05 irockel Exp $
+ * $Id: DumpParserFactory.java,v 1.9 2008-01-08 14:12:07 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -66,7 +66,7 @@ public class DumpParserFactory {
      *                             the current time stamp instead of a parsed one.
      * @return a proper dump parser for the given log file, null if no proper parser was found.
      */
-    public DumpParser getDumpParserForLogfile(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp) {
+    public DumpParser getDumpParserForLogfile(InputStream dumpFileStream, Map threadStore, boolean withCurrentTimeStamp, int startCounter) {
         BufferedReader bis = null;
         int readAheadLimit = PrefManager.get().getStreamResetBuffer();
         int lineCounter = 0;
@@ -79,7 +79,7 @@ public class DumpParserFactory {
                 bis.mark(readAheadLimit);
                 String line = bis.readLine();
                 if(SunJDKParser.checkForSupportedThreadDump(line)) {
-                    currentDumpParser = new SunJDKParser(bis, threadStore, lineCounter, withCurrentTimeStamp);
+                    currentDumpParser = new SunJDKParser(bis, threadStore, lineCounter, withCurrentTimeStamp, startCounter);
                 } else if(BeaJDKParser.checkForSupportedThreadDump(line)) {
                     currentDumpParser = new BeaJDKParser(bis, threadStore, lineCounter);
                 }

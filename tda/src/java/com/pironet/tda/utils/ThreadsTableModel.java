@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadsTableModel.java,v 1.1 2008-01-05 08:55:17 irockel Exp $
+ * $Id: ThreadsTableModel.java,v 1.2 2008-01-08 14:12:07 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -35,7 +35,7 @@ public class ThreadsTableModel extends AbstractTableModel {
     
     private Vector elements;
     
-    private static String[] columnNames = {"Name", "Type", "Prio", "Thread-ID", "Native ID", "State", "Address Range"};
+    private String[] columnNames = null;
     
     /**
      * 
@@ -48,6 +48,14 @@ public class ThreadsTableModel extends AbstractTableModel {
             for(int i = 0; i < rootNode.getChildCount(); i++) {
                 DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) rootNode.getChildAt(i);
                 elements.add(childNode.getUserObject());
+                    ThreadInfo ti = (ThreadInfo) childNode.getUserObject();
+                if(columnNames == null) {
+                    if(ti.getTokens().length > 3) {
+                        columnNames = new String[] {"Name", "Type", "Prio", "Thread-ID", "Native-ID", "State", "Address Range"};
+                    } else {
+                        columnNames = new String[] {"Name", "Native-ID", "State"};
+                    }
+                }
             }
         }
     }
@@ -67,10 +75,19 @@ public class ThreadsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         ThreadInfo ti = ((ThreadInfo) elements.elementAt(rowIndex));
         String[] columns = ti.getTokens();
-        if(columnIndex > 1 && columnIndex < 5) {
-            return new Integer(columns[columnIndex]);
+        if(getColumnCount() > 3) {
+            if (columnIndex > 1 && columnIndex < 5) {
+                return new Integer(columns[columnIndex]);
+            } else {
+                return columns[columnIndex];
+            }
         } else {
-            return columns[columnIndex];
+            if (columnIndex == 1) {
+                return new Integer(columns[columnIndex]);
+            } else {
+                return columns[columnIndex];
+            }
+            
         }
     }
     

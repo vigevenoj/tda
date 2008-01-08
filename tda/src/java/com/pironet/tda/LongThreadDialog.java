@@ -71,7 +71,9 @@ public class LongThreadDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 int divider = backRef.topSplitPane.getDividerLocation();
 
-                backRef.frame.setEnabled(true);
+                if(backRef.frame != null) {
+                    backRef.frame.setEnabled(true);
+                }
                 DumpParserFactory.get().getCurrentDumpParser().findLongRunningThreads(top, threadDumps, dumps, Integer.parseInt(settingsPanel.minOccurenceField.getText()), settingsPanel.threadRegExField.getText());
                 backRef.createTree();
                 backRef.tree.expandRow(1);
@@ -84,7 +86,9 @@ public class LongThreadDialog extends JDialog {
         
         cancelButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                backRef.frame.setEnabled(true);
+                if(backRef.frame != null) {
+                    backRef.frame.setEnabled(true);
+                }
                 dispose();
             }
         });
