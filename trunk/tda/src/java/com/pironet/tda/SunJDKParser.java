@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.24 2008-01-08 14:12:07 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.25 2008-01-08 19:13:37 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -103,11 +103,9 @@ public class SunJDKParser extends AbstractDumpParser {
         
         try {
             Map threads = new HashMap();
+            overallTDI = new ThreadDumpInfo("Dump No. " + counter++, 0);
             if(withCurrentTimeStamp) {
-                overallTDI = new ThreadDumpInfo("Dump No. " + counter + " at " + new Date(System.currentTimeMillis()), 0);
-                counter++;
-            } else {
-                overallTDI = new ThreadDumpInfo("Dump No. " + counter++, 0);
+                overallTDI.setStartTime((new Date(System.currentTimeMillis())).toString());
             }
             threadDump = new DefaultMutableTreeNode(overallTDI);
             
