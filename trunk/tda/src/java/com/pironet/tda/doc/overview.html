@@ -14,6 +14,8 @@
     <li><a href="#deadlocks">Deadlocks</a></li>
     <li><a href="#plugin">Running as JConsole Plugin</a></li>
     <li><a href="#sessions">Using Sessions</a></li>
+    <li><a href="#longrunningthreads">Find long running threads</a></li>
+    <li><a href="#peakthreads">Heavy Load Analysis</a></li>
     <li name="A"><a href="#help">Get Help</a></li>
     <li name="B"><a href="#references">References</a></li>
     </ol>
@@ -22,7 +24,7 @@
 This is a short overview on how to use the TDA - Thread Dump Analyzer. TDA parses your log 
 files and displays all found thread dumps and class histograms reported from a Sun JVM &gt;= 
 1.4.x. Class Histograms are not included in the thread dumps by default but need a special 
-JVM-Flag to be dumped with the thread dump. As TDA does everything offline and thread dumps 
+JVM-Flag to be dumped with the thread dump (<a href="#histogramopt">see below</a>). As TDA does everything offline and thread dumps 
 have very low impact on the VM (including the class histogram option), it can be used for 
 production environments. Note: There is a bug in early 1.5.x releases preventing the class 
 histogram to be printed if any other than the concurrent mark sweep garbage collector is used.
@@ -32,20 +34,22 @@ histogram to be printed if any other than the concurrent mark sweep garbage coll
 machine using JMX. See <i><a href="#plugin">Running as JConsole Plugin</a></i> for further information.
 </p>
 
-<p>
+<p><a name="histogramopt">
 To have the class histograms included in your dumps you need to provide the -XX:+PrintClassHistogram 
 option with the virtual machine's startup parameters of your application or application container.
-</p>
+</a></p>
 
 <p><a name="introduction"><h3>Obtaining a thread dump at runtime</h3></a>
 For requesting a thread dump, you need to send a kill-QUIT-Signal to the Java VM, for this you 
 need the PID of the VM and then do a <pre>kill -QUIT &lt;PID&gt;</pre> in a Unix Environment. 
-If you use Windows, you need a special tool for accomplishing this, e.g. SendSignal, see 
-<a href="#references">References</a> for a link. It does the same like <pre>kill -QUIT</pre> on Windows-Systems. 
-Beware: if you're using the remote connection on windows, you need to start the connection with 
-<pre>mstsc.exe /console</pre> otherwise you won't have sufficient rights to use the tool. The JDK will 
-then write the thread-dump to std-out. E.g. if your application is running in a tomcat, this would be 
-catalina.out in a default tomcat installation.</p>
+On Windows you need a special tool for accomplishing this, e.g. SendSignal, see 
+the <a href="#references">References</a> for a link to the homepage of this tool. 
+It does the same like <pre>kill -QUIT</pre> on Windows-Systems. 
+Note though, if you're using the remote connection on windows, you need to start the connection with 
+<pre>mstsc.exe /console</pre> otherwise you won't have sufficient rights to use the tool.</p>
+
+<p>The JDK will then write the thread-dump to standard-out. E.g. if your application is running in a 
+tomcat, this would be catalina.out in a default tomcat installation.</p>
 
 <p>Starting with Sun's JDK 1.5 you can also request a thread dump using the JVM utility <b>jstack</b>. jstack 
 prints the thread dump into the shell window where you called it. To use the dump in TDA, pipe the output
@@ -148,7 +152,7 @@ be displayed in the deadlock node of the dump. There is also a hint concerning t
 the dump summary. Note though, it doesn't have any deadlock
 detection for java level deadlocks itself, it relies on the deadlock detection of the VM.</p>
 
-<p><center><img src="deadlock.png" border=0>
+<p><center><img src="deadlock.png" border="0">
 <br><i>Deadlock informations</i></center></p>
 
 <p>TDA also tries to find deadlocks which might be caused by some external resources or some remote communication 
@@ -168,7 +172,23 @@ from 1.6 are not parsed yet though (e.g. informations about locked synchronizers
 <p><a name="sessions"><h3>Using Sessions</h3></a>
 If you opened several logfiles and you want to quit TDA and go back to this logfiles later, you can store the open logfiles to a session file.
 The logfile tree then is dumped into a session file for later usage. You must keep the logfiles if you want to be able to browse them again. For the
-tree navigation they are not necessary.</p>
+tree navigation they are not necessary. Note that session are only supported for one version of TDA, they are not exchangeable between different
+versions.</p>
+
+<p><a name="longrunningthreads"><h3>Find long running threads</h3></a>
+A common usecase for thread dump analysis is the long running thread detection. TDA offers some help for finding these long running threads. 
+The "Find long running threads" option in the tools menu or from the popup menu in the main tree checks for long running threads in 
+marked thread dumps in the main tree. The analysis is quite simple though, it just compares the thread names and if they match
+adds the thread to the result. A regular expression can be specified for filtering just the interesting threads. Additionally the usual 
+filters are applied to the result view of the analysis to filter out uninteresting threads. For a useful result appropriate filters should
+be specified to filter out all sleeping and uninteresting threads.</p>
+
+<p><a name="peakthreads"><h3>Heavy Load Analysis</h3></a>
+If a system is under heavy load, several thread dumps should be taken (e.g. every two minutes over a short period). The threads all have a 
+thread id which can be mapped to real process ID on Linux/Solaris Systems. TDA parses the ID and displays it as "Native ID" in the thread view.
+Using top in light-weight-process view on Linux and prstat on Solaris with the process id of the java process where the thread dumps came from you
+can match this native ID to the threads in the dump. This way it is easy to identify threads which produce heavy load as the thread view in top
+and prstat shows the cpu load of each single thread.</p>
 
 <p><a name="help"><h3>Get Help</h3></a>
 If you need additional help or have suggestions, comments go to the <a href="http://tda.dev.java.net/">TDA page on dev.java.net</a>. 
