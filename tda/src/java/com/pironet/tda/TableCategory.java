@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TableCategory.java,v 1.1 2008-01-05 08:55:18 irockel Exp $
+ * $Id: TableCategory.java,v 1.2 2008-01-08 14:07:26 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -61,23 +61,31 @@ public class TableCategory extends AbstractCategory {
      * @inherited
      */
     public JComponent getCatComponent(EventListener listener) {
+        System.out.println("getCatComponent()");
         if(isFilterEnabled() && ((filteredTable == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged()))) {
             // first refresh filter checker with current filters
+            System.out.println("setting filtered");
             setFilterChecker(FilterChecker.getFilterChecker());
             
             // apply new filter settings.
-            ThreadsTableModel ttm = new ThreadsTableModel(filterNodes(getRootNode()));
-            
-            // create table instance (filtered)
-            setupTable(ttm, listener);
+            DefaultMutableTreeNode filteredRootNode = filterNodes(getRootNode());
+            if(filteredRootNode != null && filteredRootNode.getChildCount() > 0) {
+                ThreadsTableModel ttm = new ThreadsTableModel(filterNodes(getRootNode()));
+
+                // create table instance (filtered)
+                setupTable(ttm, listener);
+            }
             
             setLastUpdated();
         } else if (!isFilterEnabled() && (filteredTable == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
+            System.out.println("setting non-filtered");
             // create unfiltered table view.
-            ThreadsTableModel ttm = new ThreadsTableModel(getRootNode());
-            
-            // create table instance (unfiltered)
-            setupTable(ttm, listener);
+            if(getRootNode().getChildCount() > 0) {
+                ThreadsTableModel ttm = new ThreadsTableModel(getRootNode());
+
+                // create table instance (unfiltered)
+                setupTable(ttm, listener);
+            }
         }
         return(filteredTable);
     }
@@ -92,18 +100,29 @@ public class TableCategory extends AbstractCategory {
         TableSorter ts = new TableSorter(tm);
         filteredTable = new ColoredTable(ts);
         ts.setTableHeader(filteredTable.getTableHeader());
-        filteredTable.getColumnModel().getColumn(0).setPreferredWidth(300);
-        filteredTable.getColumnModel().getColumn(1).setPreferredWidth(30);
-        filteredTable.getColumnModel().getColumn(2).setPreferredWidth(15);
         filteredTable.setSelectionModel(new ThreadsTableSelectionModel(filteredTable));
         filteredTable.getSelectionModel().addListSelectionListener((ListSelectionListener) listener);
 
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(JLabel.RIGHT);
 
-        filteredTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-        filteredTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-        filteredTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+        // currently only two different views have to be dealt with,
+        // with more the model should be subclassed.
+        if(tm.getColumnCount() > 3) {
+            filteredTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+            filteredTable.getColumnModel().getColumn(1).setPreferredWidth(30);
+            filteredTable.getColumnModel().getColumn(2).setPreferredWidth(15);
+            
+            filteredTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+            filteredTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
+            filteredTable.getColumnModel().getColumn(4).setCellRenderer(renderer);
+        } else {
+            filteredTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+            filteredTable.getColumnModel().getColumn(1).setPreferredWidth(30);
+            filteredTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+            
+            filteredTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+        }
     }
 
     /**
