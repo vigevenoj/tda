@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.10 2008-01-08 19:14:09 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.11 2008-01-08 19:37:30 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -131,14 +131,12 @@ public abstract class AbstractDumpParser implements DumpParser {
         DefaultMutableTreeNode catMerge = new DefaultMutableTreeNode(new TableCategory(info, IconFactory.DIFF_DUMPS));
         root.add(catMerge);
         int threadCount = 0;
-        System.out.println("DumpStore.keys=" + dumpStore.keySet());
         
         if(dumpStore.get(keys.get(0)) != null) {
             Iterator dumpIter = ((Map) dumpStore.get(keys.get(0))).keySet().iterator();
             
             while(dumpIter.hasNext()) {
                 String threadKey = ((String) dumpIter.next()).trim();
-                System.out.println("checking thread key=" + threadKey);
                 int occurence = 0;
                 
                 if(regex == null || regex.equals("") || threadKey.matches(regex)) {
