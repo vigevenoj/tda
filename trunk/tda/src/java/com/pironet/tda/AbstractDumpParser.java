@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.8 2008-01-08 12:05:19 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.9 2008-01-08 14:12:07 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -212,7 +212,7 @@ public abstract class AbstractDumpParser implements DumpParser {
      */
     protected void createNode(DefaultMutableTreeNode top, String title, String info, String content, int lineCount) {
         DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content, lineCount));
+        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info, content, lineCount, getThreadTokens(title)));
         top.add(threadInfo);
     }
     
@@ -229,7 +229,8 @@ public abstract class AbstractDumpParser implements DumpParser {
      */
     protected void addToCategory(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount) {
         DefaultMutableTreeNode threadInfo = null;
-        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString(), lineCount));
+        threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString(), lineCount, 
+                getThreadTokens(title)));
         ((Category)category.getUserObject()).addToCatNodes(threadInfo);
     }
 
@@ -240,6 +241,12 @@ public abstract class AbstractDumpParser implements DumpParser {
     protected BufferedReader getBis() {
         return bis;
     }
+
+    /**
+     * parse the thread tokens for table display.
+     * @param title
+     */
+    protected abstract String[] getThreadTokens(String title);
 
     /**
      * set the stream to parse
