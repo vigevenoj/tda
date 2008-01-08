@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.146 2008-01-07 17:25:52 irockel Exp $
+ * $Id: TDA.java,v 1.147 2008-01-08 12:05:19 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1093,7 +1093,13 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         String monitor = monitorLink.substring(monitorLink.lastIndexOf('/')+1);
         
         // find monitor node for this thread info
-        DefaultMutableTreeNode dumpNode = getDumpRootNode((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
+        DefaultMutableTreeNode dumpNode = null;
+        if(monitorLink.indexOf("Dump No.") > 0) {
+            dumpNode = getDumpRootNode(monitorLink.substring(monitorLink.indexOf('/')+1, monitorLink.lastIndexOf('/')),
+                    (DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
+        } else {
+            dumpNode = getDumpRootNode((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
+        }
         Enumeration childs = dumpNode.children();
         DefaultMutableTreeNode monitorNode = null;
         DefaultMutableTreeNode monitorWithoutLocksNode = null;
@@ -1651,6 +1657,35 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
         
         return(node);
+    }
+    
+    /**
+     * get the dump with the given name, starting from the provided node.
+     * @param dumpName
+     * @return
+     */
+    private DefaultMutableTreeNode getDumpRootNode(String dumpName, DefaultMutableTreeNode node) {
+        DefaultMutableTreeNode lastNode = null;
+        DefaultMutableTreeNode dumpNode = null;
+        // search for starting node
+        while(node != null && !(node.getUserObject() instanceof Logfile)) {
+            lastNode = node;
+            node = (DefaultMutableTreeNode) node.getParent();
+        }
+        
+        if(node == null) {
+            node = lastNode;
+        }
+        
+        for(int i = 0; i < node.getChildCount(); i++) {
+            Object userObject = ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject();
+            if((userObject instanceof ThreadDumpInfo) && ((ThreadDumpInfo) userObject).getName().startsWith(dumpName)) {
+                dumpNode = (DefaultMutableTreeNode) node.getChildAt(i);
+                break;
+            }
+        }
+        
+        return(dumpNode);
     }
         
     /**
