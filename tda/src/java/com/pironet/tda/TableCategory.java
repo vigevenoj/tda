@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TableCategory.java,v 1.2 2008-01-08 14:07:26 irockel Exp $
+ * $Id: TableCategory.java,v 1.3 2008-01-08 14:08:00 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -61,10 +61,8 @@ public class TableCategory extends AbstractCategory {
      * @inherited
      */
     public JComponent getCatComponent(EventListener listener) {
-        System.out.println("getCatComponent()");
         if(isFilterEnabled() && ((filteredTable == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged()))) {
             // first refresh filter checker with current filters
-            System.out.println("setting filtered");
             setFilterChecker(FilterChecker.getFilterChecker());
             
             // apply new filter settings.
@@ -78,7 +76,6 @@ public class TableCategory extends AbstractCategory {
             
             setLastUpdated();
         } else if (!isFilterEnabled() && (filteredTable == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
-            System.out.println("setting non-filtered");
             // create unfiltered table view.
             if(getRootNode().getChildCount() > 0) {
                 ThreadsTableModel ttm = new ThreadsTableModel(getRootNode());
