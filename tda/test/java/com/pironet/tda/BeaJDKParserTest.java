@@ -15,7 +15,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParserTest.java,v 1.1 2007-11-27 09:42:19 irockel Exp $
+ * $Id: BeaJDKParserTest.java,v 1.2 2008-01-09 09:40:06 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -67,7 +67,7 @@ public class BeaJDKParserTest extends TestCase {
             fis = new FileInputStream("test/none/jrockit_15_dump.txt");
             Map dumpMap = new HashMap();
             Vector topNodes = new Vector();
-            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false);
+            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false, 0);
             
             assertTrue(instance instanceof BeaJDKParser);
 
