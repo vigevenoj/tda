@@ -17,11 +17,13 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SearchDialog.java,v 1.9 2007-04-15 06:53:44 irockel Exp $
+ * $Id: SearchDialog.java,v 1.10 2008-01-09 09:31:35 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.TableSorter;
+import com.pironet.tda.utils.ThreadsTableModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -40,9 +42,10 @@ public class SearchDialog extends JDialog
         
     private JTextField searchField;
     
-    private JTree searchTree;
+    private JComponent searchComp;
+    private JTable searchTable;
         
-    public SearchDialog(JFrame owner, JTree tree) {
+    public SearchDialog(JFrame owner, JComponent comp) {
         super(owner, "Search this category... ");
         setLayout(new FlowLayout(FlowLayout.LEFT));
         
@@ -55,7 +58,7 @@ public class SearchDialog extends JDialog
         JLabel label = new JLabel("Enter search string: ");
         label.setLabelFor(searchField);
         
-        searchTree = tree;
+        searchComp = comp;
         
         JComponent buttonPane = createButtonPanel();
         
@@ -84,20 +87,26 @@ public class SearchDialog extends JDialog
         String cmd = e.getActionCommand();
         
         if (SEARCH.equals(cmd)) {            
-            TreePath searchPath = searchTree.getNextMatch(searchField.getText(),0,Position.Bias.Forward);
-            
-            if(searchPath != null) {
-                searchTree.setSelectionPath(searchPath);
-                Rectangle view = searchTree.getPathBounds(searchPath);
-                ((JViewport) searchTree.getParent()).scrollRectToVisible(view);
-                dispose();
-                searchTree.requestFocusInWindow();
-            } else {
-                JOptionPane.showMessageDialog(getOwner(),
-                        searchField.getText() + " not found!",
-                        "Search Error",
-                        JOptionPane.ERROR_MESSAGE);
-                resetFocus();
+            if(searchComp instanceof JTree) {
+                TreePath searchPath = ((JTree) searchComp).getNextMatch(searchField.getText(), 0, Position.Bias.Forward);
+
+                if (searchPath != null) {
+                    ((JTree) searchComp).setSelectionPath(searchPath);
+                    Rectangle view = ((JTree) searchComp).getPathBounds(searchPath);
+                    ((JViewport) searchComp.getParent()).scrollRectToVisible(view);
+                    dispose();
+                    searchComp.requestFocusInWindow();
+                } else {
+                    JOptionPane.showMessageDialog(getOwner(),
+                            searchField.getText() + " not found!",
+                            "Search Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    resetFocus();
+                }
+            } else if (searchComp instanceof JTable) {
+                ThreadsTableModel ttm = (ThreadsTableModel) ((TableSorter) ((JTable) searchComp).getModel()).getTableModel();
+                int row = ttm.searchRowWithName(((JTable) searchComp).getSelectedRow(), searchField.getText());
+                ((JTable) searchComp).getSelectionModel().setSelectionInterval(row, row);
             }
         }
     }

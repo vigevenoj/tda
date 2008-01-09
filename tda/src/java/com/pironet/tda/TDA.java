@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.149 2008-01-08 19:37:30 irockel Exp $
+ * $Id: TDA.java,v 1.150 2008-01-09 09:31:35 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -894,7 +894,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             if(cat.getName().startsWith("Monitors")) {
                 catComp.addMouseListener(getMonitorsPopupMenu());
             } else {
-                //catComp.addMouseListener(getCatPopupMenu());
+                catComp.addMouseListener(getCatPopupMenu());
             }
             dumpView = new JScrollPane(catComp);
             if(size != null) {
@@ -1999,10 +1999,10 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private void showSearchDialog() {
         // get the currently select category tree
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-        JTree catTree = (JTree) ((TreeCategory) node.getUserObject()).getCatComponent(this);
+        JComponent catComp = ((Category) node.getUserObject()).getCatComponent(this);
         
         //Create and set up the window.
-        searchDialog = new SearchDialog(getFrame(), catTree);
+        searchDialog = new SearchDialog(getFrame(), catComp);
         
         getFrame().setEnabled(false);
         //Display the window.

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadsTableModel.java,v 1.2 2008-01-08 14:12:07 irockel Exp $
+ * $Id: ThreadsTableModel.java,v 1.3 2008-01-09 09:31:35 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -48,7 +48,7 @@ public class ThreadsTableModel extends AbstractTableModel {
             for(int i = 0; i < rootNode.getChildCount(); i++) {
                 DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) rootNode.getChildAt(i);
                 elements.add(childNode.getUserObject());
-                    ThreadInfo ti = (ThreadInfo) childNode.getUserObject();
+                ThreadInfo ti = (ThreadInfo) childNode.getUserObject();
                 if(columnNames == null) {
                     if(ti.getTokens().length > 3) {
                         columnNames = new String[] {"Name", "Type", "Prio", "Thread-ID", "Native-ID", "State", "Address Range"};
@@ -109,6 +109,23 @@ public class ThreadsTableModel extends AbstractTableModel {
         } else {
             return String.class;
         }
+    }
+    
+    /**
+     * search for the specified (partial) name in thread names
+     * 
+     * @param startRow row to start the search
+     * @param name the (partial) name
+     * @return the index of the row or -1 if not found.
+     */
+    public int searchRowWithName(int startRow, String name) {
+        int i = startRow;
+        boolean found = false;
+        while(!found && (i < getRowCount())) {
+            found = getInfoObjectAtRow(i++).getTokens()[0].indexOf(name) >= 0;
+        }
+        
+        return(found ? i-1 : -1);
     }
 
 }
