@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParserTest.java,v 1.3 2007-11-27 09:42:19 irockel Exp $
+ * $Id: SunJDKParserTest.java,v 1.4 2008-01-09 09:40:07 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -63,7 +63,7 @@ public class SunJDKParserTest extends TestCase {
             fis = new FileInputStream("test/none/test.log");
             Map dumpMap = new HashMap();
             Vector topNodes = new Vector();
-            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false);
+            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false, 0);
             
             assertTrue(instance instanceof SunJDKParser);
 
@@ -93,7 +93,7 @@ public class SunJDKParserTest extends TestCase {
         try {
             fis = new FileInputStream("test/none/testwithhistogram.log");
             Map dumpMap = new HashMap();
-            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false);
+            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false, 0);
             
             Vector topNodes = new Vector();
             while (instance.hasMoreDumps()) {
