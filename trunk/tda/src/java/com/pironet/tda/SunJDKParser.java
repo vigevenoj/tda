@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.25 2008-01-08 19:13:37 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.26 2008-01-09 09:45:34 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -697,8 +697,13 @@ public class SunJDKParser extends AbstractDumpParser {
         } else {
             tokens = new String[3];
             tokens[0] = name.substring(1, name.lastIndexOf('"'));
-            tokens[1] = name.substring(name.indexOf("nid=") + 4, name.indexOf("state=") - 1);
-            tokens[2] = name.substring(name.indexOf("state=") +6);
+            if(name.indexOf("nid=") > 0) {
+                tokens[1] = name.substring(name.indexOf("nid=") + 3, name.indexOf("state=") - 1);
+                tokens[2] = name.substring(name.indexOf("state=") +6);
+            } else {
+                tokens[1] = name.substring(name.indexOf("nid=") + 3, name.indexOf(" in"));
+                tokens[2] = name.substring(name.indexOf(" in") +3);
+            }
         }
 
         return (tokens);
