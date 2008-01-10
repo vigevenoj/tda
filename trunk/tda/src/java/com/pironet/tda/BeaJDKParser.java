@@ -15,11 +15,12 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.5 2008-01-08 14:12:07 irockel Exp $
+ * $Id: BeaJDKParser.java,v 1.6 2008-01-10 17:16:07 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.DateMatcher;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.Map;
@@ -38,8 +39,8 @@ public class BeaJDKParser extends AbstractDumpParser {
      * @param dumpFileStream the dump file stream to read.
      * @param threadStore the thread store to store the thread informations in.
      */
-    public BeaJDKParser(BufferedReader bis, Map threadStore, int lineCounter) {
-        super(bis);
+    public BeaJDKParser(BufferedReader bis, Map threadStore, int lineCounter, DateMatcher dm) {
+        super(bis, dm);
     }
     
     public boolean hasMoreDumps() {

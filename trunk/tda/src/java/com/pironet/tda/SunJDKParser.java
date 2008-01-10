@@ -17,11 +17,12 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.28 2008-01-10 09:31:20 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.29 2008-01-10 17:16:07 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.DateMatcher;
 import com.pironet.tda.utils.HistogramTableModel;
 import com.pironet.tda.utils.IconFactory;
 import java.io.BufferedReader;
@@ -57,8 +58,8 @@ public class SunJDKParser extends AbstractDumpParser {
     /** 
      * Creates a new instance of SunJDKParser 
      */
-    public SunJDKParser(BufferedReader bis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp, int startCounter) {
-        super(bis);
+    public SunJDKParser(BufferedReader bis, Map threadStore, int lineCounter, boolean withCurrentTimeStamp, int startCounter, DateMatcher dm) {
+        super(bis, dm);
         this.threadStore = threadStore;
         this.withCurrentTimeStamp = withCurrentTimeStamp;
         this.lineCounter = lineCounter;
@@ -138,7 +139,7 @@ public class SunJDKParser extends AbstractDumpParser {
             Stack monitorStack = new Stack();
             long startTime = 0;
             int singleLineCounter = 0;
-            Matcher matched = null;
+            Matcher matched = getDm().getLastMatch();
             
             while(getBis().ready() && !finished) {
                 String line = getBis().readLine();
@@ -174,22 +175,10 @@ public class SunJDKParser extends AbstractDumpParser {
                             }
                         }
                         dumpKey = overallTDI.getName();
-                    } else if(!isPatternError() && (getRegexPattern() != null)) {
-                        try {
-                            Matcher m = getRegexPattern().matcher(line);
-                            if(m.matches()) {
-                                matched = m;
-                            }
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null,
-                                    "Error during parsing line for timestamp regular expression!\n" +
-                                    "Please check regular expression in your preferences. Deactivating\n" +
-                                    "parsing for the rest of the file! Error Message is " + ex.getMessage() + " \n",
-                                    "Error during Parsing", JOptionPane.ERROR_MESSAGE);
-                            
-                            //System.out.println("Failed parsing! " + ex.getMessage());
-                            //ex.printStackTrace();
-                            setPatternError(true);
+                    } else if(!getDm().isPatternError() && (getDm().getRegexPattern() != null)) {
+                        Matcher m = getDm().checkForDateMatch(line);
+                        if(m != null) {
+                            matched = m;
                         }
                     }
                 } else {

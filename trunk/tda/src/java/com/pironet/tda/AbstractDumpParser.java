@@ -15,10 +15,11 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.11 2008-01-08 19:37:30 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.12 2008-01-10 17:16:07 irockel Exp $
  */
 package com.pironet.tda;
 
+import com.pironet.tda.utils.DateMatcher;
 import com.pironet.tda.utils.IconFactory;
 import com.pironet.tda.utils.PrefManager;
 import java.io.BufferedReader;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
@@ -47,33 +49,15 @@ public abstract class AbstractDumpParser implements DumpParser {
     private int markSize = 16384;
     private int maxCheckLines = 10;
     private boolean millisTimeStamp = false;
-    private Pattern regexPattern = null;
-    private boolean patternError = false;
+    private DateMatcher dm = null;
+    
 
-
-    protected AbstractDumpParser(BufferedReader bis) {
+    protected AbstractDumpParser(BufferedReader bis, DateMatcher dm) {
         maxCheckLines = PrefManager.get().getMaxRows();
         markSize = PrefManager.get().getStreamResetBuffer();   
         millisTimeStamp = PrefManager.get().getMillisTimeStamp();
         setBis(bis);
-        
-        // set date parsing pattern.
-        if((PrefManager.get().getDateParsingRegex() != null) && !PrefManager.get().getDateParsingRegex().trim().equals("")) {
-            try {
-                regexPattern = Pattern.compile(PrefManager.get().getDateParsingRegex().trim());
-                patternError = false;
-            } catch (PatternSyntaxException pe) {
-                JOptionPane.showMessageDialog(null,
-                        "Error during parsing line for timestamp regular expression!\n" +
-                        "Please check regular expression in your preferences. Deactivating\n" +
-                        "parsing for the rest of the file! Error Message is " + pe.getMessage() + " \n",
-                        "Error during Parsing", JOptionPane.ERROR_MESSAGE);
-                
-                //System.out.println("Failed parsing! " + pe.getMessage());
-                //pe.printStackTrace();
-                patternError = true;
-            }
-        }      
+        setDm(dm);
     }
     
     /**
@@ -345,20 +329,11 @@ public abstract class AbstractDumpParser implements DumpParser {
         this.millisTimeStamp = millisTimeStamp;
     }
 
-    public Pattern getRegexPattern() {
-        return regexPattern;
+    public DateMatcher getDm() {
+        return dm;
     }
 
-    public void setRegexPattern(Pattern regexPattern) {
-        this.regexPattern = regexPattern;
+    public void setDm(DateMatcher dm) {
+        this.dm = dm;
     }
-
-    public boolean isPatternError() {
-        return patternError;
-    }
-
-    public void setPatternError(boolean patternError) {
-        this.patternError = patternError;
-    }
-
 }

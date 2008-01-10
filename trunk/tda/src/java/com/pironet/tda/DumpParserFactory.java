@@ -17,11 +17,12 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactory.java,v 1.9 2008-01-08 14:12:07 irockel Exp $
+ * $Id: DumpParserFactory.java,v 1.10 2008-01-10 17:16:07 irockel Exp $
  */
 
 package com.pironet.tda;
 
+import com.pironet.tda.utils.DateMatcher;
 import com.pironet.tda.utils.PrefManager;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -75,13 +76,15 @@ public class DumpParserFactory {
             
             // reset current dump parser
             currentDumpParser = null;
+            DateMatcher dm = new DateMatcher();
             while (bis.ready() && (currentDumpParser == null)) {
                 bis.mark(readAheadLimit);
                 String line = bis.readLine();
+                dm.checkForDateMatch(line);
                 if(SunJDKParser.checkForSupportedThreadDump(line)) {
-                    currentDumpParser = new SunJDKParser(bis, threadStore, lineCounter, withCurrentTimeStamp, startCounter);
+                    currentDumpParser = new SunJDKParser(bis, threadStore, lineCounter, withCurrentTimeStamp, startCounter, dm);
                 } else if(BeaJDKParser.checkForSupportedThreadDump(line)) {
-                    currentDumpParser = new BeaJDKParser(bis, threadStore, lineCounter);
+                    currentDumpParser = new BeaJDKParser(bis, threadStore, lineCounter, dm);
                 }
                 lineCounter++;
             }
@@ -94,6 +97,7 @@ public class DumpParserFactory {
         }
         return currentDumpParser;
     }
+    
     
     /**
      * returns the currently used dump parser. Will be null if getDumpParserForLogfile hasn't been
