@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParserTest.java,v 1.4 2008-01-09 09:40:07 irockel Exp $
+ * $Id: SunJDKParserTest.java,v 1.5 2008-01-10 09:29:57 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -103,6 +103,35 @@ public class SunJDKParserTest extends TestCase {
             boolean expResult = true;
             boolean result = instance.isFoundClassHistograms();
             assertEquals(expResult, result);        
+        } finally {
+            if(instance != null) {
+                instance.close();
+            }
+            if(fis != null) {
+                fis.close();
+            }
+        }
+    }
+    
+    public void test64BitDumpLoad() throws FileNotFoundException, IOException {
+        System.out.println("64BitDumpLoad");
+        FileInputStream fis = null;
+        DumpParser instance = null;
+        
+        try {
+            fis = new FileInputStream("test/none/test64bit.log");
+            Map dumpMap = new HashMap();
+            Vector topNodes = new Vector();
+            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false, 0);
+            
+            assertTrue(instance instanceof SunJDKParser);
+
+            while (instance.hasMoreDumps()) {
+                topNodes.add(instance.parseNext());
+            }
+
+            // check if one dump was found.
+            assertEquals(1, topNodes.size());
         } finally {
             if(instance != null) {
                 instance.close();
