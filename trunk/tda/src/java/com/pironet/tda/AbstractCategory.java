@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractCategory.java,v 1.2 2008-01-07 17:25:52 irockel Exp $
+ * $Id: AbstractCategory.java,v 1.3 2008-01-10 13:10:24 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -26,16 +26,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
  * @author irockel
  */
-public abstract class AbstractCategory implements Category {
+public abstract class AbstractCategory extends AbstractInfo implements Category {
     private String info;
-    private String name = null;
     
     private DefaultMutableTreeNode rootNode = null;
     private DefaultMutableTreeNode filteredRootNode = null;
@@ -72,14 +70,6 @@ public abstract class AbstractCategory implements Category {
         
     }
 
-    public void setName(String value) {
-       name = value;
-    }
-    
-    public String getName() {
-        return(name);
-    }
-    
     public Icon getIcon() {
         return(IconFactory.get().getIconFor(iconID));
     }
