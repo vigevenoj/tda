@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.27 2008-01-10 07:19:28 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.28 2008-01-10 09:31:20 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -683,8 +683,8 @@ public class SunJDKParser extends AbstractDumpParser {
             tokens[0] = name.substring(1, name.lastIndexOf('"'));
             tokens[1] = name.indexOf("daemon") > 0 ? "Daemon" : "Task";
             tokens[2] = name.substring(name.indexOf("prio=") + 5, name.indexOf("tid=") - 1);
-            tokens[3] = String.valueOf(Integer.parseInt(name.substring(name.indexOf("tid=") + 6, name.indexOf("nid=") - 1), 16));
-            tokens[4] = String.valueOf(Integer.parseInt(name.substring(name.indexOf("nid=") + 6,
+            tokens[3] = String.valueOf(Long.parseLong(name.substring(name.indexOf("tid=") + 6, name.indexOf("nid=") - 1), 16));
+            tokens[4] = String.valueOf(Long.parseLong(name.substring(name.indexOf("nid=") + 6,
                     name.indexOf(" ", name.indexOf("nid="))), 16));
             if (name.indexOf('[') > 0) {
                 tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1, name.indexOf('[',
