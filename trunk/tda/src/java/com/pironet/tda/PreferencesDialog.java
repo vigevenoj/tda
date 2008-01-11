@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.17 2007-10-29 20:32:02 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.18 2008-01-11 10:19:05 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -56,7 +56,8 @@ public class PreferencesDialog extends JDialog {
      * Creates a new instance of PreferencesDialog
      */
     public PreferencesDialog(JFrame owner) {
-        super(owner, "Preferences");  
+        super(owner, "Preferences");
+        this.setIconImage(TDA.createImageIcon("Preferences.gif").getImage());
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
         initPanel();        

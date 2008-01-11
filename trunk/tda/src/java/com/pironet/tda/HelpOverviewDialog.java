@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.9 2007-11-02 15:38:19 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.10 2008-01-11 10:19:05 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -26,6 +26,7 @@ import com.pironet.tda.utils.Browser;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -54,9 +55,12 @@ public class HelpOverviewDialog extends JDialog {
     /** 
      * Creates a new instance of HelpOverviewDialog 
      */
-    public HelpOverviewDialog(JFrame owner, String title, String file) {
+    public HelpOverviewDialog(JFrame owner, String title, String file, Image icon) {
         super(owner, title);
         setFile(file);
+        if(icon != null) {
+            this.setIconImage(icon);
+        }
         getContentPane().setLayout(new BorderLayout());
         initPanel();
         setLocationRelativeTo(owner);

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.26 2007-11-14 20:09:01 irockel Exp $
+ * $Id: MainMenu.java,v 1.27 2008-01-11 10:19:06 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -53,6 +53,8 @@ public class MainMenu extends JMenuBar {
     private JButton closeToolBarButton;
     private JMenuItem saveSessionMenuItem;
     private JButton findLRThreadsButton;
+    private JButton expandButton;
+    private JButton collapseButton;
 
 
 
@@ -76,6 +78,20 @@ public class MainMenu extends JMenuBar {
      */
     public JButton getCloseToolBarButton() {
         return(closeToolBarButton);
+    }
+    
+    /**
+     * get the close file menu item
+     */
+    public JButton getExpandButton() {
+        return(expandButton);
+    }
+    
+    /**
+     * get the close file menu item
+     */
+    public JButton getCollapseButton() {
+        return(collapseButton);
     }
     
     /**
@@ -133,6 +149,7 @@ public class MainMenu extends JMenuBar {
         //a group of JMenuItems
         menuItem = new JMenuItem("Open...",
                 KeyEvent.VK_O);
+        menuItem.setIcon(TDA.createImageIcon("FileOpen.gif"));
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_O, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
@@ -141,6 +158,7 @@ public class MainMenu extends JMenuBar {
         menu.add(menuItem);
         
         closeMenuItem = new JMenuItem("Close...");
+        closeMenuItem.setIcon(TDA.createImageIcon("CloseFile.gif"));
         closeMenuItem.getAccessibleContext().setAccessibleDescription(
                 "Close currently selected dump file.");
         closeMenuItem.addActionListener(listener);
@@ -179,6 +197,7 @@ public class MainMenu extends JMenuBar {
 
         menuItem = new JMenuItem("Preferences",
                 KeyEvent.VK_P);
+        menuItem.setIcon(TDA.createImageIcon("Preferences.gif"));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Set Preferences");
         menuItem.addActionListener(listener);
@@ -213,6 +232,7 @@ public class MainMenu extends JMenuBar {
         
         expandAllMenuItem = new JMenuItem("Expand all Dump nodes",
                 KeyEvent.VK_E);
+        expandAllMenuItem.setIcon(TDA.createImageIcon("Expanded.gif"));
         expandAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_E, ActionEvent.ALT_MASK));
         expandAllMenuItem.getAccessibleContext().setAccessibleDescription(
@@ -223,6 +243,7 @@ public class MainMenu extends JMenuBar {
 
         collapseAllMenuItem = new JMenuItem("Collapse all Dump nodes",
                 KeyEvent.VK_C);
+        collapseAllMenuItem.setIcon(TDA.createImageIcon("Collapsed.gif"));
         collapseAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_C, ActionEvent.ALT_MASK));
         collapseAllMenuItem.getAccessibleContext().setAccessibleDescription(
@@ -234,6 +255,7 @@ public class MainMenu extends JMenuBar {
         menu.addSeparator();
         menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
         menuItem.addActionListener(listener);
+        menuItem.setIcon(TDA.createImageIcon("Empty.gif"));
         menu.add(menuItem);
         
         return(menu);
@@ -253,16 +275,18 @@ public class MainMenu extends JMenuBar {
         
         longMenuItem = new JMenuItem("Find long running threads...",
                 KeyEvent.VK_L);
+        longMenuItem.setIcon(TDA.createImageIcon("FindLRThreads.gif"));
         longMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_L, ActionEvent.ALT_MASK));
         longMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Exit TDA");
+                "Find long running threads...");
         longMenuItem.addActionListener(listener);
         longMenuItem.setEnabled(false);
         menu.add(longMenuItem);
 
         menuItem = new JMenuItem("Filters",
                 KeyEvent.VK_F);
+        menuItem.setIcon(TDA.createImageIcon("Filters.gif"));
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_F, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
@@ -286,6 +310,7 @@ public class MainMenu extends JMenuBar {
         
         menuItem = new JMenuItem("Overview",
                 KeyEvent.VK_A);
+        menuItem.setIcon(TDA.createImageIcon("Help.gif"));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "About Thread Dump Analyzer");
         menuItem.addActionListener(listener);
@@ -309,6 +334,7 @@ public class MainMenu extends JMenuBar {
         menu.addSeparator();
         menuItem = new JMenuItem("About TDA",
                 KeyEvent.VK_A);
+        menuItem.setIcon(TDA.createImageIcon("About.gif"));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "About Thread Dump Analyzer");
         menuItem.addActionListener(listener);
@@ -388,6 +414,13 @@ public class MainMenu extends JMenuBar {
         }
         toolBar.addSeparator();
         toolBar.add(createToolBarButton("Preferences", "Preferences.gif"));
+        toolBar.addSeparator();
+        expandButton = createToolBarButton("Expand all nodes", "Expanded.gif");
+        expandButton.setEnabled(false);
+        toolBar.add(expandButton);
+        collapseButton = createToolBarButton("Collapse all nodes", "Collapsed.gif");
+        collapseButton.setEnabled(false);
+        toolBar.add(collapseButton);
         toolBar.addSeparator();
         findLRThreadsButton = createToolBarButton("Find long running threads", "FindLRThreads.gif");
         findLRThreadsButton.setEnabled(false);
