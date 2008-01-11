@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.7 2007-11-22 13:38:29 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.8 2008-01-11 10:19:06 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -56,6 +56,8 @@ public class EditFilterDialog extends JDialog {
      */
     public EditFilterDialog(JFrame owner, String frameTitle, JList filterList, boolean isAdd) {
         super(owner, frameTitle);
+        setIconImage(TDA.createImageIcon("Filters.gif").getImage());
+        
         this.isAdd = isAdd;
         this.filterList = filterList;
         frame = owner;

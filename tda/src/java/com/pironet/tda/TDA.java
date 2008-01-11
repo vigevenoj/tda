@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.150 2008-01-09 09:31:35 irockel Exp $
+ * $Id: TDA.java,v 1.151 2008-01-11 10:19:05 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -310,6 +310,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         tree.setShowsRootHandles(false);
         displayContent(null);
         getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
+        getMainMenu().getExpandButton().setEnabled(true);
+        getMainMenu().getCollapseButton().setEnabled(true);
+
     }
 
     private void addToLogfile(String dump) {
@@ -605,6 +608,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             getMainMenu().getCloseMenuItem().setEnabled(true);
             getMainMenu().getSaveSessionMenuItem().setEnabled(true);
             getMainMenu().getCloseToolBarButton().setEnabled(true);
+            getMainMenu().getExpandButton().setEnabled(true);
+            getMainMenu().getCollapseButton().setEnabled(true);
             getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
             getMainMenu().getCloseAllMenuItem().setEnabled(true);
             getMainMenu().getExpandAllMenuItem().setEnabled(true);
@@ -1375,13 +1380,13 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 saveState();
                 frame.dispose();
             } else if ("Overview".equals(source.getText())) {
-                showInfoFile("Overview", "doc/overview.html");
+                showInfoFile("Overview", "doc/overview.html", "Help.gif");
             } else if ("Help".equals(source.getText())) {
-                showInfoFile("Overview", "doc/overview.html");
+                showInfoFile("Overview", "doc/overview.html", "Document.gif");
             } else if ("Release Notes".equals(source.getText())) {
-                showInfoFile("Release Notes", "doc/README");
+                showInfoFile("Release Notes", "doc/README", "Document.gif");
             } else if ("License".equals(source.getText())) {
-                showInfoFile("License Information", "doc/COPYING");
+                showInfoFile("License Information", "doc/COPYING", "Document.gif");
             } else if ("Forum".equals(source.getText())) {
                 try {
                     Browser.open("https://tda.dev.java.net/servlets/ForumMessageList?forumID=1967");
@@ -1444,12 +1449,18 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 showPreferencesDialog();
             } else if("Find long running threads".equals(source.getToolTipText())) {
                 findLongRunningThreads();
+            } else if("Expand all nodes".equals(source.getToolTipText())) {
+                expandAllDumpNodes(true);
+            } else if ("Collapse all nodes".equals(source.getToolTipText())) {
+                expandAllDumpNodes(false);
+            } else if("Find long running threads".equals(source.getToolTipText())) {
+                findLongRunningThreads();
             } else if("Filters".equals(source.getToolTipText())) {
                 showFilterDialog();
             } else if("Request a Thread Dump".equals(source.getToolTipText())) {
                 addMXBeanDump();
             } else if("Help".equals(source.getToolTipText())) {
-                showInfoFile("Overview", "doc/overview.html");
+                showInfoFile("Overview", "doc/overview.html", "Help.gif");
             }
             source.setSelected(false);
         }
@@ -1490,8 +1501,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      * @param title title of the info window.
      * @param file the file to display.
      */
-    private void showInfoFile(String title, String file) {
-        HelpOverviewDialog infoDialog = new HelpOverviewDialog(getFrame(), title, file);
+    private void showInfoFile(String title, String file, String icon) {
+        HelpOverviewDialog infoDialog = new HelpOverviewDialog(getFrame(), title, file, TDA.createImageIcon(icon).getImage());
         infoDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         //Display the window.
@@ -1747,6 +1758,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 getMainMenu().getCloseMenuItem().setEnabled(false);
                 getMainMenu().getSaveSessionMenuItem().setEnabled(false);
                 getMainMenu().getCloseToolBarButton().setEnabled(false);
+                getMainMenu().getExpandButton().setEnabled(false);
+                getMainMenu().getCollapseButton().setEnabled(false);
                 getMainMenu().getFindLRThreadsToolBarButton().setEnabled(false);
                 getMainMenu().getCloseAllMenuItem().setEnabled(false);
                 getMainMenu().getExpandAllMenuItem().setEnabled(false);
@@ -1795,6 +1808,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         getMainMenu().getCloseMenuItem().setEnabled(false);
         getMainMenu().getSaveSessionMenuItem().setEnabled(false);
         getMainMenu().getCloseToolBarButton().setEnabled(false);
+        getMainMenu().getExpandButton().setEnabled(false);
+        getMainMenu().getCollapseButton().setEnabled(false);
         getMainMenu().getFindLRThreadsToolBarButton().setEnabled(false);
         getMainMenu().getCloseAllMenuItem().setEnabled(false);
         getMainMenu().getExpandAllMenuItem().setEnabled(false);

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.7 2007-01-18 09:35:33 irockel Exp $
+ * $Id: FilterDialog.java,v 1.8 2008-01-11 10:19:05 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -56,6 +56,7 @@ public class FilterDialog extends JDialog {
      */
     public FilterDialog(JFrame owner) {
         super(owner, "Filter Settings");
+        setIconImage(TDA.createImageIcon("Filters.gif").getImage());
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
         initPanel();  
