@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DateMatcher.java,v 1.1 2008-01-10 17:16:08 irockel Exp $
+ * $Id: DateMatcher.java,v 1.2 2008-01-13 08:09:27 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -32,7 +32,9 @@ import javax.swing.JOptionPane;
  */
 public class DateMatcher {
     private Pattern regexPattern;
+    private Pattern defaultPattern;
     private boolean patternError;
+    private boolean defaultMatches;
     private Matcher matched = null;
     
     public DateMatcher() {
@@ -40,6 +42,7 @@ public class DateMatcher {
         if((PrefManager.get().getDateParsingRegex() != null) && !PrefManager.get().getDateParsingRegex().trim().equals("")) {
             try {
                 regexPattern = Pattern.compile(PrefManager.get().getDateParsingRegex().trim());
+                defaultPattern = Pattern.compile("(\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d).*");
                 setPatternError(false);
             } catch (PatternSyntaxException pe) {
                 showErrorPane(pe.getMessage());
@@ -68,9 +71,16 @@ public class DateMatcher {
             if(getRegexPattern() == null) {
                 setRegexPattern(Pattern.compile(PrefManager.get().getDateParsingRegex().trim()));
             }
-            Matcher m = getRegexPattern().matcher(line);
-            if (m.matches()) {
+            Matcher m = defaultPattern.matcher(line);
+            if(m.matches()) {
+                setDefaultMatches(true);
                 matched = m;
+            } else {
+                m = getRegexPattern().matcher(line);
+                if (m.matches()) {
+                    setDefaultMatches(false);
+                    matched = m;
+                }
             }
         } catch (Exception ex) {
             showErrorPane(ex.getMessage());
@@ -87,9 +97,21 @@ public class DateMatcher {
         JOptionPane.showMessageDialog(null,
                 "Error during parsing line for timestamp regular expression!\n" +
                 "Please check regular expression in your preferences. Deactivating\n" +
-                "parsing for the rest of the file! Error Message is " + message + " \n",
+                "parsing for the rest of the file! Error Message is \"" + message + "\" \n",
                 "Error during Parsing", JOptionPane.ERROR_MESSAGE);
 
         setPatternError(true);
+    }
+
+    /**
+     * 
+     * @return true, if the default matcher matched (checks for 1.6 default date info)
+     */
+    public boolean isDefaultMatches() {
+        return defaultMatches;
+    }
+
+    private void setDefaultMatches(boolean defaultMatches) {
+        this.defaultMatches = defaultMatches;
     }
 }
