@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.29 2008-01-10 17:16:07 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.30 2008-01-13 08:09:26 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -156,7 +156,7 @@ public class SunJDKParser extends AbstractDumpParser {
                             } else if (matched != null && matched.matches()) {
 
                                 String parsedStartTime = matched.group(1);
-                                if (isMillisTimeStamp()) {
+                                if (!getDm().isDefaultMatches() && isMillisTimeStamp()) {
                                     try {
                                         // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=2342342340)
                                         if (parsedStartTime.length() < 13) {
@@ -172,6 +172,7 @@ public class SunJDKParser extends AbstractDumpParser {
                                     overallTDI.setStartTime(parsedStartTime);
                                 }
                                 parsedStartTime = null;
+                                matched = null;
                             }
                         }
                         dumpKey = overallTDI.getName();
