@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.151 2008-01-11 10:19:05 irockel Exp $
+ * $Id: TDA.java,v 1.152 2008-01-15 19:35:13 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -204,6 +204,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     public void init(boolean asJConsolePlugin, boolean asNetbeansPlugin) {
         // init everything
         tree = new JTree();
+        addTreeListener(tree);
         runningAsJConsolePlugin = asJConsolePlugin;
         runningAsNetbeansPlugin = asNetbeansPlugin;
         
@@ -605,9 +606,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         topNodes = new Vector();
         if(!runningAsJConsolePlugin) {
             getMainMenu().getLongMenuItem().setEnabled(true);
-            getMainMenu().getCloseMenuItem().setEnabled(true);
             getMainMenu().getSaveSessionMenuItem().setEnabled(true);
-            getMainMenu().getCloseToolBarButton().setEnabled(true);
             getMainMenu().getExpandButton().setEnabled(true);
             getMainMenu().getCollapseButton().setEnabled(true);
             getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
@@ -713,6 +712,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         if(topNodes.size() == 1) {
             tree = new JTree((DefaultMutableTreeNode) topNodes.get(0));
             tree.setRootVisible(!runningAsJConsolePlugin);
+            addTreeListener(tree);
             if(!runningAsJConsolePlugin && !runningAsNetbeansPlugin) {
                 frame.setTitle("TDA - Thread Dumps of " + dumpFile);
             }
@@ -723,6 +723,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             }
             tree = new JTree(root);
             tree.setRootVisible(false);
+            addTreeListener(tree);
             if(!runningAsJConsolePlugin && !runningAsNetbeansPlugin) {
                 frame.setTitle(frame.getTitle() + " ...");
             }
@@ -752,6 +753,22 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         createPopupMenu();
         
     }
+    
+    /**
+     * add a tree listener for enabling/disabling menu and toolbar icons.
+     * @param tree
+     */
+    private void addTreeListener(JTree tree) {
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+
+            public void valueChanged(TreeSelectionEvent e) {
+                getMainMenu().getCloseMenuItem().setEnabled(e.getPath() != null);
+                getMainMenu().getCloseToolBarButton().setEnabled(e.getPath() != null);
+            }
+            
+        });
+    }
+
 
     private boolean threadDisplay = false;
     
