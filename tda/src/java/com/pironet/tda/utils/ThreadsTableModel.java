@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadsTableModel.java,v 1.4 2008-01-10 09:31:20 irockel Exp $
+ * $Id: ThreadsTableModel.java,v 1.5 2008-01-15 13:44:27 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -97,7 +97,7 @@ public class ThreadsTableModel extends AbstractTableModel {
      * @return thread info object at this line.
      */
     public ThreadInfo getInfoObjectAtRow(int rowIndex) {
-        return((ThreadInfo) elements.get(rowIndex));
+        return(rowIndex >= 0 && rowIndex < getRowCount() ? (ThreadInfo) elements.get(rowIndex) : null);
     }
     
     /**
