@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.31 2008-01-15 14:42:53 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.32 2008-01-15 15:27:48 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -147,7 +147,6 @@ public class SunJDKParser extends AbstractDumpParser {
                 if(locked) {
                     if(line.indexOf("Full thread dump") >= 0) {
                         locked = false;
-                        System.out.println("line = " + line + "\nmatched= " + matched);
                         if(!withCurrentTimeStamp) {
                             overallTDI.setLogLine(lineCounter);
                             
