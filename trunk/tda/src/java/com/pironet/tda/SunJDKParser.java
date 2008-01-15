@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.30 2008-01-13 08:09:26 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.31 2008-01-15 14:42:53 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Matcher;
-import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
@@ -148,6 +147,7 @@ public class SunJDKParser extends AbstractDumpParser {
                 if(locked) {
                     if(line.indexOf("Full thread dump") >= 0) {
                         locked = false;
+                        System.out.println("line = " + line + "\nmatched= " + matched);
                         if(!withCurrentTimeStamp) {
                             overallTDI.setLogLine(lineCounter);
                             
@@ -167,12 +167,15 @@ public class SunJDKParser extends AbstractDumpParser {
                                     } catch (NumberFormatException nfe) {
                                         startTime = 0;
                                     }
-                                    overallTDI.setStartTime((new Date(startTime)).toString());
+                                    if(startTime > 0) {
+                                        overallTDI.setStartTime((new Date(startTime)).toString());
+                                    }
                                 } else {
                                     overallTDI.setStartTime(parsedStartTime);
                                 }
                                 parsedStartTime = null;
                                 matched = null;
+                                getDm().resetLastMatch();
                             }
                         }
                         dumpKey = overallTDI.getName();

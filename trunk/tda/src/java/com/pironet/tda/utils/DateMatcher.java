@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DateMatcher.java,v 1.2 2008-01-13 08:09:27 irockel Exp $
+ * $Id: DateMatcher.java,v 1.3 2008-01-15 14:42:54 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -91,6 +91,10 @@ public class DateMatcher {
     
     public Matcher getLastMatch() {
         return(matched);
+    }
+    
+    public void resetLastMatch() {
+        matched = null;
     }
     
     private void showErrorPane(String message) {
