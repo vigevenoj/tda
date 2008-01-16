@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.12 2008-01-10 17:16:07 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.13 2008-01-16 16:19:04 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -149,7 +149,7 @@ public abstract class AbstractDumpParser implements DumpParser {
                                 content.append(fixMonitorLinks((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey), (String) keys.get(i)));
                             }
                         }
-                        addToCategory(catMerge, threadKey, null, content, 0);
+                        addToCategory(catMerge, threadKey, null, content, 0, true);
                     }
                 }
             }
@@ -215,10 +215,11 @@ public abstract class AbstractDumpParser implements DumpParser {
      * @param lineCount the line count of the thread stack, 0 if not applicable for this element.
      * @see ThreadInfo 
      */
-    protected void addToCategory(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount) {
+    protected void addToCategory(DefaultMutableTreeNode category, String title, StringBuffer info, StringBuffer content, int lineCount,
+            boolean parseTokens) {
         DefaultMutableTreeNode threadInfo = null;
         threadInfo = new DefaultMutableTreeNode(new ThreadInfo(title, info != null ? info.toString() : null, content.toString(), lineCount, 
-                getThreadTokens(title)));
+                parseTokens ? getThreadTokens(title) : null));
         ((Category)category.getUserObject()).addToCatNodes(threadInfo);
     }
 
