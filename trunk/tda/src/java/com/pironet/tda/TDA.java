@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.153 2008-01-16 09:31:12 irockel Exp $
+ * $Id: TDA.java,v 1.154 2008-01-16 11:33:27 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -760,10 +760,31 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      */
     private void addTreeListener(JTree tree) {
         tree.addTreeSelectionListener(new TreeSelectionListener() {
+            JScrollPane emptyView = null;
 
             public void valueChanged(TreeSelectionEvent e) {
                 getMainMenu().getCloseMenuItem().setEnabled(e.getPath() != null);
                 getMainMenu().getCloseToolBarButton().setEnabled(e.getPath() != null);
+                // reset right pane of the top view:
+                
+                if(emptyView == null) {
+                    JEditorPane emptyPane = new JEditorPane("text/html", "<html><body bgcolor=\"ffffff\">   </body></html>");
+                    emptyPane.setEditable(false);
+
+                    emptyView = new JScrollPane(emptyPane);
+                }
+
+                if(e.getPath() == null || 
+                        !(((DefaultMutableTreeNode) e.getPath().getLastPathComponent()).
+                        getUserObject() instanceof Category)) {
+                    resetPane();
+                }
+            }
+            
+            private void resetPane() {
+                int dividerLocation = topSplitPane.getDividerLocation();
+                topSplitPane.setRightComponent(emptyView);
+                topSplitPane.setDividerLocation(dividerLocation);
             }
             
         });
@@ -774,10 +795,10 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     
     private void setThreadDisplay(boolean value) {
         threadDisplay = value;
-        if(!value) {
+        /*if(!value) {
             // clear thread pane
             topSplitPane.setRightComponent(null);
-        }
+        }*/
     }
     
     private boolean isThreadDisplay() {
