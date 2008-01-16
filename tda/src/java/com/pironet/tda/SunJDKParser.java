@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.32 2008-01-15 15:27:48 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.33 2008-01-16 16:19:04 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -189,24 +189,24 @@ public class SunJDKParser extends AbstractDumpParser {
                         if(title != null) {
                             threads.put(title, content.toString());
                             content.append("</pre></pre>");
-                            addToCategory(catThreads, title, null, content, singleLineCounter);
+                            addToCategory(catThreads, title, null, content, singleLineCounter, true);
                             threadCount++;
                         }
                         if(wContent != null) {
                             wContent.append("</b><hr>");
-                            addToCategory(catWaiting, title, wContent, content, singleLineCounter);
+                            addToCategory(catWaiting, title, wContent, content, singleLineCounter, true);
                             wContent = null;
                             waiting++;
                         }
                         if(sContent != null) {
                             sContent.append("</b><hr>");
-                            addToCategory(catSleeping, title, sContent, content, singleLineCounter);
+                            addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
                             sContent = null;
                             sleeping++;
                         }
                         if(lContent != null) {
                             lContent.append("</b><hr>");
-                            addToCategory(catLocking, title, lContent, content, singleLineCounter);
+                            addToCategory(catLocking, title, lContent, content, singleLineCounter, true);
                             lContent = null;
                             locking++;
                         }
@@ -285,24 +285,24 @@ public class SunJDKParser extends AbstractDumpParser {
             if(title != null) {
                 threads.put(title, content.toString());
                 content.append("</pre></pre>");
-                addToCategory(catThreads, title, null, content, singleLineCounter);
+                addToCategory(catThreads, title, null, content, singleLineCounter, true);
                 threadCount++;
             }
             if(wContent != null) {
                 wContent.append("</b><hr>");
-                addToCategory(catWaiting, title, null, wContent, singleLineCounter);
+                addToCategory(catWaiting, title, null, wContent, singleLineCounter, true);
                 wContent = null;
                 waiting++;
             }
             if(sContent != null) {
                 sContent.append("</b><hr>");
-                addToCategory(catSleeping, title, sContent, content, singleLineCounter);
+                addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
                 sContent = null;
                 sleeping++;
             }
             if(lContent != null) {
                 lContent.append("</b><hr>");
-                addToCategory(catLocking, title, null, lContent, singleLineCounter);
+                addToCategory(catLocking, title, null, lContent, singleLineCounter, true);
                 lContent = null;
                 locking++;
             }
@@ -512,7 +512,7 @@ public class SunJDKParser extends AbstractDumpParser {
                 if(line.startsWith("Found one Java-level deadlock")) {
                     if(dContent.length() > 0) {
                         deadlocks++;
-                        addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
+                        addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0, false);
                     }
                     dContent = new StringBuffer();
                     dContent.append("</pre><b><font size=" + TDA.getFontSizeModifier(-1) + ">");
@@ -556,7 +556,7 @@ public class SunJDKParser extends AbstractDumpParser {
         }
         if(dContent.length() > 0) {
             deadlocks++;
-            addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0);
+            addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0, false);
         }
         
         if(deadlocks > 0) {
@@ -674,18 +674,37 @@ public class SunJDKParser extends AbstractDumpParser {
 
             tokens[0] = name.substring(1, name.lastIndexOf('"'));
             tokens[1] = name.indexOf("daemon") > 0 ? "Daemon" : "Task";
-            tokens[2] = name.substring(name.indexOf("prio=") + 5, name.indexOf("tid=") - 1);
-            tokens[3] = String.valueOf(Long.parseLong(name.substring(name.indexOf("tid=") + 6, name.indexOf("nid=") - 1), 16));
-            tokens[4] = String.valueOf(Long.parseLong(name.substring(name.indexOf("nid=") + 6,
-                    name.indexOf(" ", name.indexOf("nid="))), 16));
-            if (name.indexOf('[') > 0) {
-                tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1, name.indexOf('[',
-                        name.indexOf("nid=")) - 1);
-                tokens[6] = name.substring(name.indexOf('['));
+            
+            if(name.indexOf("tid=") >= 0) {
+                tokens[2] = name.substring(name.indexOf("prio=") + 5, name.indexOf("tid=") - 1);
             } else {
-                tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1);
-                tokens[6] = "<no address range>";
+                tokens[2] = name.substring(name.indexOf("prio=") + 5);
             }
+            
+            if((name.indexOf("tid=") >= 0) && (name.indexOf("nid=") >= 0)) {
+                tokens[3] = String.valueOf(Long.parseLong(name.substring(name.indexOf("tid=") + 6, name.indexOf("nid=")-1), 16));
+            } else if(name.indexOf("tid=") >= 0) {
+                tokens[3] = String.valueOf(Long.parseLong(name.substring(name.indexOf("tid=") + 6), 16));
+            }
+            
+            // default for token 6 is:
+            tokens[6] = "<no address range>";
+            
+            if((name.indexOf("nid=") >= 0) && (name.indexOf(" ", name.indexOf("nid="))) >= 0) {
+                tokens[4] = String.valueOf(Long.parseLong(name.substring(name.indexOf("nid=") + 6,
+                        name.indexOf(" ", name.indexOf("nid="))), 16));
+                
+                if (name.indexOf('[') > 0) {
+                    tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1, name.indexOf('[',
+                            name.indexOf("nid=")) - 1);
+                    tokens[6] = name.substring(name.indexOf('['));
+                } else {
+                    tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1);
+                }
+            } else if(name.indexOf("nid=") >= 0) {
+                // nid is at the end.
+                tokens[4] = String.valueOf(Long.parseLong(name.substring(name.indexOf("nid=") + 6), 16)) ;
+            }         
         } else {
             tokens = new String[3];
             tokens[0] = name.substring(1, name.lastIndexOf('"'));
