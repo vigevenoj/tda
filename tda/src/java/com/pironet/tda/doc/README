@@ -13,6 +13,7 @@ Changes from 1.5 are:
 * Added Drag and Drop for new files to open.
 * Threads are now displayed in a table, the thread ids and native ids are 
   transfered from hexadecimal to decimal.
+* Date parsing for 1.6 time stamps is added as default regex.
 * Bugfixed and reworked long running thread detection.
 * Bugfixing.
 
