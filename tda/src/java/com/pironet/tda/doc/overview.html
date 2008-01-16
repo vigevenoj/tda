@@ -178,7 +178,12 @@ versions.</p>
 <p><a name="longrunningthreads"><h3>Find long running threads</h3></a>
 A common usecase for thread dump analysis is the long running thread detection. TDA offers some help for finding these long running threads. 
 The "Find long running threads" option in the tools menu or from the popup menu in the main tree checks for long running threads in 
-marked thread dumps in the main tree. The analysis is quite simple though, it just compares the thread names and if they match
+marked thread dumps in the main tree. </p>
+
+<p><center><img src="longrunning.png" border=0>
+<br><i>Long running threads detection</i></center></p>
+
+<p>The analysis is quite simple though, it just compares the thread names and if they match
 adds the thread to the result. A regular expression can be specified for filtering just the interesting threads. Additionally the usual 
 filters are applied to the result view of the analysis to filter out uninteresting threads. For a useful result appropriate filters should
 be specified to filter out all sleeping and uninteresting threads.</p>
