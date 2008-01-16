@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TableCategory.java,v 1.4 2008-01-10 16:35:57 irockel Exp $
+ * $Id: TableCategory.java,v 1.5 2008-01-16 16:30:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -72,6 +72,9 @@ public class TableCategory extends AbstractCategory {
 
                 // create table instance (filtered)
                 setupTable(ttm, listener);
+            } else {
+                // just an empty table
+                filteredTable = new JTable();
             }
             
             setLastUpdated();
