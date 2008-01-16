@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.23 2007-11-06 08:45:22 irockel Exp $
+ * $Id: PrefManager.java,v 1.24 2008-01-16 11:47:51 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -169,6 +169,10 @@ public class PrefManager {
     }
     
     public void setDateParsingRegex(String dateRegex) {
+        if(dateRegex == null) {
+            // don't save null values.
+            dateRegex = "";
+        }
         toolPrefs.put("dateParsingRegex", dateRegex);
     }
     
