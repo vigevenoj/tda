@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LongThreadDialog.java,v 1.6 2008-01-08 19:47:27 irockel Exp $
+ * $Id: LongThreadDialog.java,v 1.7 2008-01-16 16:45:55 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -81,7 +81,10 @@ public class LongThreadDialog extends JDialog {
         
         okButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int divider = backRef.topSplitPane.getDividerLocation();
+                int divider = 0;
+                if(backRef.isThreadDisplay()) {
+                    divider = backRef.topSplitPane.getDividerLocation();
+                }
 
                 if(backRef.frame != null) {
                     backRef.frame.setEnabled(true);
@@ -91,7 +94,9 @@ public class LongThreadDialog extends JDialog {
                 backRef.tree.expandRow(1);
 
                 backRef.getRootPane().revalidate();
-                backRef.topSplitPane.setDividerLocation(divider);
+                if(divider > 0) {
+                    backRef.topSplitPane.setDividerLocation(divider);
+                }
                 dispose();
             }
         });
