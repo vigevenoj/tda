@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.18 2008-01-11 10:19:05 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.19 2008-01-16 14:33:26 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -114,6 +114,7 @@ public class PreferencesDialog extends JDialog {
         regExPanel.dateParsingRegexs.setModel(boxModel);
         regExPanel.dateParsingRegexs.setSelectedItem(PrefManager.get().getDateParsingRegex());
         
+        regExPanel.isJDK16DefaultParsing.setSelected(PrefManager.get().getJDK16DefaultParsing());
         regExPanel.isMillisTimeStamp.setSelected(PrefManager.get().getMillisTimeStamp());
     }
     
@@ -126,6 +127,7 @@ public class PreferencesDialog extends JDialog {
         PrefManager.get().setDateParsingRegexs(regExPanel.dateParsingRegexs.getModel());
         PrefManager.get().setMillisTimeStamp(regExPanel.isMillisTimeStamp.isSelected());
         PrefManager.get().setUseGTKLF(generalPanel.useGTKLF.isSelected());
+        PrefManager.get().setJDK16DefaultParsing(regExPanel.isJDK16DefaultParsing.isSelected());
         PrefManager.get().setMaxLogfileSize(Integer.parseInt(generalPanel.maxLogfileSizeField.getText()));
         dispose();
     }
@@ -186,6 +188,7 @@ public class PreferencesDialog extends JDialog {
     public class RegExPanel extends JPanel implements ActionListener {
         JComboBox dateParsingRegexs;
         JCheckBox isMillisTimeStamp;
+        JCheckBox isJDK16DefaultParsing;
         JButton clearButton;
         String lastSelectedItem = null;
         
@@ -206,11 +209,19 @@ public class PreferencesDialog extends JDialog {
             
             add(layoutPanel,BorderLayout.CENTER);
             
+            JPanel lowerPanel = new JPanel(new BorderLayout());
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             isMillisTimeStamp = new JCheckBox();
             layoutPanel.add(new JLabel("Parsed timestamp is a long representing msecs since 1970"));
             layoutPanel.add(isMillisTimeStamp);
-            add(layoutPanel,BorderLayout.SOUTH);
+            lowerPanel.add(layoutPanel,BorderLayout.NORTH);
+            
+            layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            isJDK16DefaultParsing = new JCheckBox();
+            layoutPanel.add(new JLabel("Perform Parsing for Default Thread Dump Timestamps of Sun JDK 1.6"));
+            layoutPanel.add(isJDK16DefaultParsing);
+            lowerPanel.add(layoutPanel,BorderLayout.CENTER);
+            add(lowerPanel, BorderLayout.SOUTH);
         }
         
         public void actionPerformed(ActionEvent e) {

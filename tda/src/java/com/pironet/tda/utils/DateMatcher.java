@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DateMatcher.java,v 1.3 2008-01-15 14:42:54 irockel Exp $
+ * $Id: DateMatcher.java,v 1.4 2008-01-16 14:33:26 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -71,8 +71,12 @@ public class DateMatcher {
             if(getRegexPattern() == null) {
                 setRegexPattern(Pattern.compile(PrefManager.get().getDateParsingRegex().trim()));
             }
-            Matcher m = defaultPattern.matcher(line);
-            if(m.matches()) {
+            
+            Matcher m = null;
+            if(PrefManager.get().getJDK16DefaultParsing()) {
+                m = defaultPattern.matcher(line);
+            }
+            if(m != null && m.matches()) {
                 setDefaultMatches(true);
                 matched = m;
             } else {

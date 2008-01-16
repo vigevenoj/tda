@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.24 2008-01-16 11:47:51 irockel Exp $
+ * $Id: PrefManager.java,v 1.25 2008-01-16 14:33:26 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -154,6 +154,14 @@ public class PrefManager {
     
     public void setForceLoggcLoading(boolean force) {
         toolPrefs.putBoolean("forceLoggcLoading", force);
+    }
+    
+    public boolean getJDK16DefaultParsing() {
+        return(toolPrefs.getBoolean("jdk16DefaultParsing", true));
+    }
+    
+    public void setJDK16DefaultParsing(boolean defaultParsing) {
+        toolPrefs.putBoolean("jdk16DefaultParsing", defaultParsing);
     }
     
     public boolean getShowToolbar() {
