@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.156 2008-01-17 09:29:57 irockel Exp $
+ * $Id: TDA.java,v 1.157 2008-01-17 09:55:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -477,6 +477,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             int selectValue = 0;
             if ((selectValue == 0) && (file.exists())) {
                 try {
+                    resetMainPanel();
                     loadSession(file, false);
                 } catch (IOException ex) {
                     ex.printStackTrace();
