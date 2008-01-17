@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.157 2008-01-17 09:55:51 irockel Exp $
+ * $Id: TDA.java,v 1.158 2008-01-17 10:47:45 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -772,7 +772,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
 
             public void valueChanged(TreeSelectionEvent e) {
                 getMainMenu().getCloseMenuItem().setEnabled(e.getPath() != null);
-                getMainMenu().getCloseToolBarButton().setEnabled(e.getPath() != null);
+                if(getMainMenu().getCloseToolBarButton() != null) {
+                    getMainMenu().getCloseToolBarButton().setEnabled(e.getPath() != null);
+                }
                 // reset right pane of the top view:
                 
                 if(emptyView == null) {
