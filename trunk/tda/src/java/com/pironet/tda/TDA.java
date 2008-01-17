@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.155 2008-01-16 16:45:55 irockel Exp $
+ * $Id: TDA.java,v 1.156 2008-01-17 09:29:57 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -110,6 +110,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -136,6 +138,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private JEditorPane htmlPane;
     private JEditTextArea jeditPane;
     protected JTree tree;
+    protected DefaultTreeModel treeModel;
     private JSplitPane splitPane;
     protected JSplitPane topSplitPane;
     private DumpStore dumpStore;
@@ -710,7 +713,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     protected void createTree() {
         //Create a tree that allows multiple selection at a time.
         if(topNodes.size() == 1) {
-            tree = new JTree((DefaultMutableTreeNode) topNodes.get(0));
+            treeModel = new DefaultTreeModel((DefaultMutableTreeNode) topNodes.get(0));
+            tree = new JTree(treeModel);
             tree.setRootVisible(!runningAsJConsolePlugin);
             addTreeListener(tree);
             if(!runningAsJConsolePlugin && !runningAsNetbeansPlugin) {
@@ -718,6 +722,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             }
         } else {
             DefaultMutableTreeNode root = new DefaultMutableTreeNode("Thread Dump Nodes");
+            treeModel = new DefaultTreeModel(root);
             for(int i = 0; i < topNodes.size(); i++) {
                 root.add((DefaultMutableTreeNode) topNodes.get(i));
             }
@@ -725,7 +730,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             tree.setRootVisible(false);
             addTreeListener(tree);
             if(!runningAsJConsolePlugin && !runningAsNetbeansPlugin) {
-                frame.setTitle(frame.getTitle() + " ...");
+                if(!frame.getTitle().endsWith("...")) {
+                    frame.setTitle(frame.getTitle() + " ...");
+                }
             }
         }
         
