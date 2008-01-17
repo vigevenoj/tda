@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TableCategory.java,v 1.5 2008-01-16 16:30:50 irockel Exp $
+ * $Id: TableCategory.java,v 1.6 2008-01-17 09:55:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -39,7 +39,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @author irockel
  */
 public class TableCategory extends AbstractCategory {
-    private JTable filteredTable;
+    private transient JTable filteredTable;
     
     /** 
      * Creates a new instance of TreeCategory 
