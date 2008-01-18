@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.158 2008-01-17 10:47:45 irockel Exp $
+ * $Id: TDA.java,v 1.159 2008-01-18 09:51:00 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -2146,7 +2146,6 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                         File[] files = new File[fileStrings.length];
                         for (int j = 0; j < fileStrings.length; j++) {
                             files[j] = new File(fileStrings[j].substring(7));
-                            System.out.println("files=" + files[j]);
                         }
                         openFiles(files, false);
                         dtde.dropComplete(true);
