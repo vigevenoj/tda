@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LongThreadDialog.java,v 1.7 2008-01-16 16:45:55 irockel Exp $
+ * $Id: LongThreadDialog.java,v 1.8 2008-01-19 07:21:22 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -57,7 +57,7 @@ public class LongThreadDialog extends JDialog {
      * Creates a new instance of PreferencesDialog 
      */
     public LongThreadDialog(TDA owner, TreePath[] dumps, DefaultMutableTreeNode top, Map threadDumps) {        
-        super(owner.frame, "Detect long running Threads");
+        super(TDA.frame, "Detect long running Threads");
         backRef = owner;
         this.dumps = dumps;
         this.threadDumps = threadDumps;
@@ -86,8 +86,8 @@ public class LongThreadDialog extends JDialog {
                     divider = backRef.topSplitPane.getDividerLocation();
                 }
 
-                if(backRef.frame != null) {
-                    backRef.frame.setEnabled(true);
+                if(TDA.frame != null) {
+                    TDA.frame.setEnabled(true);
                 }
                 DumpParserFactory.get().getCurrentDumpParser().findLongRunningThreads(top, threadDumps, dumps, Integer.parseInt(settingsPanel.minOccurenceField.getText()), settingsPanel.threadRegExField.getText());
                 backRef.createTree();
@@ -103,8 +103,8 @@ public class LongThreadDialog extends JDialog {
         
         cancelButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(backRef.frame != null) {
-                    backRef.frame.setEnabled(true);
+                if(TDA.frame != null) {
+                    TDA.frame.setEnabled(true);
                 }
                 dispose();
             }
