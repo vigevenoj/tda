@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.161 2008-01-19 07:21:22 irockel Exp $
+ * $Id: TDA.java,v 1.162 2008-01-19 07:27:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -149,7 +149,6 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
     private FilterDialog filterDialog;
-    private LongThreadDialog longThreadDialog;
     private JTable histogramTable;
     private JMenuItem showDumpMenuItem;
     boolean runningAsJConsolePlugin;
@@ -1939,13 +1938,11 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                     "Error", JOptionPane.ERROR_MESSAGE);
             
         } else {
-            if(longThreadDialog == null) {
-                DefaultMutableTreeNode mergeRoot = fetchTop(tree.getSelectionPath());
-                Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
-                
-                longThreadDialog = new LongThreadDialog(this, paths, mergeRoot, dumpMap);
-                longThreadDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-            }
+            DefaultMutableTreeNode mergeRoot = fetchTop(tree.getSelectionPath());
+            Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
+
+            LongThreadDialog longThreadDialog = new LongThreadDialog(this, paths, mergeRoot, dumpMap);
+            longThreadDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             
             if(frame != null) {
                 frame.setEnabled(false);
