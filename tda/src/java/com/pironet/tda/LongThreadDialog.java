@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LongThreadDialog.java,v 1.8 2008-01-19 07:21:22 irockel Exp $
+ * $Id: LongThreadDialog.java,v 1.9 2008-01-19 07:35:52 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -62,6 +62,7 @@ public class LongThreadDialog extends JDialog {
         this.dumps = dumps;
         this.threadDumps = threadDumps;
         this.top = top;
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout());
         initPanel();
         setLocationRelativeTo(owner);
