@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.162 2008-01-19 07:27:50 irockel Exp $
+ * $Id: TDA.java,v 1.163 2008-01-19 07:35:52 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1942,11 +1942,11 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
 
             LongThreadDialog longThreadDialog = new LongThreadDialog(this, paths, mergeRoot, dumpMap);
-            longThreadDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             
             if(frame != null) {
                 frame.setEnabled(false);
             }
+            
             //Display the window.
             longThreadDialog.reset();
             longThreadDialog.pack();
