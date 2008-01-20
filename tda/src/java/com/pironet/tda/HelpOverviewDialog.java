@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewDialog.java,v 1.10 2008-01-11 10:19:05 irockel Exp $
+ * $Id: HelpOverviewDialog.java,v 1.11 2008-01-20 12:00:40 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -59,7 +59,11 @@ public class HelpOverviewDialog extends JDialog {
         super(owner, title);
         setFile(file);
         if(icon != null) {
-            this.setIconImage(icon);
+            try {
+                this.setIconImage(icon);
+            } catch (NoSuchMethodError nsme) {
+            // ignore, for 1.4 backward compatibility
+            }
         }
         getContentPane().setLayout(new BorderLayout());
         initPanel();
