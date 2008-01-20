@@ -15,6 +15,7 @@ Changes from 1.5 are:
   transfered from hexadecimal to decimal.
 * Date parsing for 1.6 time stamps is added as default regex.
 * Bugfixed and reworked long running thread detection.
+* Extended Help Overview.
 * Bugfixing.
 
 Changes from 1.4 are:
