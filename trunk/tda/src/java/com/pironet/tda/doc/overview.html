@@ -184,9 +184,13 @@ marked thread dumps in the main tree. </p>
 <br><i>Long running threads detection</i></center></p>
 
 <p>The analysis is quite simple though, it just compares the thread names and if they match
-adds the thread to the result. A regular expression can be specified for filtering just the interesting threads. Additionally the usual 
-filters are applied to the result view of the analysis to filter out uninteresting threads. For a useful result appropriate filters should
+adds the thread to the result. A regular expression can be specified for filtering just the interesting threads. The usual 
+filters are also applied to the result view of the analysis to filter out uninteresting threads. For a useful result appropriate filters should
 be specified to filter out all sleeping and uninteresting threads.</p>
+
+<p>Note, that the long running threads detection is a bit picky about the selected nodes for the detection. You should only select thread dump
+root nodes otherwise the detection might through an exception as it doesn't know what to do with the selected nodes. You also always should select
+nodes from one VM run, otherwise you might get quite weird results because the detection matched threads from different VM runs.</p>
 
 <p><a name="peakthreads"><h3>Heavy Load Analysis</h3></a>
 If a system is under heavy load, several thread dumps should be taken (e.g. every two minutes over a short period). The threads all have a 
