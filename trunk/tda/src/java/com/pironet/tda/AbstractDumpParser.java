@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.13 2008-01-16 16:19:04 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.14 2008-01-20 08:41:56 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -155,12 +155,36 @@ public abstract class AbstractDumpParser implements DumpParser {
             }
         }
         
-        StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System " +
-                "><b><font face=System> " + 
-                ((Category) catMerge.getUserObject()).getName() + " </b></td></tr><hr/><br/>" +
+        ((Category) catMerge.getUserObject()).setInfo(getStatInfo(keys, prefix, minOccurence, threadCount));
+        
+    }
+    
+    /**
+     * generate statistical information concerning the merge on long running thread detection.
+     * @param keys the dump node keys
+     * @param prefix the prefix of the run (either "Merge" or "Long running threads detection"
+     * @param minOccurence the minimum occurence of threads
+     * @param threadCount the overall thread count of this run.
+     * @return
+     */
+    private String getStatInfo(Vector keys, String prefix, int minOccurence, int threadCount) {
+        StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System><b><font face=System> "); 
+        
+        statData.append("<b>" + prefix + "</b><hr/><p><i>");
+        for(int i = 0; i < keys.size(); i++) {
+            statData.append(keys.get(i));
+            if(i < keys.size() -1) {
+                statData.append(", ");
+            }
+        }
+        statData.append("</i></p><br/>" +
                 "<table border=0><tr bgcolor=\"#dddddd\"><td><font face=System " +
                 ">Overall Thread Count</td><td width=\"150\"></td><td><b><font face=System>");
         statData.append(threadCount);
+        statData.append("</b></td></tr>");
+        statData.append("<tr bgcolor=\"#eeeeee\"><td><font face=System " +
+                ">Minimum Occurence of threads</td><td width=\"150\"></td><td><b><font face=System>");
+        statData.append(minOccurence);
         statData.append("</b></td></tr>");
         
         if(threadCount == 0) {
@@ -173,8 +197,7 @@ public abstract class AbstractDumpParser implements DumpParser {
                 
         statData.append("</table>");
         
-        ((Category) catMerge.getUserObject()).setInfo(statData.toString());
-        
+        return statData.toString();
     }
     
     /**
