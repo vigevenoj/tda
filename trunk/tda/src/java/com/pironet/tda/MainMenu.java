@@ -17,12 +17,13 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.27 2008-01-11 10:19:06 irockel Exp $
+ * $Id: MainMenu.java,v 1.28 2008-01-23 15:26:30 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.PrefManager;
+import com.pironet.tda.utils.ResourceManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
@@ -141,9 +142,9 @@ public class MainMenu extends JMenuBar {
         JMenuItem menuItem;
         JMenu menu;
         //Build the first menu.
-        menu = new JMenu("File");
+        menu = new JMenu(ResourceManager.translate("file.menu"));
         menu.setMnemonic(KeyEvent.VK_F);
-        menu.getAccessibleContext().setAccessibleDescription("File Menu");
+        menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("file.menu.description"));
         menu.addMenuListener(listener);
         
         //a group of JMenuItems
@@ -224,10 +225,9 @@ public class MainMenu extends JMenuBar {
     private JMenu createViewMenu() {
         JMenuItem menuItem;
         JMenu menu;
-        menu = new JMenu("View");
+        menu = new JMenu(ResourceManager.translate("view.menu"));
         menu.setMnemonic(KeyEvent.VK_V);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "View Menu");
+        menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("view.menu.description"));
         add(menu);
         
         expandAllMenuItem = new JMenuItem("Expand all Dump nodes",
@@ -267,10 +267,9 @@ public class MainMenu extends JMenuBar {
     private JMenu createToolsMenu() {
         JMenuItem menuItem;
         JMenu menu;
-        menu = new JMenu("Tools");
+        menu = new JMenu(ResourceManager.translate("tools.menu"));
         menu.setMnemonic(KeyEvent.VK_T);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "Tools Menu");
+        menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("tools.menu.description"));
         add(menu);
         
         longMenuItem = new JMenuItem("Find long running threads...",
@@ -303,10 +302,10 @@ public class MainMenu extends JMenuBar {
     private JMenu createHelpMenu() {
         JMenuItem menuItem;
         JMenu menu;
-        menu = new JMenu("Help");
+        menu = new JMenu(ResourceManager.translate("help.menu"));
         menu.setMnemonic(KeyEvent.VK_H);
         menu.getAccessibleContext().setAccessibleDescription(
-                "Help Menu");
+                ResourceManager.translate("help.menu.description"));
         
         menuItem = new JMenuItem("Overview",
                 KeyEvent.VK_A);
