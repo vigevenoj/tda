@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.28 2008-01-23 15:26:30 irockel Exp $
+ * $Id: MainMenu.java,v 1.29 2008-01-24 09:49:12 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -143,32 +143,34 @@ public class MainMenu extends JMenuBar {
         JMenu menu;
         //Build the first menu.
         menu = new JMenu(ResourceManager.translate("file.menu"));
-        menu.setMnemonic(KeyEvent.VK_F);
+        menu.setMnemonic(KeyStroke.getKeyStroke(ResourceManager.translate("file.menu.mnem")).getKeyCode());
         menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("file.menu.description"));
         menu.addMenuListener(listener);
         
         //a group of JMenuItems
-        menuItem = new JMenuItem("Open...",
-                KeyEvent.VK_O);
+        menuItem = new JMenuItem(ResourceManager.translate("file.open"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.open.mnem")).getKeyCode());
         menuItem.setIcon(TDA.createImageIcon("FileOpen.gif"));
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_O, ActionEvent.ALT_MASK));
+                ResourceManager.translate("file.open.accel")));
         menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open Log File with dumps.");
+                ResourceManager.translate("file.open.description"));
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         
-        closeMenuItem = new JMenuItem("Close...");
+        closeMenuItem = new JMenuItem(ResourceManager.translate("file.close"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.close.mnem")).getKeyCode());
         closeMenuItem.setIcon(TDA.createImageIcon("CloseFile.gif"));
         closeMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Close currently selected dump file.");
+                ResourceManager.translate("file.open.description"));
         closeMenuItem.addActionListener(listener);
         closeMenuItem.setEnabled(false);
         menu.add(closeMenuItem);
         
-        closeAllMenuItem = new JMenuItem("Close all...");
+        closeAllMenuItem = new JMenuItem(ResourceManager.translate("file.closeall"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.closeall.mnem")).getKeyCode());
         closeAllMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Close all open dump files.");
+                ResourceManager.translate("file.closeall.description"));
         closeAllMenuItem.addActionListener(listener);
         closeAllMenuItem.setEnabled(false);
         menu.add(closeAllMenuItem);
@@ -177,17 +179,18 @@ public class MainMenu extends JMenuBar {
         menu.add(recentFilesMenu);
         
         menu.addSeparator();
-        saveSessionMenuItem = new JMenuItem("Save Session...",
-                KeyEvent.VK_S);
+        saveSessionMenuItem = new JMenuItem(ResourceManager.translate("file.savesession"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.savesession.mnem")).getKeyCode());
         saveSessionMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Save the current session of loaded log files");
+                ResourceManager.translate("file.savesession.description"));
         saveSessionMenuItem.addActionListener(listener);
         menu.add(saveSessionMenuItem);
         saveSessionMenuItem.setEnabled(false);
-        menuItem = new JMenuItem("Open Session...",
-                KeyEvent.VK_P);
+        
+        menuItem = new JMenuItem(ResourceManager.translate("file.opensession"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.opensession.mnem")).getKeyCode());
         menuItem.getAccessibleContext().setAccessibleDescription(
-                "Open a stored session of logfiles");
+                ResourceManager.translate("file.opensession.description"));
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         
@@ -196,22 +199,22 @@ public class MainMenu extends JMenuBar {
         
         menu.addSeparator();
 
-        menuItem = new JMenuItem("Preferences",
-                KeyEvent.VK_P);
+        menuItem = new JMenuItem(ResourceManager.translate("file.preferences"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.preferences.mnem")).getKeyCode());
         menuItem.setIcon(TDA.createImageIcon("Preferences.gif"));
         menuItem.getAccessibleContext().setAccessibleDescription(
-                "Set Preferences");
+                ResourceManager.translate("file.preferences.description"));
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         
         menu.addSeparator();
 
-        menuItem = new JMenuItem("Exit TDA",
-                KeyEvent.VK_X);
+        menuItem = new JMenuItem(ResourceManager.translate("file.exit"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.exit.mnem")).getKeyCode());
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_X, ActionEvent.ALT_MASK));
+                ResourceManager.translate("file.exit.accel")));
         menuItem.getAccessibleContext().setAccessibleDescription(
-                "Exit TDA");
+                ResourceManager.translate("file.exit.description"));
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         
@@ -226,7 +229,7 @@ public class MainMenu extends JMenuBar {
         JMenuItem menuItem;
         JMenu menu;
         menu = new JMenu(ResourceManager.translate("view.menu"));
-        menu.setMnemonic(KeyEvent.VK_V);
+        menu.setMnemonic(KeyStroke.getKeyStroke(ResourceManager.translate("view.menu.mnem")).getKeyCode());
         menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("view.menu.description"));
         add(menu);
         
@@ -268,7 +271,7 @@ public class MainMenu extends JMenuBar {
         JMenuItem menuItem;
         JMenu menu;
         menu = new JMenu(ResourceManager.translate("tools.menu"));
-        menu.setMnemonic(KeyEvent.VK_T);
+        menu.setMnemonic(KeyStroke.getKeyStroke(ResourceManager.translate("tools.menu.mnem")).getKeyCode());
         menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("tools.menu.description"));
         add(menu);
         
@@ -303,7 +306,7 @@ public class MainMenu extends JMenuBar {
         JMenuItem menuItem;
         JMenu menu;
         menu = new JMenu(ResourceManager.translate("help.menu"));
-        menu.setMnemonic(KeyEvent.VK_H);
+        menu.setMnemonic(KeyStroke.getKeyStroke(ResourceManager.translate("help.menu.mnem")).getKeyCode());
         menu.getAccessibleContext().setAccessibleDescription(
                 ResourceManager.translate("help.menu.description"));
         
@@ -348,9 +351,9 @@ public class MainMenu extends JMenuBar {
     private void createRecentFileMenu() {
         String[] recentFiles = PrefManager.get().getRecentFiles();
         
+        recentFilesMenu = new JMenu(ResourceManager.translate("file.recentfiles"));
+        recentFilesMenu.setMnemonic(KeyStroke.getKeyStroke(ResourceManager.translate("file.recentfiles.mnem")).getKeyCode());
         if(recentFiles.length > 1) {
-            recentFilesMenu = new JMenu("Open recent file");
-            
             for(int i = 1; i < recentFiles.length; i++) {
                 if(!recentFiles[i].equals("")) {
                     JMenuItem item = new JMenuItem(recentFiles[i]);
@@ -359,7 +362,6 @@ public class MainMenu extends JMenuBar {
                 }
             }
         } else {
-            recentFilesMenu = new JMenuItem("Open recent file");
             recentFilesMenu.setEnabled(false);
         }
     }
@@ -370,8 +372,9 @@ public class MainMenu extends JMenuBar {
     private void createRecentSessionsMenu() {
         String[] recentFiles = PrefManager.get().getRecentSessions();
         
+        recentSessionsMenu = new JMenu(ResourceManager.translate("file.recentsessions"));
+        recentSessionsMenu.setMnemonic(KeyStroke.getKeyStroke(ResourceManager.translate("file.recentsessions.mnem")).getKeyCode());
         if(recentFiles.length > 1) {
-            recentSessionsMenu = new JMenu("Open recent session");
             
             for(int i = 1; i < recentFiles.length; i++) {
                 if(!recentFiles[i].equals("")) {
@@ -381,7 +384,6 @@ public class MainMenu extends JMenuBar {
                 }
             }
         } else {
-            recentSessionsMenu = new JMenuItem("Open recent session");
             recentSessionsMenu.setEnabled(false);
         }
     }
