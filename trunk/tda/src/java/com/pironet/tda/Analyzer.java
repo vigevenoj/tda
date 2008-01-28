@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Analyzer.java,v 1.2 2007-12-20 09:03:33 irockel Exp $
+ * $Id: Analyzer.java,v 1.3 2008-01-28 09:29:34 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -93,8 +93,8 @@ public class Analyzer implements Serializable {
         if ((threadCount > 0) && (overallThreadsWaitingWithoutLocks / (threadCount / 100.0) > 50.0)) {
             statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
             statData.append("<tr bgcolor=\"#cccccc\"><td colspan=2><font face=System " +
-                    "<p>" + (int) (overallThreadsWaitingWithoutLocks / (threadCount / 100.0)) + "% of all threads are waiting for a monitor without a application");
-            statData.append("thread holding it.<br> This indicates a congestion. It is very likely the garbage collector is running");
+                    "<p>" + (int) (overallThreadsWaitingWithoutLocks / (threadCount / 100.0)) + "% of all threads are waiting for a monitor without a application ");
+            statData.append("thread holding it.<br> This indicates a congestion. It is very likely the garbage collector is running ");
             statData.append("and is blocking the monitors.</p<br>");
             statData.append("You should check the monitors without locking threads for more information on the blocked threads.<br>");
             statData.append("You also should analyze the garbage collector behaviour. Go to the ");
