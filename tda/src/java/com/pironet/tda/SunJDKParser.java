@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.33 2008-01-16 16:19:04 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.34 2008-02-06 09:24:02 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Matcher;
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
@@ -91,280 +92,290 @@ public class SunJDKParser extends AbstractDumpParser {
             nextDump = null;
             return(tmpDump);
         }
+        boolean retry = false;
         
-        DefaultMutableTreeNode threadDump = null;
-        ThreadDumpInfo overallTDI = null;
-        DefaultMutableTreeNode catMonitors = null;
-        DefaultMutableTreeNode catMonitorsLocks = null;
-        DefaultMutableTreeNode catThreads = null;
-        DefaultMutableTreeNode catLocking = null;
-        DefaultMutableTreeNode catSleeping = null;
-        DefaultMutableTreeNode catWaiting = null;
-        
-        try {
-            Map threads = new HashMap();
-            overallTDI = new ThreadDumpInfo("Dump No. " + counter++, 0);
-            if(withCurrentTimeStamp) {
-                overallTDI.setStartTime((new Date(System.currentTimeMillis())).toString());
-            }
-            threadDump = new DefaultMutableTreeNode(overallTDI);
+        do {
+            DefaultMutableTreeNode threadDump = null;
+            ThreadDumpInfo overallTDI = null;
+            DefaultMutableTreeNode catMonitors = null;
+            DefaultMutableTreeNode catMonitorsLocks = null;
+            DefaultMutableTreeNode catThreads = null;
+            DefaultMutableTreeNode catLocking = null;
+            DefaultMutableTreeNode catSleeping = null;
+            DefaultMutableTreeNode catWaiting = null;
             
-            catThreads = new DefaultMutableTreeNode(new TableCategory("Threads", IconFactory.THREADS));
-            threadDump.add(catThreads);
-            
-            catWaiting = new DefaultMutableTreeNode(new TableCategory("Threads waiting for Monitors", IconFactory.THREADS_WAITING));
-            
-            catSleeping = new DefaultMutableTreeNode(new TableCategory("Threads sleeping on Monitors", IconFactory.THREADS_SLEEPING));
+            try {
+                Map threads = new HashMap();
+                overallTDI = new ThreadDumpInfo("Dump No. " + counter++, 0);
+                if (withCurrentTimeStamp) {
+                    overallTDI.setStartTime((new Date(System.currentTimeMillis())).toString());
+                }
+                threadDump = new DefaultMutableTreeNode(overallTDI);
 
-            catLocking = new DefaultMutableTreeNode(new TableCategory("Threads locking Monitors", IconFactory.THREADS_LOCKING));
-            
-            // create category for monitors with disabled filtering.
-            catMonitors = new DefaultMutableTreeNode(new TreeCategory("Monitors", IconFactory.MONITORS, false));
-            catMonitorsLocks = new DefaultMutableTreeNode(new TreeCategory("Monitors without locking thread", IconFactory.MONITORS_NOLOCKS, false));
-            
-            String title = null;
-            String dumpKey = null;
-            StringBuffer content = null;
-            StringBuffer lContent = null;
-            StringBuffer sContent = null;
-            StringBuffer wContent = null;
-            int threadCount = 0;
-            int waiting = 0;
-            int locking = 0;
-            int sleeping = 0;
-            boolean locked = true;
-            boolean finished = false;
-            MonitorMap mmap = new MonitorMap();
-            Stack monitorStack = new Stack();
-            long startTime = 0;
-            int singleLineCounter = 0;
-            Matcher matched = getDm().getLastMatch();
-            
-            while(getBis().ready() && !finished) {
-                String line = getBis().readLine();
-                lineCounter++;
-                singleLineCounter++;
-                if(locked) {
-                    if(line.indexOf("Full thread dump") >= 0) {
-                        locked = false;
-                        if(!withCurrentTimeStamp) {
-                            overallTDI.setLogLine(lineCounter);
-                            
-                            if (startTime != 0) {
-                                startTime = 0;
-                            } else if (matched != null && matched.matches()) {
+                catThreads = new DefaultMutableTreeNode(new TableCategory("Threads", IconFactory.THREADS));
+                threadDump.add(catThreads);
 
-                                String parsedStartTime = matched.group(1);
-                                if (!getDm().isDefaultMatches() && isMillisTimeStamp()) {
-                                    try {
-                                        // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=2342342340)
-                                        if (parsedStartTime.length() < 13) {
-                                            startTime = Long.parseLong(parsedStartTime) * (long) Math.pow(10, 13 - parsedStartTime.length());
-                                        } else {
-                                            startTime = Long.parseLong(parsedStartTime);
+                catWaiting = new DefaultMutableTreeNode(new TableCategory("Threads waiting for Monitors", IconFactory.THREADS_WAITING));
+
+                catSleeping = new DefaultMutableTreeNode(new TableCategory("Threads sleeping on Monitors", IconFactory.THREADS_SLEEPING));
+
+                catLocking = new DefaultMutableTreeNode(new TableCategory("Threads locking Monitors", IconFactory.THREADS_LOCKING));
+
+                // create category for monitors with disabled filtering.
+                catMonitors = new DefaultMutableTreeNode(new TreeCategory("Monitors", IconFactory.MONITORS, false));
+                catMonitorsLocks = new DefaultMutableTreeNode(new TreeCategory("Monitors without locking thread", IconFactory.MONITORS_NOLOCKS, false));
+
+                String title = null;
+                String dumpKey = null;
+                StringBuffer content = null;
+                StringBuffer lContent = null;
+                StringBuffer sContent = null;
+                StringBuffer wContent = null;
+                int threadCount = 0;
+                int waiting = 0;
+                int locking = 0;
+                int sleeping = 0;
+                boolean locked = true;
+                boolean finished = false;
+                MonitorMap mmap = new MonitorMap();
+                Stack monitorStack = new Stack();
+                long startTime = 0;
+                int singleLineCounter = 0;
+                Matcher matched = getDm().getLastMatch();
+
+                while (getBis().ready() && !finished) {
+                    String line = getBis().readLine();
+                    lineCounter++;
+                    singleLineCounter++;
+                    if (locked) {
+                        if (line.indexOf("Full thread dump") >= 0) {
+                            locked = false;
+                            if (!withCurrentTimeStamp) {
+                                overallTDI.setLogLine(lineCounter);
+
+                                if (startTime != 0) {
+                                    startTime = 0;
+                                } else if (matched != null && matched.matches()) {
+
+                                    String parsedStartTime = matched.group(1);
+                                    if (!getDm().isDefaultMatches() && isMillisTimeStamp()) {
+                                        try {
+                                            // the factor is a hack for a bug in oc4j timestamp printing (pattern timeStamp=2342342340)
+                                            if (parsedStartTime.length() < 13) {
+                                                startTime = Long.parseLong(parsedStartTime) * (long) Math.pow(10, 13 - parsedStartTime.length());
+                                            } else {
+                                                startTime = Long.parseLong(parsedStartTime);
+                                            }
+                                        } catch (NumberFormatException nfe) {
+                                            startTime = 0;
                                         }
-                                    } catch (NumberFormatException nfe) {
-                                        startTime = 0;
+                                        if (startTime > 0) {
+                                            overallTDI.setStartTime((new Date(startTime)).toString());
+                                        }
+                                    } else {
+                                        overallTDI.setStartTime(parsedStartTime);
                                     }
-                                    if(startTime > 0) {
-                                        overallTDI.setStartTime((new Date(startTime)).toString());
-                                    }
-                                } else {
-                                    overallTDI.setStartTime(parsedStartTime);
+                                    parsedStartTime = null;
+                                    matched = null;
+                                    getDm().resetLastMatch();
                                 }
-                                parsedStartTime = null;
-                                matched = null;
-                                getDm().resetLastMatch();
+                            }
+                            dumpKey = overallTDI.getName();
+                        } else if (!getDm().isPatternError() && (getDm().getRegexPattern() != null)) {
+                            Matcher m = getDm().checkForDateMatch(line);
+                            if (m != null) {
+                                matched = m;
                             }
                         }
-                        dumpKey = overallTDI.getName();
-                    } else if(!getDm().isPatternError() && (getDm().getRegexPattern() != null)) {
-                        Matcher m = getDm().checkForDateMatch(line);
-                        if(m != null) {
-                            matched = m;
+                    } else {
+                        if (line.startsWith("\"")) {
+                            if (title != null) {
+                                threads.put(title, content.toString());
+                                content.append("</pre></pre>");
+                                addToCategory(catThreads, title, null, content, singleLineCounter, true);
+                                threadCount++;
+                            }
+                            if (wContent != null) {
+                                wContent.append("</b><hr>");
+                                addToCategory(catWaiting, title, wContent, content, singleLineCounter, true);
+                                wContent = null;
+                                waiting++;
+                            }
+                            if (sContent != null) {
+                                sContent.append("</b><hr>");
+                                addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
+                                sContent = null;
+                                sleeping++;
+                            }
+                            if (lContent != null) {
+                                lContent.append("</b><hr>");
+                                addToCategory(catLocking, title, lContent, content, singleLineCounter, true);
+                                lContent = null;
+                                locking++;
+                            }
+                            singleLineCounter = 0;
+                            while (!monitorStack.empty()) {
+                                mmap.parseAndAddThread((String) monitorStack.pop(), title, content.toString());
+                            }
+
+                            title = line;
+                            content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
+                            content.append(line);
+                            content.append("\n");
+                        } else if (line.indexOf("at ") >= 0) {
+                            content.append(line);
+                            content.append("\n");
+                        } else if (line.indexOf("java.lang.Thread.State") >= 0) {
+                            content.append(line);
+                            content.append("\n");
+                        } else if (line.indexOf("Locked ownable synchronizers:") >= 0) {
+                            content.append(line);
+                            content.append("\n");
+                        } else if (line.indexOf("- waiting on") >= 0) {
+                            String newLine = linkifyMonitor(line);
+                            content.append(newLine);
+                            if (sContent == null) {
+                                sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
+                            }
+                            sContent.append(newLine);
+                            monitorStack.push(line);
+                            sContent.append("\n");
+                            content.append("\n");
+                        } else if (line.indexOf("- waiting to") >= 0) {
+                            String newLine = linkifyMonitor(line);
+                            content.append(newLine);
+                            if (wContent == null) {
+                                wContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
+                            }
+                            wContent.append(newLine);
+                            monitorStack.push(line);
+                            wContent.append("\n");
+                            content.append("\n");
+                        } else if (line.indexOf("- locked <") >= 0) {
+                            String newLine = linkifyMonitor(line);
+                            content.append(newLine);
+                            if (lContent == null) {
+                                lContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
+                            }
+                            lContent.append(newLine);
+                            monitorStack.push(line);
+                            lContent.append("\n");
+                            content.append("\n");
+                        } else if (line.indexOf("- ") >= 0) {
+                            content.append(line);
+                            content.append("\n");
                         }
-                    }
-                } else {
-                    if(line.startsWith("\"")) {
-                        if(title != null) {
-                            threads.put(title, content.toString());
-                            content.append("</pre></pre>");
-                            addToCategory(catThreads, title, null, content, singleLineCounter, true);
-                            threadCount++;
-                        }
-                        if(wContent != null) {
-                            wContent.append("</b><hr>");
-                            addToCategory(catWaiting, title, wContent, content, singleLineCounter, true);
-                            wContent = null;
-                            waiting++;
-                        }
-                        if(sContent != null) {
-                            sContent.append("</b><hr>");
-                            addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
-                            sContent = null;
-                            sleeping++;
-                        }
-                        if(lContent != null) {
-                            lContent.append("</b><hr>");
-                            addToCategory(catLocking, title, lContent, content, singleLineCounter, true);
-                            lContent = null;
-                            locking++;
-                        }
-                        singleLineCounter = 0;
-                        while(!monitorStack.empty()) {
-                            mmap.parseAndAddThread((String)monitorStack.pop(), title, content.toString());
-                        }
-                        
-                        title = line;
-                        content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
-                        content.append(line);
-                        content.append("\n");
-                    } else if (line.indexOf("at ") >= 0) {
-                        content.append(line);
-                        content.append("\n");
-                    } else if (line.indexOf("java.lang.Thread.State") >= 0) {
-                        content.append(line);
-                        content.append("\n");
-                    } else if (line.indexOf("Locked ownable synchronizers:") >= 0) {
-                        content.append(line);
-                        content.append("\n");
-                    } else if (line.indexOf("- waiting on") >= 0) {
-                        String newLine = linkifyMonitor(line);
-                        content.append(newLine);
-                        if(sContent == null) {
-                            sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
-                        }
-                        sContent.append(newLine);
-                        monitorStack.push(line);
-                        sContent.append("\n");
-                        content.append("\n");
-                    } else if (line.indexOf("- waiting to") >= 0) {
-                        String newLine = linkifyMonitor(line);
-                        content.append(newLine);
-                        if(wContent == null) {
-                            wContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
-                        }
-                        wContent.append(newLine);
-                        monitorStack.push(line);
-                        wContent.append("\n");
-                        content.append("\n");
-                    } else if (line.indexOf("- locked <") >= 0) {
-                        String newLine = linkifyMonitor(line);
-                        content.append(newLine);
-                        if(lContent == null) {
-                            lContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
-                        }
-                        lContent.append(newLine);
-                        monitorStack.push(line);
-                        lContent.append("\n");
-                        content.append("\n");
-                    } else if (line.indexOf("- ") >= 0) {
-                        content.append(line);
-                        content.append("\n");
-                    }
-                    
-                    // last thread reached?
-                    if((line.indexOf("\"Suspend Checker Thread\"") >= 0) ||
-                       (line.indexOf("\"VM Periodic Task Thread\"") >= 0) ||
-                       (line.indexOf("<EndOfDump>") >= 0)) {
-                        finished = true;
-                        getBis().mark(getMarkSize());
-                        if((checkForDeadlocks(threadDump)) == 0) {
-                            // no deadlocks found, set back original position.
-                            getBis().reset();
-                        }
-                        
-                        getBis().mark(getMarkSize());
-                        if(!(foundClassHistograms = checkForClassHistogram(threadDump))) {
-                            getBis().reset();
+
+                        // last thread reached?
+                        if ((line.indexOf("\"Suspend Checker Thread\"") >= 0) ||
+                                (line.indexOf("\"VM Periodic Task Thread\"") >= 0) ||
+                                (line.indexOf("<EndOfDump>") >= 0)) {
+                            finished = true;
+                            getBis().mark(getMarkSize());
+                            if ((checkForDeadlocks(threadDump)) == 0) {
+                                // no deadlocks found, set back original position.
+                                getBis().reset();
+                            }
+
+                            getBis().mark(getMarkSize());
+                            if (!(foundClassHistograms = checkForClassHistogram(threadDump))) {
+                                getBis().reset();
+                            }
                         }
                     }
                 }
-            }
-            // last thread
-            if(title != null) {
-                threads.put(title, content.toString());
-                content.append("</pre></pre>");
-                addToCategory(catThreads, title, null, content, singleLineCounter, true);
-                threadCount++;
-            }
-            if(wContent != null) {
-                wContent.append("</b><hr>");
-                addToCategory(catWaiting, title, null, wContent, singleLineCounter, true);
-                wContent = null;
-                waiting++;
-            }
-            if(sContent != null) {
-                sContent.append("</b><hr>");
-                addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
-                sContent = null;
-                sleeping++;
-            }
-            if(lContent != null) {
-                lContent.append("</b><hr>");
-                addToCategory(catLocking, title, null, lContent, singleLineCounter, true);
-                lContent = null;
-                locking++;
-            }
-            
-            int monitorCount = mmap.size();
-                        
-            int monitorsWithoutLocksCount = 0;
-            // dump monitors 
-            if(mmap.size() > 0) {
-                int[] result = dumpMonitors(catMonitors, catMonitorsLocks, mmap);
-                monitorsWithoutLocksCount = result[0];
-                overallTDI.setOverallThreadsWaitingWithoutLocksCount(result[1]);
-            }
-            
-            // display nodes with stuff to display
-            if(waiting > 0) {
-                overallTDI.setWaitingThreads((Category) catWaiting.getUserObject());
-                threadDump.add(catWaiting);
-            }
-            
-            if(sleeping > 0) {
-                overallTDI.setSleepingThreads((Category) catSleeping.getUserObject());
-                threadDump.add(catSleeping);
-            }
+                // last thread
+                if (title != null) {
+                    threads.put(title, content.toString());
+                    content.append("</pre></pre>");
+                    addToCategory(catThreads, title, null, content, singleLineCounter, true);
+                    threadCount++;
+                }
+                if (wContent != null) {
+                    wContent.append("</b><hr>");
+                    addToCategory(catWaiting, title, null, wContent, singleLineCounter, true);
+                    wContent = null;
+                    waiting++;
+                }
+                if (sContent != null) {
+                    sContent.append("</b><hr>");
+                    addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
+                    sContent = null;
+                    sleeping++;
+                }
+                if (lContent != null) {
+                    lContent.append("</b><hr>");
+                    addToCategory(catLocking, title, null, lContent, singleLineCounter, true);
+                    lContent = null;
+                    locking++;
+                }
 
-            if(locking > 0) {
-                overallTDI.setLockingThreads((Category) catLocking.getUserObject());
-                threadDump.add(catLocking);
+                int monitorCount = mmap.size();
+
+                int monitorsWithoutLocksCount = 0;
+                // dump monitors 
+                if (mmap.size() > 0) {
+                    int[] result = dumpMonitors(catMonitors, catMonitorsLocks, mmap);
+                    monitorsWithoutLocksCount = result[0];
+                    overallTDI.setOverallThreadsWaitingWithoutLocksCount(result[1]);
+                }
+
+                // display nodes with stuff to display
+                if (waiting > 0) {
+                    overallTDI.setWaitingThreads((Category) catWaiting.getUserObject());
+                    threadDump.add(catWaiting);
+                }
+
+                if (sleeping > 0) {
+                    overallTDI.setSleepingThreads((Category) catSleeping.getUserObject());
+                    threadDump.add(catSleeping);
+                }
+
+                if (locking > 0) {
+                    overallTDI.setLockingThreads((Category) catLocking.getUserObject());
+                    threadDump.add(catLocking);
+                }
+
+                if (monitorCount > 0) {
+                    overallTDI.setMonitors((Category) catMonitors.getUserObject());
+                    threadDump.add(catMonitors);
+                }
+
+                if (monitorsWithoutLocksCount > 0) {
+                    overallTDI.setMonitorsWithoutLocks((Category) catMonitorsLocks.getUserObject());
+                    threadDump.add(catMonitorsLocks);
+                }
+                overallTDI.setThreads((Category) catThreads.getUserObject());
+
+                ((Category) catThreads.getUserObject()).setName(((Category) catThreads.getUserObject()) + " (" + threadCount + " Threads overall)");
+                ((Category) catWaiting.getUserObject()).setName(((Category) catWaiting.getUserObject()) + " (" + waiting + " Threads waiting)");
+                ((Category) catSleeping.getUserObject()).setName(((Category) catSleeping.getUserObject()) + " (" + sleeping + " Threads sleeping)");
+                ((Category) catLocking.getUserObject()).setName(((Category) catLocking.getUserObject()) + " (" + locking + " Threads locking)");
+                ((Category) catMonitors.getUserObject()).setName(((Category) catMonitors.getUserObject()) + " (" + monitorCount + " Monitors)");
+                ((Category) catMonitorsLocks.getUserObject()).setName(((Category) catMonitorsLocks.getUserObject()) + " (" + monitorsWithoutLocksCount +
+                        " Monitors)");
+                // add thread dump to passed dump store.
+                if ((threadCount > 0) && (dumpKey != null)) {
+                    threadStore.put(dumpKey.trim(), threads);
+                }
+
+                return (threadCount > 0 ? threadDump : null);
+
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (StringIndexOutOfBoundsException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Error during parsing of a found thread dump, skipping to next one!\n" +
+                        "Check for possible broken dumps, sometimes, stream flushing mixes the logged data\n" +
+                        "Error Message is \"" + e.getLocalizedMessage() + "\" \n",
+                        "Error during Parsing Thread Dump", JOptionPane.ERROR_MESSAGE);
+                retry = true;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            
-            if(monitorCount > 0) {
-                overallTDI.setMonitors((Category) catMonitors.getUserObject());
-                threadDump.add(catMonitors);
-            }
-            
-            if(monitorsWithoutLocksCount > 0) {
-                overallTDI.setMonitorsWithoutLocks((Category) catMonitorsLocks.getUserObject());
-                threadDump.add(catMonitorsLocks);
-            }
-            overallTDI.setThreads((Category) catThreads.getUserObject());
-            
-            ((Category) catThreads.getUserObject()).setName(((Category) catThreads.getUserObject()) + " (" + threadCount + " Threads overall)");
-            ((Category) catWaiting.getUserObject()).setName(((Category) catWaiting.getUserObject()) + " (" + waiting + " Threads waiting)");
-            ((Category) catSleeping.getUserObject()).setName(((Category) catSleeping.getUserObject()) + " (" + sleeping + " Threads sleeping)");
-            ((Category) catLocking.getUserObject()).setName(((Category) catLocking.getUserObject()) + " (" + locking + " Threads locking)");
-            ((Category) catMonitors.getUserObject()).setName(((Category) catMonitors.getUserObject()) + " (" + monitorCount + " Monitors)");
-            ((Category) catMonitorsLocks.getUserObject()).setName(((Category) catMonitorsLocks.getUserObject()) + " (" + monitorsWithoutLocksCount + 
-                    " Monitors)");
-            // add thread dump to passed dump store.
-            if((threadCount > 0) && (dumpKey != null)) {
-                threadStore.put(dumpKey.trim(), threads);
-            }
-            
-            return(threadCount > 0? threadDump : null);
-            
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        } while (retry);
         
         return(null);
     }
