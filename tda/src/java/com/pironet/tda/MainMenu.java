@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.29 2008-01-24 09:49:12 irockel Exp $
+ * $Id: MainMenu.java,v 1.30 2008-02-09 07:39:56 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -233,30 +233,31 @@ public class MainMenu extends JMenuBar {
         menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("view.menu.description"));
         add(menu);
         
-        expandAllMenuItem = new JMenuItem("Expand all Dump nodes",
-                KeyEvent.VK_E);
+        expandAllMenuItem = new JMenuItem(ResourceManager.translate("view.expand"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("view.expand.mnem")).getKeyCode());
         expandAllMenuItem.setIcon(TDA.createImageIcon("Expanded.gif"));
         expandAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_E, ActionEvent.ALT_MASK));
+                ResourceManager.translate("view.expand.accel")));
         expandAllMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Expand all Dumps nodes");
+                ResourceManager.translate("view.expand.description"));
         expandAllMenuItem.addActionListener(listener);
         expandAllMenuItem.setEnabled(false);
         menu.add(expandAllMenuItem);
 
-        collapseAllMenuItem = new JMenuItem("Collapse all Dump nodes",
-                KeyEvent.VK_C);
+        collapseAllMenuItem = new JMenuItem(ResourceManager.translate("view.collapse"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("view.collapse.mnem")).getKeyCode());
         collapseAllMenuItem.setIcon(TDA.createImageIcon("Collapsed.gif"));
         collapseAllMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_C, ActionEvent.ALT_MASK));
+                ResourceManager.translate("view.collapse.accel")));
         collapseAllMenuItem.getAccessibleContext().setAccessibleDescription(
-                "Collapse all Dump nodes");
+                ResourceManager.translate("view.collapse.description"));
         collapseAllMenuItem.setEnabled(false);
         collapseAllMenuItem.addActionListener(listener);
         menu.add(collapseAllMenuItem);
                 
         menu.addSeparator();
-        menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
+        menuItem = new JCheckBoxMenuItem(ResourceManager.translate("view.showtoolbar"), PrefManager.get().getShowToolbar());
+        menuItem.setMnemonic(KeyStroke.getKeyStroke(ResourceManager.translate("view.showtoolbar.mnem")).getKeyCode());
         menuItem.addActionListener(listener);
         menuItem.setIcon(TDA.createImageIcon("Empty.gif"));
         menu.add(menuItem);
@@ -275,8 +276,8 @@ public class MainMenu extends JMenuBar {
         menu.getAccessibleContext().setAccessibleDescription(ResourceManager.translate("tools.menu.description"));
         add(menu);
         
-        longMenuItem = new JMenuItem("Find long running threads...",
-                KeyEvent.VK_L);
+        longMenuItem = new JMenuItem(ResourceManager.translate("tools.longrunning"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("tools.longrunning.mnem")).getKeyCode());
         longMenuItem.setIcon(TDA.createImageIcon("FindLRThreads.gif"));
         longMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_L, ActionEvent.ALT_MASK));
