@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.6 2008-01-10 17:16:07 irockel Exp $
+ * $Id: BeaJDKParser.java,v 1.7 2008-02-11 02:04:18 rmoutinho Exp $
  */
 
 package com.pironet.tda;
@@ -33,7 +33,12 @@ import javax.swing.tree.MutableTreeNode;
  * @author irockel
  */
 public class BeaJDKParser extends AbstractDumpParser {
-
+    private MutableTreeNode nextDump = null;
+    private Map threadStore = null;
+    private int counter = 1;
+    private int lineCounter = 0;
+    // private boolean foundClassHistograms = false;
+    // private boolean withCurrentTimeStamp = false;
     /**
      * constructs a new instance of a bea jdk parser
      * @param dumpFileStream the dump file stream to read.
@@ -41,13 +46,35 @@ public class BeaJDKParser extends AbstractDumpParser {
      */
     public BeaJDKParser(BufferedReader bis, Map threadStore, int lineCounter, DateMatcher dm) {
         super(bis, dm);
-    }
-    
-    public boolean hasMoreDumps() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.threadStore = threadStore;
+        this.lineCounter = lineCounter;
     }
 
+    /**
+     * returns true if at least one more dump available, already loads it
+     * (this will be returned on next call of parseNext)
+    */
+    public boolean hasMoreDumps() {
+        throw new UnsupportedOperationException("Not supported yet.");
+        // nextDump = parseNext();
+        // return(nextDump != null);
+    }
+
+    /**
+     * parse the next thread dump from the stream passed with the constructor.
+     * @returns null if no more thread dumps were found.
+    */
     public MutableTreeNode parseNext() {
+        if (nextDump != null) {
+            MutableTreeNode tmpDump = nextDump;
+            nextDump = null;
+            return(tmpDump);
+        }      
+        boolean retry = false;
+        
+        do {
+            DefaultMutableTreeNode threadDump = null;            
+        } while (retry); // Keep parsing until we get a full thread dump, or the file ends 
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
