@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.163 2008-01-19 07:35:52 irockel Exp $
+ * $Id: TDA.java,v 1.164 2008-02-11 08:05:47 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -581,20 +581,19 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     
     private String getInfoText() {
         StringBuffer info = new StringBuffer("<html><body bgcolor=\"ffffff\"><font face=\"System\" size=+2><b>");
-        info.append("<img border=0 src=\"" + TDA.class.getResource("icons/TDA.gif") + "\">  ");
-        info.append(AppInfo.getAppInfo());
-        info.append("</b></font><hr><font face=\"System\"><p>");
-        info.append("(C)opyright ");
-        info.append(AppInfo.getCopyright());
-        info.append(" - Ingo Rockel<br>");
-        info.append("Version: <b>");
-        info.append(AppInfo.getVersion());
-        info.append("</b><p>");
-        if(runningAsJConsolePlugin) {
+        info.append("<table width=100% height=100%><tr><td align=center valign=middle><img border=0 src=\"" + TDA.class.getResource("icons/tda-logo.png") + "\"></td></tr></table  ");
+        info.append("</b></font><hr fgcolor=\"#cccccc\"><font face=\"System\"><p>");
+        //info.append("(C)opyright ");
+        //info.append(AppInfo.getCopyright());
+        //info.append(" - Ingo Rockel<br>");
+        //info.append("Version: <b>");
+        //info.append(AppInfo.getVersion());
+        //info.append("</b><p>");
+        /*if(runningAsJConsolePlugin) {
             info.append("<a href=\"threaddump://\">Request Thread Dump...</a>");
         } else {
             info.append("Select File/Open to open your log file with thread dumps to start analyzing these thread dumps.<p>See Help/Overview for information on how to obtain a thread dump from your VM.</p></font></body></html>");
-        }
+        }*/
         return(info.toString());
     }
     
