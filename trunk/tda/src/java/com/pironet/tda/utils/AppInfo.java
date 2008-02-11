@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AppInfo.java,v 1.6 2008-01-07 21:06:43 irockel Exp $
+ * $Id: AppInfo.java,v 1.7 2008-02-11 08:05:47 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -28,7 +28,7 @@ package com.pironet.tda.utils;
 public class AppInfo {
     private static final String APP_SHORT_NAME = "TDA";
     private static final String APP_FULL_NAME = "Thread Dump Analyzer";
-    private static final String VERSION = "1.6";
+    private static final String VERSION = "2.0";
     
     private static final String COPYRIGHT = "2006-2008";
     
