@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.164 2008-02-11 08:05:47 irockel Exp $
+ * $Id: TDA.java,v 1.165 2008-02-14 14:36:08 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1092,6 +1092,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 dumpStore.addFileToDumpFiles(fileName, dumpMap);
             }
             dp = DumpParserFactory.get().getDumpParserForLogfile(dumpFileStream, dumpMap, runningAsJConsolePlugin, dumpCounter);
+            ((Logfile) top.getUserObject()).setUsedParser(dp);
+            
             while((dp != null) && dp.hasMoreDumps()) {
                 top.add(dp.parseNext());
                 if(!isFoundClassHistogram) {
@@ -1463,7 +1465,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 } else {
                     DefaultMutableTreeNode mergeRoot = fetchTop(tree.getSelectionPath());
                     Map dumpMap = dumpStore.getFromDumpFiles(mergeRoot.getUserObject().toString());
-                    DumpParserFactory.get().getCurrentDumpParser().mergeDumps(mergeRoot,
+                    ((Logfile) mergeRoot.getUserObject()).getUsedParser().mergeDumps(mergeRoot,
                             dumpMap, paths, paths.length, null);
                     createTree();
                     this.getRootPane().revalidate();
@@ -1764,7 +1766,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         // get pos of this node in the thread dump hierarchy.
         int pos = node.getParent().getIndex(node);
         
-        DumpParserFactory.get().getCurrentDumpParser().setDumpHistogramCounter(pos);
+        ((Logfile) ((DefaultMutableTreeNode) node.getParent()).getUserObject()).getUsedParser().setDumpHistogramCounter(pos);
         openLoggcFile();
     }
     
@@ -1899,7 +1901,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                             try {
                                 DefaultMutableTreeNode top = fetchTop(tree.getSelectionPath());
                                 
-                                DumpParserFactory.get().getCurrentDumpParser().parseLoggcFile(loggcFileStream, top);
+                                ((Logfile) top.getUserObject()).getUsedParser().parseLoggcFile(loggcFileStream, top);
                                 
                                 addThreadDumps(top, loggcFileStream);
                                 createTree();
