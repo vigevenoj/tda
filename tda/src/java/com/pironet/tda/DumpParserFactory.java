@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactory.java,v 1.10 2008-01-10 17:16:07 irockel Exp $
+ * $Id: DumpParserFactory.java,v 1.11 2008-02-14 14:36:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -37,8 +37,6 @@ import java.util.Map;
  */
 public class DumpParserFactory {
     private static DumpParserFactory instance = null;
-    
-    private DumpParser currentDumpParser = null;
     
     /** 
      * singleton private constructor 
@@ -71,11 +69,12 @@ public class DumpParserFactory {
         BufferedReader bis = null;
         int readAheadLimit = PrefManager.get().getStreamResetBuffer();
         int lineCounter = 0;
+        DumpParser currentDumpParser = null;
+            
         try {
             bis = new BufferedReader(new InputStreamReader(dumpFileStream));
             
             // reset current dump parser
-            currentDumpParser = null;
             DateMatcher dm = new DateMatcher();
             while (bis.ready() && (currentDumpParser == null)) {
                 bis.mark(readAheadLimit);
@@ -96,15 +95,5 @@ public class DumpParserFactory {
             ex.printStackTrace();
         }
         return currentDumpParser;
-    }
-    
-    
-    /**
-     * returns the currently used dump parser. Will be null if getDumpParserForLogfile hasn't been
-     * called before.
-     * @return the currently used dump parser.
-     */
-    public DumpParser getCurrentDumpParser() {
-        return(currentDumpParser);
-    }
+    }    
 }

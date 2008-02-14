@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Logfile.java,v 1.6 2007-12-08 10:27:52 irockel Exp $
+ * $Id: Logfile.java,v 1.7 2008-02-14 14:36:07 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -28,6 +28,7 @@ package com.pironet.tda;
  */
 public class Logfile extends AbstractInfo {
     private String content;
+    private DumpParser usedParser;
     
     /** 
      * Creates a new instance of Logfile 
@@ -46,5 +47,27 @@ public class Logfile extends AbstractInfo {
     
     public String toString() {
         return((String) getContent());
+    }
+    
+    /**
+     * return the parser used in this log file
+     * @return used parser, null if no dump was found in log file.
+     */
+    public DumpParser getUsedParser() {
+        return(usedParser);
+    }
+
+    /**
+     * set the used parser to the passed parser. Method can only be
+     * called once during lifetime of object.
+     * @param parser new parser.
+     * @throws UnsupportedOperationException if called more than once.
+     */
+    public void setUsedParser(DumpParser parser) {
+        if(usedParser == null) {
+            usedParser = parser;
+        } else {
+            throw new UnsupportedOperationException("Method can only be called once!");
+        }
     }
 }

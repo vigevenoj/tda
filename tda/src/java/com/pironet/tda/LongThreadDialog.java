@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LongThreadDialog.java,v 1.9 2008-01-19 07:35:52 irockel Exp $
+ * $Id: LongThreadDialog.java,v 1.10 2008-02-14 14:36:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -90,7 +90,7 @@ public class LongThreadDialog extends JDialog {
                 if(TDA.frame != null) {
                     TDA.frame.setEnabled(true);
                 }
-                DumpParserFactory.get().getCurrentDumpParser().findLongRunningThreads(top, threadDumps, dumps, Integer.parseInt(settingsPanel.minOccurenceField.getText()), settingsPanel.threadRegExField.getText());
+                ((Logfile) top.getUserObject()).getUsedParser().findLongRunningThreads(top, threadDumps, dumps, Integer.parseInt(settingsPanel.minOccurenceField.getText()), settingsPanel.threadRegExField.getText());
                 backRef.createTree();
                 backRef.tree.expandRow(1);
 
