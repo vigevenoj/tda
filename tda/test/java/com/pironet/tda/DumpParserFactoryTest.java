@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: DumpParserFactoryTest.java,v 1.4 2008-01-09 09:40:07 irockel Exp $
+ * $Id: DumpParserFactoryTest.java,v 1.5 2008-02-15 09:05:04 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -89,18 +89,5 @@ public class DumpParserFactoryTest extends TestCase {
         assertNotNull(result);
         
         assertTrue(result instanceof com.pironet.tda.BeaJDKParser);
-    }
-
-    /**
-     * Test of getCurrentDumpParser method, of class com.pironet.tda.DumpParserFactory.
-     */
-    public void testGetCurrentDumpParser() {
-        System.out.println("getCurrentDumpParser");
-        
-        DumpParserFactory instance = DumpParserFactory.get();
-        
-        DumpParser result = instance.getCurrentDumpParser();
-        assertNotNull(result);        
-    }
-    
+    }    
 }
