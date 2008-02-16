@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+OpenIDE-Module: net.java.dev.tda.visualvm
+OpenIDE-Module-Install: net/java/dev/tda/visualvm/Install.class
+OpenIDE-Module-Layer: net/java/dev/tda/visualvm/layer.xml
+OpenIDE-Module-Localizing-Bundle: net/java/dev/tda/visualvm/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
