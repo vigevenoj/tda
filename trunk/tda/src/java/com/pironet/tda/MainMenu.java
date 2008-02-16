@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.30 2008-02-09 07:39:56 irockel Exp $
+ * $Id: MainMenu.java,v 1.31 2008-02-16 18:00:25 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -406,8 +406,9 @@ public class MainMenu extends JMenuBar {
      */
     private void createToolBar() {
         toolBar = new JToolBar("TDA Toolbar");
-        if(listener.runningAsJConsolePlugin) {
+        if(listener.runningAsJConsolePlugin || listener.runningAsVisualVMPlugin) {
             toolBar.add(createToolBarButton("Request a Thread Dump", "FileOpen.gif"));
+            toolBar.setFloatable(false);
         } else {
             toolBar.add(createToolBarButton("Open Logfile", "FileOpen.gif"));
             closeToolBarButton = createToolBarButton("Close selected Logfile", "CloseFile.gif");
