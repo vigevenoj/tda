@@ -15,15 +15,19 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.7 2008-02-11 02:04:18 rmoutinho Exp $
+ * $Id: BeaJDKParser.java,v 1.8 2008-03-08 04:44:39 rmoutinho Exp $
  */
 
 package com.pironet.tda;
 
 import com.pironet.tda.utils.DateMatcher;
+import com.pironet.tda.utils.IconFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
+import java.util.regex.Matcher;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
@@ -35,7 +39,7 @@ import javax.swing.tree.MutableTreeNode;
 public class BeaJDKParser extends AbstractDumpParser {
     private MutableTreeNode nextDump = null;
     private Map threadStore = null;
-    private int counter = 1;
+    private int counter = 1; // Number of the thread dump
     private int lineCounter = 0;
     // private boolean foundClassHistograms = false;
     // private boolean withCurrentTimeStamp = false;
@@ -55,9 +59,9 @@ public class BeaJDKParser extends AbstractDumpParser {
      * (this will be returned on next call of parseNext)
     */
     public boolean hasMoreDumps() {
-        throw new UnsupportedOperationException("Not supported yet.");
-        // nextDump = parseNext();
-        // return(nextDump != null);
+        // throw new UnsupportedOperationException("Not supported yet.");
+        nextDump = parseNext();
+        return(nextDump != null);
     }
 
     /**
@@ -73,7 +77,61 @@ public class BeaJDKParser extends AbstractDumpParser {
         boolean retry = false;
         
         do {
-            DefaultMutableTreeNode threadDump = null;            
+            DefaultMutableTreeNode threadDump = null;
+            ThreadDumpInfo overallTDI = null;
+            DefaultMutableTreeNode catMonitors = null;
+            DefaultMutableTreeNode catMonitorsLocks = null;
+            DefaultMutableTreeNode catThreads = null;
+            DefaultMutableTreeNode catLocking = null;
+            DefaultMutableTreeNode catSleeping = null;
+            DefaultMutableTreeNode catWaiting = null;
+            
+            try {
+                Map threads = new HashMap();
+                overallTDI = new ThreadDumpInfo("Dump No. " + counter++, 0);
+                threadDump = new DefaultMutableTreeNode(overallTDI);
+                catThreads = new DefaultMutableTreeNode(new TableCategory("Threads", IconFactory.THREADS));
+                threadDump.add(catThreads);
+                catWaiting = new DefaultMutableTreeNode(new TableCategory("Threads waiting for Monitors", IconFactory.THREADS_WAITING));
+
+                catSleeping = new DefaultMutableTreeNode(new TableCategory("Threads sleeping on Monitors", IconFactory.THREADS_SLEEPING));
+
+                catLocking = new DefaultMutableTreeNode(new TableCategory("Threads locking Monitors", IconFactory.THREADS_LOCKING));
+
+                // create category for monitors with disabled filtering.
+                catMonitors = new DefaultMutableTreeNode(new TreeCategory("Monitors", IconFactory.MONITORS, false));
+                catMonitorsLocks = new DefaultMutableTreeNode(new TreeCategory("Monitors without locking thread", IconFactory.MONITORS_NOLOCKS, false));
+
+                String title = null;
+                String dumpKey = null;
+                StringBuffer content = null;
+                StringBuffer lContent = null;
+                StringBuffer sContent = null;
+                StringBuffer wContent = null;
+                int threadCount = 0;
+                int waiting = 0;
+                int locking = 0;
+                int sleeping = 0;
+                boolean locked = true; // 
+                boolean finished = false;
+                MonitorMap mmap = new MonitorMap();
+                Stack monitorStack = new Stack();
+                long startTime = 0;
+                int singleLineCounter = 0;
+                Matcher matched = getDm().getLastMatch();                
+                
+                while (getBis().ready() && !finished) {
+                    String line = getBis().readLine();
+                    lineCounter++;
+                    singleLineCounter++;
+                    if (locked) {
+                    } else {
+                        
+                    }
+                }
+            } catch (Exception e) {
+                
+            }
         } while (retry); // Keep parsing until we get a full thread dump, or the file ends 
         throw new UnsupportedOperationException("Not supported yet.");
     }
