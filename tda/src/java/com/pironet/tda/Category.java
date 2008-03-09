@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Category.java,v 1.18 2008-01-07 17:25:52 irockel Exp $
+ * $Id: Category.java,v 1.19 2008-03-09 06:36:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -37,6 +37,13 @@ public interface Category {
      * add the passed node to the category tree
      */
     void addToCatNodes(DefaultMutableTreeNode node);
+    
+    /**
+     * get the node at the given position
+     * @param index the index to look up.
+     * @return the node at the given index, null otherwise.
+     */
+    public DefaultMutableTreeNode getNodeAt(int index);
 
     /**
      * return category tree with filtered child nodes

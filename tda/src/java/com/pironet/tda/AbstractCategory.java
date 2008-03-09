@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractCategory.java,v 1.3 2008-01-10 13:10:24 irockel Exp $
+ * $Id: AbstractCategory.java,v 1.4 2008-03-09 06:36:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -88,7 +88,7 @@ public abstract class AbstractCategory extends AbstractInfo implements Category 
     }
     
     public int getNodeCount() {
-        return(getRootNode().getChildCount());
+        return(getRootNode() == null ? 0 : getRootNode().getChildCount());
     }
     
     public int showing() {
@@ -107,6 +107,15 @@ public abstract class AbstractCategory extends AbstractInfo implements Category 
             setRootNode(new DefaultMutableTreeNode("root"));
         }
         getRootNode().add(node);
+    }
+    
+    /**
+     * get the node at the given position in the unfiltered tree.
+     * @param index the index to look up.
+     * @return the node at the given index, null otherwise.
+     */
+    public DefaultMutableTreeNode getNodeAt(int index) {
+        return(getRootNode() != null ? (DefaultMutableTreeNode) getRootNode().getChildAt(index) : null);
     }
     
     public void setLastView(JScrollPane view) {

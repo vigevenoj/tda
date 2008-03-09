@@ -19,14 +19,17 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.25 2008-01-16 14:33:26 irockel Exp $
+ * $Id: PrefManager.java,v 1.26 2008-03-09 06:36:52 irockel Exp $
  */
 package com.pironet.tda.utils;
 
+import com.pironet.tda.CustomCategory;
 import com.pironet.tda.filter.Filter;
+import com.pironet.tda.filter.FilterChecker;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
+import java.util.Iterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.DefaultListModel;
@@ -283,7 +286,6 @@ public class PrefManager {
      */
     private DefaultListModel cachedFilters = null;
     
-    
     public ListModel getFilters() {
         DefaultListModel filters = null;
         if(cachedFilters == null) {
@@ -311,6 +313,67 @@ public class PrefManager {
             filters = cachedFilters;
         }
         return(filters);
+    }
+    
+    /**
+     * temporary storage for categories to not to have them be parsed again
+     */
+    private DefaultListModel cachedCategories = null;
+    
+    /**
+     * get custom categories.
+     * @return list model with custom categories.
+     */
+    public ListModel getCategories() {
+        DefaultListModel categories = null;
+        if (cachedCategories == null) {
+            String categoryString = toolPrefs.get("categories", "");
+            if (categoryString.length() > 0) {
+                categories = new DefaultListModel();
+                String[] sCategories = categoryString.split(PARAM_DELIM);
+                categories.ensureCapacity(sCategories.length);
+                try {
+                    FilterChecker fc = FilterChecker.getFilterChecker();
+                    for (int i = 0; i < sCategories.length; i++) {
+                        String[] catData = sCategories[i].split(FILTER_SEP);
+                        CustomCategory newCat = new CustomCategory(catData[0]);
+                        
+                        for(int j = 1; j < catData.length; j++) {
+                            Filter filter = getFromFilters(catData[j].trim());
+                            if(filter != null) {
+                                newCat.addToFilters(filter);
+                            }
+                        }
+                        categories.add(i, newCat);
+                    }
+                } catch (ArrayIndexOutOfBoundsException aioob) {
+                    // fall back to default categories
+                    categories = getPredefinedFilters();
+                }
+            } else {
+                categories = new DefaultListModel();
+            }
+        } else {
+            categories = cachedCategories;
+        }
+        return (categories);
+    }
+    
+    /**
+     * get filter for given key from filters
+     * @param key filter key to look up
+     * @return filter, null otherwise.
+     */
+    private Filter getFromFilters(String key) {
+        ListModel filters = getFilters();
+        for(int i = 0; i < filters.getSize(); i++) {
+            Filter filter = (Filter) filters.getElementAt(i);
+            if(filter.getName().equals(key)) {
+                return(filter);
+            } 
+        }
+        
+        return(null);
     }
     
     /**
@@ -349,6 +412,33 @@ public class PrefManager {
         toolPrefs.put("filters", filterString.toString());
         setFilterLastChanged();
     }
+    
+    /**
+     * store categories
+     * @param categories
+     */
+    public void setCategories(DefaultListModel categories) {
+        // store into cache
+        cachedCategories = categories;
+        StringBuffer catString = new StringBuffer();
+        for (int i = 0; i < categories.getSize(); i++) {
+            if (i > 0) {
+                catString.append(PARAM_DELIM);
+            }
+            CustomCategory cat = (CustomCategory) categories.getElementAt(i);
+            catString.append(cat.getName());
+            catString.append(FILTER_SEP);
+            Iterator catIter = cat.iterOfFilters();
+            while ((catIter != null) && (catIter.hasNext())) {
+                Filter filter = (Filter) catIter.next();
+                catString.append(filter.getName());
+                catString.append(FILTER_SEP);
+                
+            }
+        }
+        toolPrefs.put("categories", catString.toString());
+    }
+
     
     private long filterLastChanged = -1;
     

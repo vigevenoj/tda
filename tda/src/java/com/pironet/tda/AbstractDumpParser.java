@@ -15,10 +15,11 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.14 2008-01-20 08:41:56 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.15 2008-03-09 06:36:50 irockel Exp $
  */
 package com.pironet.tda;
 
+import com.pironet.tda.filter.Filter;
 import com.pironet.tda.utils.DateMatcher;
 import com.pironet.tda.utils.IconFactory;
 import com.pironet.tda.utils.PrefManager;
@@ -31,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -359,5 +361,36 @@ public abstract class AbstractDumpParser implements DumpParser {
 
     public void setDm(DateMatcher dm) {
         this.dm = dm;
+    }
+    
+    /**
+     * check threads in given thread dump and add appropriate 
+     * custom categories (if any defined).
+     * @param tdi the thread dump info object.
+     */
+    public void addCustomCategories(DefaultMutableTreeNode threadDump) {
+        ThreadDumpInfo tdi = (ThreadDumpInfo) threadDump.getUserObject();
+        Category threads = tdi.getThreads();
+        ListModel cats = PrefManager.get().getCategories();
+        for(int i = 0; i < cats.getSize(); i++) {
+            Category cat = new TableCategory(((CustomCategory) cats.getElementAt(i)).getName(), IconFactory.THREADS);
+            for(int j = 0; j < threads.getNodeCount(); j++) {
+                Iterator filterIter = ((CustomCategory) cats.getElementAt(i)).iterOfFilters();
+                boolean matches = true;
+                ThreadInfo ti = (ThreadInfo) ((DefaultMutableTreeNode) threads.getNodeAt(j)).getUserObject();
+                while (matches && filterIter.hasNext()) {
+                    Filter filter = (Filter) filterIter.next();
+                    matches = filter.matches(ti, true);
+                }
+                
+                if(matches) {
+                    cat.addToCatNodes(new DefaultMutableTreeNode(ti));
+                }
+            }
+            if(cat.getNodeCount() > 0) {
+                cat.setName(cat.getName() + " (" + cat.getNodeCount() + " Threads overall)");
+                threadDump.add(new DefaultMutableTreeNode(cat));
+            }
+        }
     }
 }

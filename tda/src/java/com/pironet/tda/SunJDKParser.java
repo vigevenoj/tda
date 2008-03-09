@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.35 2008-02-26 13:52:25 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.36 2008-03-09 06:36:50 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -358,6 +358,9 @@ public class SunJDKParser extends AbstractDumpParser {
                 if ((threadCount > 0) && (dumpKey != null)) {
                     threadStore.put(dumpKey.trim(), threads);
                 }
+                
+                // check custom categories
+                addCustomCategories(threadDump);
 
                 return (threadCount > 0 ? threadDump : null);
 

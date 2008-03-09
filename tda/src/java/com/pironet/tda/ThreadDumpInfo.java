@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadDumpInfo.java,v 1.8 2008-01-05 08:55:18 irockel Exp $
+ * $Id: ThreadDumpInfo.java,v 1.9 2008-03-09 06:36:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -255,6 +255,14 @@ public class ThreadDumpInfo extends AbstractInfo {
     }
     
     /**
+     * add given category to the custom category.
+     * @param cat
+     */
+    public void addToCustomCategories(Category cat) {
+        
+    }
+
+    /**
      * string representation of this node, is used to displayed the node info
      * in the tree.
      * @return the thread dump information (one line).
@@ -269,5 +277,6 @@ public class ThreadDumpInfo extends AbstractInfo {
         }
         return(getName() +  postFix);
     }
+    
 
 }

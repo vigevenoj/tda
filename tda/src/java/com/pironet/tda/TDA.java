@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.166 2008-02-16 18:00:25 irockel Exp $
+ * $Id: TDA.java,v 1.167 2008-03-09 06:36:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -82,6 +82,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -149,6 +151,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
     private FilterDialog filterDialog;
+    private CustomCategoriesDialog categoriesDialog;
     private JTable histogramTable;
     private JMenuItem showDumpMenuItem;
     boolean runningAsJConsolePlugin;
@@ -210,7 +213,13 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         runningAsVisualVMPlugin = asVisualVMPlugin;
         
         //Create the HTML viewing pane.
-        htmlPane = new JEditorPane("text/html", getInfoText());
+        URL tutURL = TDA.class.getResource("doc/welcome.html");
+        try {
+            htmlPane = new JEditorPane(tutURL);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        //htmlPane = new JEditorPane("text/html", getInfoText());
         htmlPane.setEditable(false);
         
         if(!asJConsolePlugin) {
@@ -237,6 +246,18 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                         navigateToChild("Deadlocks");
                     } else if(evt.getDescription().startsWith("threaddump")) {
                         addMXBeanDump();
+                    } else if(evt.getDescription().startsWith("openlogfile")) {
+                        chooseFile();
+                    } else if(evt.getDescription().startsWith("opensession")) {
+                        openSession();
+                    } else if(evt.getDescription().startsWith("preferences")) {
+                        showPreferencesDialog();
+                    } else if(evt.getDescription().startsWith("filters")) {
+                        showFilterDialog();
+                    } else if(evt.getDescription().startsWith("categories")) {
+                        showCategoriesDialog();
+                    } else if(evt.getDescription().startsWith("overview")) {
+                        showInfoFile("Overview", "doc/overview.html", "Help.gif");
                     } else if(evt.getURL() != null) {
                         try {
                             // launch a browser with the appropriate URL
@@ -283,7 +304,6 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         
         setShowToolbar(PrefManager.get().getShowToolbar());        
         
-        
         if(firstFile && runningAsVisualVMPlugin) {
             // init filechooser
             fc = new JFileChooser();
@@ -292,7 +312,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
     }
 
-    private void addMXBeanDump() {
+   private void addMXBeanDump() {
         String dump = mBeanDumper.threadDump();
         String locks = mBeanDumper.findDeadlock();
         
@@ -1425,6 +1445,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 showPreferencesDialog();
             } else if ("Filters".equals(source.getText())) {
                 showFilterDialog();
+            } else if ("Categories".equals(source.getText())) {
+                showCategoriesDialog();
             } else if ("Exit TDA".equals(source.getText())) {
                 saveState();
                 frame.dispose();
@@ -1600,6 +1622,24 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         filterDialog.setVisible(true);
     }
     
+    /**
+     * display categories settings.
+     */
+    private void showCategoriesDialog() {
+        //Create and set up the window.
+        if(categoriesDialog == null) {
+            categoriesDialog = new CustomCategoriesDialog(getFrame());
+            categoriesDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        }
+        
+        getFrame().setEnabled(false);
+        //Display the window.
+        categoriesDialog.reset();
+        categoriesDialog.pack();
+        categoriesDialog.setLocationRelativeTo(getFrame());
+        categoriesDialog.setVisible(true);
+    }
+     
     /**
      * flag indicates if next file to open will be the first file (so fresh open)
      * or if a add has to be performed.
