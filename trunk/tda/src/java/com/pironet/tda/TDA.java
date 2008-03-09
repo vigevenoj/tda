@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.167 2008-03-09 06:36:50 irockel Exp $
+ * $Id: TDA.java,v 1.168 2008-03-09 06:41:06 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1914,8 +1914,10 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private boolean checkNameFromNode(DefaultMutableTreeNode node, String startsWith) {
         Object info = node.getUserObject();
         String result = null;
-        if(info != null) {
+        if((info != null) && (info instanceof AbstractInfo)) {
             result = ((AbstractInfo) info).getName();
+        } else if ((info != null) && (info instanceof String)) {
+            result = (String) info;
         }
         
         return(result != null && result.startsWith(startsWith));
