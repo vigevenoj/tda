@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Filter.java,v 1.10 2007-12-08 09:58:35 irockel Exp $
+ * $Id: Filter.java,v 1.11 2008-03-09 06:36:51 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -190,8 +190,12 @@ public class Filter {
     }
     
     public boolean matches(ThreadInfo ti) {
+        return(matches(ti, false));
+    }
+    
+    public boolean matches(ThreadInfo ti, boolean forceEnabled) {
         boolean result = true;
-        if(isEnabled()) {
+        if(forceEnabled || isEnabled()) {
             switch(getFilterRule()) {
                 case HAS_IN_TITLE_RULE :
                     result = getFilterExpressionPattern().matcher(ti.getName()).find();
@@ -222,7 +226,6 @@ public class Filter {
                     result = (ti.getStackLines() == 0) || ((ti.getStackLines() -2) > Integer.parseInt(filterExpression));
                     break;
             }
-            //System.out.println("Filter " + getFilterExpression() + " result = " + result + " // content" + ti.content);
             
             // invert if it is exclusion filter
             if(isExclusionFilter()) {
@@ -246,6 +249,6 @@ public class Filter {
 
     public String toString() {
         //  (general)  removed atm.
-        return (getName() + (isGeneralFilter() ? "" : "") + (isEnabled() ? "" : " (disabled)"));
+        return (getName() + (isGeneralFilter() ? "" : "") + (isEnabled() ? " (default)" : ""));
     }
 }

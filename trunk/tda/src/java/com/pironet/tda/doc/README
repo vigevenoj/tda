@@ -7,6 +7,9 @@ Note: This is the 2.0 release of the software, for an usage overview see Help/Ov
 
 Changes from 1.6 are:
 * Skip broken thread dumps.
+* Custom Thread Categories.
+* New Welcome Screen.
+* Internationalisation (only english available so far).
 * Bugfixing.
 
 Changes from 1.5 are:

@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.31 2008-02-16 18:00:25 irockel Exp $
+ * $Id: MainMenu.java,v 1.32 2008-03-09 06:36:51 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -286,6 +286,7 @@ public class MainMenu extends JMenuBar {
         longMenuItem.addActionListener(listener);
         longMenuItem.setEnabled(false);
         menu.add(longMenuItem);
+        menu.addSeparator();
 
         menuItem = new JMenuItem("Filters",
                 KeyEvent.VK_F);
@@ -297,6 +298,24 @@ public class MainMenu extends JMenuBar {
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         
+        menuItem = new JMenuItem("Categories",
+                KeyEvent.VK_F);
+        menuItem.setIcon(TDA.createImageIcon("Empty.gif"));
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_G, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Setup Categories");
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+        menu.addSeparator();
+        
+        menuItem = new JMenuItem("Load Configuration Set...",
+                KeyEvent.VK_F);
+        menuItem.setIcon(TDA.createImageIcon("Empty.gif"));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "Load Configuration Set");
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
         return(menu);
     }
     

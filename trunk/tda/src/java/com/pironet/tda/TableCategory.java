@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TableCategory.java,v 1.6 2008-01-17 09:55:51 irockel Exp $
+ * $Id: TableCategory.java,v 1.7 2008-03-09 06:36:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -42,14 +42,14 @@ public class TableCategory extends AbstractCategory {
     private transient JTable filteredTable;
     
     /** 
-     * Creates a new instance of TreeCategory 
+     * Creates a new instance of TableCategory 
      */
     public TableCategory(String name, int iconID) {
         this(name, iconID, true);
     }
 
     /** 
-     * Creates a new instance of TreeCategory 
+     * Creates a new instance of TableCategory 
      */
     public TableCategory(String name, int iconID, boolean filtering) {
         setName(name);

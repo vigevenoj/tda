@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.9 2008-01-20 12:00:40 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.10 2008-03-09 06:36:51 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -110,7 +110,7 @@ public class EditFilterDialog extends JDialog {
         filter.setName(settingsPanel.filterName.getText());
         filter.setFilterExpression(settingsPanel.regEx.getText());
         filter.setFilterRule(settingsPanel.filterRule.getSelectedIndex());
-        filter.setGeneralFilter(settingsPanel.generalFilter.isSelected());
+        filter.setGeneralFilter(true);
         filter.setExclusionFilter(settingsPanel.isExclusionFilter.isSelected());
         filter.setEnabled(settingsPanel.isEnabled.isSelected());
     }
@@ -130,7 +130,6 @@ public class EditFilterDialog extends JDialog {
     class SettingsPanel extends JPanel {
         JTextField filterName = null;
         JTextField regEx = null;
-        JCheckBox generalFilter = null;
         JCheckBox isExclusionFilter = null;
         JCheckBox isEnabled = null;
         JComboBox filterRule = null;
@@ -163,14 +162,8 @@ public class EditFilterDialog extends JDialog {
             innerInnerSettingsPanel.add(isExclusionFilter = new JCheckBox());
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.CENTER);
             
-            /*innerInnerSettingsPanel = new JPanel(fl);
-            innerInnerSettingsPanel.add(new JLabel("Filter is a general filter"));
-            innerInnerSettingsPanel.add(generalFilter = new JCheckBox());
-            innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.EAST);*/
-            generalFilter = new JCheckBox("", true);
-            
             innerInnerSettingsPanel = new JPanel(fl);
-            innerInnerSettingsPanel.add(new JLabel("Is Filter enabled"));
+            innerInnerSettingsPanel.add(new JLabel("Is Filter enabled in default categories"));
             innerInnerSettingsPanel.add(isEnabled = new JCheckBox());
             innerSettingsPanel.add(innerInnerSettingsPanel, BorderLayout.SOUTH);
             
@@ -190,7 +183,6 @@ public class EditFilterDialog extends JDialog {
             regEx.setText(presetFilter.getFilterExpression());
             filterRule.setSelectedIndex(presetFilter.getFilterRule());
             isExclusionFilter.setSelected(presetFilter.isExclusionFilter());
-            generalFilter.setSelected(presetFilter.isGeneralFilter());
             isEnabled.setSelected(presetFilter.isEnabled());
         }
 
@@ -200,7 +192,7 @@ public class EditFilterDialog extends JDialog {
          */
         public Filter getAsFilter() {
             Filter newFilter = new Filter(filterName.getText(),
-                    regEx.getText(), filterRule.getSelectedIndex(), generalFilter.isSelected(), 
+                    regEx.getText(), filterRule.getSelectedIndex(), true, 
                     isExclusionFilter.isSelected(), isEnabled.isSelected());
             return newFilter;
         }
