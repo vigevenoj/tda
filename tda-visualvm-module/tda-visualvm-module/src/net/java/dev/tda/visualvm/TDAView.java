@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAView.java,v 1.1 2008-02-16 18:22:12 irockel Exp $
+ * $Id: TDAView.java,v 1.2 2008-03-12 10:51:46 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
@@ -53,6 +53,7 @@ public class TDAView extends DataSourceView {
 
     @Override
     public DataViewComponent getView() {
+        // return tda view.
         return(view);
     }
 
