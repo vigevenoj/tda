@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.32 2008-03-09 06:36:51 irockel Exp $
+ * $Id: MainMenu.java,v 1.33 2008-03-12 09:50:53 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -300,7 +300,7 @@ public class MainMenu extends JMenuBar {
         
         menuItem = new JMenuItem("Categories",
                 KeyEvent.VK_F);
-        menuItem.setIcon(TDA.createImageIcon("Empty.gif"));
+        menuItem.setIcon(TDA.createImageIcon("CustomCat.gif"));
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_G, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
@@ -449,6 +449,7 @@ public class MainMenu extends JMenuBar {
         toolBar.add(findLRThreadsButton);
         
         toolBar.add(createToolBarButton("Filters", "Filters.gif"));
+        toolBar.add(createToolBarButton("Custom Categories", "CustomCat.gif"));
         toolBar.addSeparator();
         toolBar.add(createToolBarButton("Help","Help.gif"));
     }
