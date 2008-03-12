@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterChecker.java,v 1.7 2008-03-09 06:36:51 irockel Exp $
+ * $Id: FilterChecker.java,v 1.8 2008-03-12 10:44:19 irockel Exp $
  */
 package com.pironet.tda.filter;
 
@@ -64,7 +64,6 @@ public class FilterChecker {
         for(int i = 0; i < filters.getSize(); i++) {
             Filter currentFilter = (Filter) filters.getElementAt(i);
             if(currentFilter.isEnabled() && currentFilter.isGeneralFilter()) {
-                System.out.println("filter= " + currentFilter.getName());
                 generalFilters.put(currentFilter.getName(), currentFilter);
             }
         }
