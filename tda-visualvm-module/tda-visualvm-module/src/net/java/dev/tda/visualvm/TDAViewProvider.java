@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAViewProvider.java,v 1.1 2008-02-16 18:22:12 irockel Exp $
+ * $Id: TDAViewProvider.java,v 1.2 2008-03-12 10:37:36 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
@@ -40,12 +40,6 @@ import javax.management.MBeanServerConnection;
 public class TDAViewProvider implements DataSourceViewsProvider<Application> {
     private Map<Application, DataSourceView> viewsCache = new HashMap();
 
-    public boolean supportsViewFor(Application application) {
-        JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
-        MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
-        return mbsc != null;
-    }
-
     public Set<? extends DataSourceView> getViews(Application application) {
         DataSourceView view = viewsCache.get(application);
         if (view == null) {
@@ -56,5 +50,11 @@ public class TDAViewProvider implements DataSourceViewsProvider<Application> {
 
     static void initialize() {
         DataSourceWindowFactory.sharedInstance().addViewProvider(new TDAViewProvider(), Application.class);
+    }
+
+    public boolean supportsViewsFor(Application application) {
+        JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
+        MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
+        return mbsc != null;
     }
 }
