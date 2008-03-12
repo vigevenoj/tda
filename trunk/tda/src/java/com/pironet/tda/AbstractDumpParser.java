@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.15 2008-03-09 06:36:50 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.16 2008-03-12 09:50:53 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -373,7 +373,7 @@ public abstract class AbstractDumpParser implements DumpParser {
         Category threads = tdi.getThreads();
         ListModel cats = PrefManager.get().getCategories();
         for(int i = 0; i < cats.getSize(); i++) {
-            Category cat = new TableCategory(((CustomCategory) cats.getElementAt(i)).getName(), IconFactory.THREADS);
+            Category cat = new TableCategory(((CustomCategory) cats.getElementAt(i)).getName(), IconFactory.CUSTOM_CATEGORY);
             for(int j = 0; j < threads.getNodeCount(); j++) {
                 Iterator filterIter = ((CustomCategory) cats.getElementAt(i)).iterOfFilters();
                 boolean matches = true;

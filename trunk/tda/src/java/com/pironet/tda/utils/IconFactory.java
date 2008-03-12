@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: IconFactory.java,v 1.1 2007-11-01 14:59:40 irockel Exp $
+ * $Id: IconFactory.java,v 1.2 2008-03-12 09:50:53 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -39,6 +39,7 @@ public class IconFactory {
     public static final int DIFF_DUMPS = 5;
     public static final int MONITORS = 6;
     public static final int MONITORS_NOLOCKS = 7;
+    public static final int CUSTOM_CATEGORY = 8;
     
     private final Icon[] icons = { TDA.createImageIcon("Threads.gif"),
                                    TDA.createImageIcon("ThreadsWaiting.gif"),
@@ -47,7 +48,8 @@ public class IconFactory {
                                    TDA.createImageIcon("Deadlock.gif"),
                                    TDA.createImageIcon("DiffDumps.gif"),
                                    TDA.createImageIcon("Monitors.gif"),
-                                   TDA.createImageIcon("Monitors-nolocks.gif")
+                                   TDA.createImageIcon("Monitors-nolocks.gif"),
+                                   TDA.createImageIcon("CustomCat.gif")
     };
     
     public static IconFactory get() {
