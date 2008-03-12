@@ -10,6 +10,7 @@ Changes from 1.6 are:
 * Custom Thread Categories.
 * New Welcome Screen.
 * Internationalisation (only english available so far).
+* Small Adjustments to support SAP JVM Dumps (slightly modified from SUN Dumps).
 * Bugfixing.
 
 Changes from 1.5 are:
