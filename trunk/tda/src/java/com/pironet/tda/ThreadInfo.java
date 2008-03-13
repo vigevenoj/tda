@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadInfo.java,v 1.8 2008-01-08 14:12:07 irockel Exp $
+ * $Id: ThreadInfo.java,v 1.9 2008-03-13 21:16:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -32,6 +32,7 @@ public class ThreadInfo extends AbstractInfo {
     private String info;
     private int stackLines;
     private String[] tokens;
+    private boolean aLotOfWaiting;
     
     public ThreadInfo(String name, String info, String content, int stackLines, String[] tableTokens) {
         setName(name);
@@ -72,5 +73,13 @@ public class ThreadInfo extends AbstractInfo {
     
     public String[] getTokens() {
         return(tokens);
-    }    
+    }
+
+    public void setALotOfWaiting(boolean b) {
+        aLotOfWaiting = b;
+    }
+    
+    public boolean areALotOfWaiting() {
+        return(aLotOfWaiting);
+    }
 }

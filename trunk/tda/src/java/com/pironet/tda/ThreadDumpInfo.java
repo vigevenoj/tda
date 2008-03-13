@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadDumpInfo.java,v 1.9 2008-03-09 06:36:51 irockel Exp $
+ * $Id: ThreadDumpInfo.java,v 1.10 2008-03-13 21:16:08 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -159,7 +159,7 @@ public class ThreadDumpInfo extends AbstractInfo {
             statData.append("In this case you should consider analyzing the Garbage Collector output. If the dump has many monitors with no locking thread<br>");
             statData.append("a click on the <a href=\"dump://\">dump node</a> will give you additional information.<br></td></tr>");
         }
-        if (waits > 5) {
+        if (areALotOfWaiting(waits)) {
             statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
             statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System " +
                     "<p>A lot of threads are waiting for this monitor to become available again.</p><br>");
@@ -169,6 +169,15 @@ public class ThreadDumpInfo extends AbstractInfo {
         statData.append("</table>");
 
         return (statData.toString());
+    }
+    
+    /**
+     * checks if a lot of threads are waiting
+     * @param waits the wait to check
+     * @return true if a lot of threads are waiting.
+     */
+    public static boolean areALotOfWaiting(int waits) {
+        return(waits > 5);
     }
     
     /**
