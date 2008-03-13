@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TreeRenderer.java,v 1.9 2007-12-08 09:58:35 irockel Exp $
+ * $Id: TreeRenderer.java,v 1.10 2008-03-13 21:16:08 irockel Exp $
  */
 
 package com.pironet.tda.utils;
@@ -63,7 +63,11 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
             if(((DefaultMutableTreeNode) value).isRoot() || isLogfile(value)) {
                 setIcon(TDA.createImageIcon("Root.gif"));
             } else if(isThreadInfo(value)) {
-                setIcon(TDA.createImageIcon("Monitor.gif"));
+                if(((ThreadInfo) ((DefaultMutableTreeNode) value).getUserObject()).areALotOfWaiting()) {
+                    setIcon(TDA.createImageIcon("MonitorRed.gif"));
+                } else {
+                    setIcon(TDA.createImageIcon("Monitor.gif"));
+                }
             } else {
                 setIcon(TDA.createImageIcon("ThreadDump.gif"));
             }

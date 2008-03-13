@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.36 2008-03-09 06:36:50 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.37 2008-03-13 21:16:08 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -631,6 +631,9 @@ public class SunJDKParser extends AbstractDumpParser {
             
             mi.setContent(ThreadDumpInfo.getMonitorInfo(locks, waits, sleeps));
             mi.setName(mi.getName() + ":    " + (sleeps) + " Thread(s) sleeping, " + (waits) + " Thread(s) waiting, " + (locks) + " Thread(s) locking");
+            if(ThreadDumpInfo.areALotOfWaiting(waits)) {
+                mi.setALotOfWaiting(true);
+            }
                         
             ((Category)catMonitors.getUserObject()).addToCatNodes(monitorNode);
             if(locks == 0) {
