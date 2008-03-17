@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.37 2008-03-13 21:16:08 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.38 2008-03-17 12:59:27 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -42,7 +42,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
 /**
- * Parses SunJDK Thread Dumps.
+ * Parses SunJDK Thread Dumps. Also parses SAP and HP Dumps.
  * Needs to be closed after use (so inner stream is closed).
  *
  * @author irockel
@@ -368,9 +368,10 @@ public class SunJDKParser extends AbstractDumpParser {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (StringIndexOutOfBoundsException e) {
+                e.printStackTrace();
                 JOptionPane.showMessageDialog(null,
                         "Error during parsing of a found thread dump, skipping to next one!\n" +
-                        "Check for possible broken dumps, sometimes, stream flushing mixes the logged data\n" +
+                        "Check for possible broken dumps, sometimes, stream flushing mixes the logged data.\n" +
                         "Error Message is \"" + e.getLocalizedMessage() + "\" \n",
                         "Error during Parsing Thread Dump", JOptionPane.ERROR_MESSAGE);
                 retry = true;
@@ -708,19 +709,36 @@ public class SunJDKParser extends AbstractDumpParser {
             tokens[6] = "<no address range>";
             
             if((name.indexOf("nid=") >= 0) && (name.indexOf(" ", name.indexOf("nid="))) >= 0) {
-                tokens[4] = String.valueOf(Long.parseLong(name.substring(name.indexOf("nid=") + 6,
-                        name.indexOf(" ", name.indexOf("nid="))), 16));
+                if(name.indexOf("nid=0x") > 0) { // is hexadecimal
+                    String nidToken = name.substring(name.indexOf("nid=") + 6,
+                        name.indexOf(" ", name.indexOf("nid=")));
+                    tokens[4] = String.valueOf(Long.parseLong(nidToken, 16));
+                } else { // is decimal
+                    String nidToken = name.substring(name.indexOf("nid=") + 4,
+                        name.indexOf(" ", name.indexOf("nid=")));
+                    tokens[4] = nidToken;
+                }
                 
                 if (name.indexOf('[') > 0) {
-                    tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1, name.indexOf('[',
-                            name.indexOf("nid=")) - 1);
+                    if(name.indexOf("lwp_id=") > 0) {
+                        tokens[5] = name.substring(name.indexOf(" ", name.indexOf("lwp_id=")) + 1, name.indexOf('[',
+                                name.indexOf("lwp_id=")) - 1);
+                    } else {
+                        tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1, name.indexOf('[',
+                                name.indexOf("nid=")) - 1);
+                    }
                     tokens[6] = name.substring(name.indexOf('['));
                 } else {
                     tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1);
                 }
             } else if(name.indexOf("nid=") >= 0) {
+                String nidToken = name.substring(name.indexOf("nid=") + 6);
                 // nid is at the end.
-                tokens[4] = String.valueOf(Long.parseLong(name.substring(name.indexOf("nid=") + 6), 16)) ;
+                if(nidToken.indexOf("0x") > 0) { // is hexadecimal
+                    tokens[4] = String.valueOf(Long.parseLong(nidToken, 16));
+                } else {
+                    tokens[4] = nidToken;
+                }
             }         
         } else {
             tokens = new String[3];
@@ -744,8 +762,7 @@ public class SunJDKParser extends AbstractDumpParser {
      * @return true, if the start of a sun thread dump is detected.
      */
     public static boolean checkForSupportedThreadDump(String logLine) {
-        return (logLine.trim().indexOf("Full thread dump Java HotSpot(TM)") >= 0 ||
-                logLine.trim().indexOf("Full thread dump SAP Java") >= 0);
+        return (logLine.trim().indexOf("Full thread dump") >= 0);
     }
     
 }

@@ -11,6 +11,7 @@ Changes from 1.6 are:
 * New Welcome Screen.
 * Internationalisation (only english available so far).
 * Small Adjustments to support SAP JVM Dumps (slightly modified from SUN Dumps).
+* Small Adjustments to support HP JVM DUmps (slightly modified from SUN Dumps).
 * Icons of monitors with high contention now have a red background (issue 13).
 * Bugfixing.
 
