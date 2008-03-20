@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.8 2008-03-08 04:44:39 rmoutinho Exp $
+ * $Id: BeaJDKParser.java,v 1.9 2008-03-20 02:35:05 rmoutinho Exp $
  */
 
 package com.pironet.tda;
@@ -112,7 +112,7 @@ public class BeaJDKParser extends AbstractDumpParser {
                 int waiting = 0;
                 int locking = 0;
                 int sleeping = 0;
-                boolean locked = true; // 
+                boolean locked = true; // true means we haven't hit the beggining of a thread dump yet
                 boolean finished = false;
                 MonitorMap mmap = new MonitorMap();
                 Stack monitorStack = new Stack();
@@ -124,9 +124,59 @@ public class BeaJDKParser extends AbstractDumpParser {
                     String line = getBis().readLine();
                     lineCounter++;
                     singleLineCounter++;
-                    if (locked) {
-                    } else {
-                        
+                    if (locked) {  // Are we outside of a thread dump ?
+                        if (line.indexOf("===== FULL THREAD DUMP ===============") >= 0) {
+                            locked = false;
+                        }
+                    } else {  // Alright we're already inside a dump
+                        if (line.startsWith("\"")) { // Did we hit a new thread ?
+                            if (title != null) { // Let's store the previous thread
+                                threads.put(title, content.toString());
+                                content.append("</pre></pre>");
+                                addToCategory(catThreads, title, null, content, singleLineCounter, true);
+                                threadCount++;
+                            }
+                            if (wContent != null) {
+                                wContent.append("</b><hr>");
+                                addToCategory(catWaiting, title, wContent, content, singleLineCounter, true);
+                                wContent = null;
+                                waiting++;
+                            }
+                            if (sContent != null) {
+                                sContent.append("</b><hr>");
+                                addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
+                                sContent = null;
+                                sleeping++;
+                            }
+                            if (lContent != null) {
+                                lContent.append("</b><hr>");
+                                addToCategory(catLocking, title, lContent, content, singleLineCounter, true);
+                                lContent = null;
+                                locking++;
+                            }
+                            singleLineCounter = 0;
+                            while (!monitorStack.empty()) {
+                                mmap.parseAndAddThread((String) monitorStack.pop(), title, content.toString());
+                            }
+
+                            title = line;
+                            content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
+                            content.append(line);
+                            content.append("\n");
+                        } else if (line.indexOf("at ") >= 0) { 
+                            content.append(line);
+                            content.append("\n");
+                        } else if (line.indexOf("-- Waiting for notification") >= 0) {
+                            String newLine = linkifyMonitor(line);
+                            content.append(newLine);
+                            if (sContent == null) {
+                                sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
+                            }
+                            sContent.append(newLine);
+                            monitorStack.push(line);
+                            sContent.append("\n");
+                            content.append("\n");
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -135,7 +185,20 @@ public class BeaJDKParser extends AbstractDumpParser {
         } while (retry); // Keep parsing until we get a full thread dump, or the file ends 
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
+    private String linkifyMonitor(String line) {
+        if(line != null && line.indexOf('@') >= 0) {
+            String begin = line.substring(0, line.indexOf('@'));
+            String monitor = line.substring(line.indexOf('@'), line.indexOf('[') + 1);
+            String end = line.substring(line.indexOf('>') + 1);
+            monitor = monitor.replaceAll("@", "<a href=\"monitor://" + monitor + "\">&lt;");
+            monitor = monitor.substring(0, monitor.length() - 1) + "&gt;</a>";
+            return(begin + monitor + end);
+        } else {
+            return(line);
+        }
+    }
+    
     public boolean isFoundClassHistograms() {
         // bea parser doesn't support class histograms
         return false;
