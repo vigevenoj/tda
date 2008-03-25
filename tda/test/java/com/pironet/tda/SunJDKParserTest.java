@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParserTest.java,v 1.7 2008-03-17 12:59:28 irockel Exp $
+ * $Id: SunJDKParserTest.java,v 1.8 2008-03-25 06:33:42 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -190,6 +190,35 @@ public class SunJDKParserTest extends TestCase {
 
             // check if two dump were found.
             assertEquals(2, topNodes.size());
+        } finally {
+            if(instance != null) {
+                instance.close();
+            }
+            if(fis != null) {
+                fis.close();
+            }
+        }
+    }
+    
+    public void testURLThreadNameDumps()  throws FileNotFoundException, IOException {
+        System.out.println("URLThreadNameDumpLoad");
+        FileInputStream fis = null;
+        DumpParser instance = null;
+        
+        try {
+            fis = new FileInputStream("test/none/urlthread.log");
+            Map dumpMap = new HashMap();
+            Vector topNodes = new Vector();
+            instance = DumpParserFactory.get().getDumpParserForLogfile(fis, dumpMap, false, 0);
+            
+            assertTrue(instance instanceof SunJDKParser);
+
+            while (instance.hasMoreDumps()) {
+                topNodes.add(instance.parseNext());
+            }
+
+            // check if two dump were found.
+            assertEquals(1, topNodes.size());
         } finally {
             if(instance != null) {
                 instance.close();
