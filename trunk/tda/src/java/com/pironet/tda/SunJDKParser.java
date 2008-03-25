@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.38 2008-03-17 12:59:27 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.39 2008-03-25 06:33:42 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -693,46 +693,49 @@ public class SunJDKParser extends AbstractDumpParser {
             tokens[0] = name.substring(1, name.lastIndexOf('"'));
             tokens[1] = name.indexOf("daemon") > 0 ? "Daemon" : "Task";
             
-            if(name.indexOf("tid=") >= 0) {
-                tokens[2] = name.substring(name.indexOf("prio=") + 5, name.indexOf("tid=") - 1);
+            String strippedToken = name.substring(name.lastIndexOf('"')+1);
+            
+            if(strippedToken.indexOf("tid=") >= 0) {
+                tokens[2] = strippedToken.substring(strippedToken.indexOf("prio=") + 5, strippedToken.indexOf("tid=") - 1);
             } else {
-                tokens[2] = name.substring(name.indexOf("prio=") + 5);
+                tokens[2] = strippedToken.substring(strippedToken.indexOf("prio=") + 5);
             }
             
-            if((name.indexOf("tid=") >= 0) && (name.indexOf("nid=") >= 0)) {
-                tokens[3] = String.valueOf(Long.parseLong(name.substring(name.indexOf("tid=") + 6, name.indexOf("nid=")-1), 16));
-            } else if(name.indexOf("tid=") >= 0) {
-                tokens[3] = String.valueOf(Long.parseLong(name.substring(name.indexOf("tid=") + 6), 16));
+            if((strippedToken.indexOf("tid=") >= 0) && (strippedToken.indexOf("nid=") >= 0)) {
+                tokens[3] = String.valueOf(Long.parseLong(strippedToken.substring(strippedToken.indexOf("tid=") + 6, 
+                        strippedToken.indexOf("nid=")-1), 16));
+            } else if(strippedToken.indexOf("tid=") >= 0) {
+                tokens[3] = String.valueOf(Long.parseLong(strippedToken.substring(strippedToken.indexOf("tid=") + 6), 16));
             }
             
             // default for token 6 is:
             tokens[6] = "<no address range>";
             
-            if((name.indexOf("nid=") >= 0) && (name.indexOf(" ", name.indexOf("nid="))) >= 0) {
-                if(name.indexOf("nid=0x") > 0) { // is hexadecimal
-                    String nidToken = name.substring(name.indexOf("nid=") + 6,
-                        name.indexOf(" ", name.indexOf("nid=")));
+            if((strippedToken.indexOf("nid=") >= 0) && (strippedToken.indexOf(" ", strippedToken.indexOf("nid="))) >= 0) {
+                if(strippedToken.indexOf("nid=0x") > 0) { // is hexadecimal
+                    String nidToken = strippedToken.substring(strippedToken.indexOf("nid=") + 6,
+                        strippedToken.indexOf(" ", strippedToken.indexOf("nid=")));
                     tokens[4] = String.valueOf(Long.parseLong(nidToken, 16));
                 } else { // is decimal
-                    String nidToken = name.substring(name.indexOf("nid=") + 4,
-                        name.indexOf(" ", name.indexOf("nid=")));
+                    String nidToken = strippedToken.substring(strippedToken.indexOf("nid=") + 4,
+                        strippedToken.indexOf(" ", strippedToken.indexOf("nid=")));
                     tokens[4] = nidToken;
                 }
                 
-                if (name.indexOf('[') > 0) {
-                    if(name.indexOf("lwp_id=") > 0) {
-                        tokens[5] = name.substring(name.indexOf(" ", name.indexOf("lwp_id=")) + 1, name.indexOf('[',
-                                name.indexOf("lwp_id=")) - 1);
+                if (strippedToken.indexOf('[') > 0) {
+                    if(strippedToken.indexOf("lwp_id=") > 0) {
+                        tokens[5] = strippedToken.substring(name.indexOf(" ", strippedToken.indexOf("lwp_id=")) + 1, strippedToken.indexOf('[',
+                                strippedToken.indexOf("lwp_id=")) - 1);
                     } else {
-                        tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1, name.indexOf('[',
-                                name.indexOf("nid=")) - 1);
+                        tokens[5] = strippedToken.substring(strippedToken.indexOf(" ", strippedToken.indexOf("nid=")) + 1, strippedToken.indexOf('[',
+                                strippedToken.indexOf("nid=")) - 1);
                     }
-                    tokens[6] = name.substring(name.indexOf('['));
+                    tokens[6] = strippedToken.substring(strippedToken.indexOf('['));
                 } else {
-                    tokens[5] = name.substring(name.indexOf(" ", name.indexOf("nid=")) + 1);
+                    tokens[5] = strippedToken.substring(strippedToken.indexOf(" ", strippedToken.indexOf("nid=")) + 1);
                 }
-            } else if(name.indexOf("nid=") >= 0) {
-                String nidToken = name.substring(name.indexOf("nid=") + 6);
+            } else if(strippedToken.indexOf("nid=") >= 0) {
+                String nidToken = strippedToken.substring(strippedToken.indexOf("nid=") + 6);
                 // nid is at the end.
                 if(nidToken.indexOf("0x") > 0) { // is hexadecimal
                     tokens[4] = String.valueOf(Long.parseLong(nidToken, 16));
