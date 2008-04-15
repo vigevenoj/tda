@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.9 2008-03-20 02:35:05 rmoutinho Exp $
+ * $Id: BeaJDKParser.java,v 1.10 2008-04-15 02:49:09 rmoutinho Exp $
  */
 
 package com.pironet.tda;
@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
@@ -129,6 +130,9 @@ public class BeaJDKParser extends AbstractDumpParser {
                             locked = false;
                         }
                     } else {  // Alright we're already inside a dump
+                        if (line.indexOf("-- end of trace")>= 0){
+                            System.out.print("x");
+                        }
                         if (line.startsWith("\"")) { // Did we hit a new thread ?
                             if (title != null) { // Let's store the previous thread
                                 threads.put(title, content.toString());
@@ -163,7 +167,7 @@ public class BeaJDKParser extends AbstractDumpParser {
                             content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
                             content.append(line);
                             content.append("\n");
-                        } else if (line.indexOf("at ") >= 0) { 
+                        } else if (line.indexOf("at ") >= 0) { // é enganado por [fat lock] 
                             content.append(line);
                             content.append("\n");
                         } else if (line.indexOf("-- Waiting for notification") >= 0) {
@@ -180,10 +184,11 @@ public class BeaJDKParser extends AbstractDumpParser {
                     }
                 }
             } catch (Exception e) {
-                
+                System.out.println(e.toString());
             }
         } while (retry); // Keep parsing until we get a full thread dump, or the file ends 
-        throw new UnsupportedOperationException("Not supported yet.");
+        return(null);
+        // throw new UnsupportedOperationException("Not supported yet.");
     }
     
     private String linkifyMonitor(String line) {
@@ -222,7 +227,23 @@ public class BeaJDKParser extends AbstractDumpParser {
         return (logLine.trim().indexOf("===== FULL THREAD DUMP ===============") >= 0);
     }
 
-    protected String[] getThreadTokens(String title) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    protected String[] getThreadTokens(String name) {
+        String patternMask = "^.*\"([^\"]+)\".*id=([^ ]+).*tid=([^ ]+).*"+
+            "prio=([^ ]+) ([^,]+, [^,]+, [^,]+)(, daemon)?$";
+        Pattern p = Pattern.compile(patternMask);
+        Matcher m = p.matcher(name);
+        System.out.println(m.matches());
+        for (int iLoop =1; iLoop < m.groupCount(); iLoop++){
+            System.out.println(iLoop+": "+m.group(iLoop));
+        }
+        
+        String[] tokens = new String[7];
+        tokens[0] = m.group(1); // name
+        tokens[2] = m.group(4); // prio
+        tokens[3] = m.group(3); // tid
+        tokens[4] = m.group(2); // nid
+        tokens[5] = m.group(5); // State
+ 
+        return (tokens);
     }
 }
