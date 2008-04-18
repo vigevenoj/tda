@@ -5,13 +5,13 @@
 
 package com.pironet.tda.utils;
 
-import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
+//import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 
 /**
  *
  * @author irockel
  */
-public class MonitorsTableModel extends AbstractTreeTableModel {
+public class MonitorsTableModel {//extends AbstractTreeTableModel {
 
     public int getColumnCount() {
         throw new UnsupportedOperationException("Not supported yet.");
