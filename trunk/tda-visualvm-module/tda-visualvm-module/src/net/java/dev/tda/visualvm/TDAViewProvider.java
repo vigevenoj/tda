@@ -15,21 +15,17 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAViewProvider.java,v 1.2 2008-03-12 10:37:36 irockel Exp $
+ * $Id: TDAViewProvider.java,v 1.3 2008-04-18 10:57:10 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
 
-import com.sun.tools.visualvm.core.datasource.Application;
-import com.sun.tools.visualvm.core.model.jmx.JmxModel;
-import com.sun.tools.visualvm.core.model.jmx.JmxModelFactory;
+import com.sun.tools.visualvm.application.Application;
 import com.sun.tools.visualvm.core.ui.DataSourceView;
-import com.sun.tools.visualvm.core.ui.DataSourceViewsProvider;
-import com.sun.tools.visualvm.core.ui.DataSourceWindowFactory;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import com.sun.tools.visualvm.core.ui.DataSourceViewProvider;
+import com.sun.tools.visualvm.core.ui.DataSourceViewsManager;
+import com.sun.tools.visualvm.tools.jmx.JmxModel;
+import com.sun.tools.visualvm.tools.jmx.JmxModelFactory;
 import javax.management.MBeanServerConnection;
 
 /**
@@ -37,24 +33,20 @@ import javax.management.MBeanServerConnection;
  * 
  * @author irockel
  */
-public class TDAViewProvider implements DataSourceViewsProvider<Application> {
-    private Map<Application, DataSourceView> viewsCache = new HashMap();
-
-    public Set<? extends DataSourceView> getViews(Application application) {
-        DataSourceView view = viewsCache.get(application);
-        if (view == null) {
-            view = new TDAView(application);
-        }
-        return Collections.singleton(view);
-    }
-
+public class TDAViewProvider extends DataSourceViewProvider<Application> {
     static void initialize() {
-        DataSourceWindowFactory.sharedInstance().addViewProvider(new TDAViewProvider(), Application.class);
+        DataSourceViewsManager.sharedInstance().addViewProvider(new TDAViewProvider(), Application.class);
     }
 
-    public boolean supportsViewsFor(Application application) {
+    @Override
+    protected boolean supportsViewFor(Application application) {
         JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
         MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
         return mbsc != null;
+    }
+
+    @Override
+    protected DataSourceView createView(Application application) {
+        return(new TDAView(application));
     }
 }

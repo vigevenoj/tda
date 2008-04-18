@@ -15,18 +15,18 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAView.java,v 1.2 2008-03-12 10:51:46 irockel Exp $
+ * $Id: TDAView.java,v 1.3 2008-04-18 10:57:09 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
 
 import com.pironet.tda.TDA;
 import com.pironet.tda.jconsole.MBeanDumper;
-import com.sun.tools.visualvm.core.datasource.Application;
-import com.sun.tools.visualvm.core.model.jmx.JmxModel;
-import com.sun.tools.visualvm.core.model.jmx.JmxModelFactory;
+import com.sun.tools.visualvm.application.Application;
 import com.sun.tools.visualvm.core.ui.DataSourceView;
 import com.sun.tools.visualvm.core.ui.components.DataViewComponent;
+import com.sun.tools.visualvm.tools.jmx.JmxModel;
+import com.sun.tools.visualvm.tools.jmx.JmxModelFactory;
 import java.io.IOException;
 import javax.management.MBeanServerConnection;
 import javax.swing.ImageIcon;
@@ -41,37 +41,26 @@ import org.openide.util.Utilities;
 public class TDAView extends DataSourceView {
     private static final String IMAGE_PATH = "net/java/dev/tda/visualvm/tda.png"; // NOI18N
     private Application application;
-    DataViewComponent view;
     
     public TDAView(Application application) {
-        super("Thread Dumps", new ImageIcon(Utilities.loadImage(IMAGE_PATH, true)).getImage(), 60);
+        super(application, "Thread Dumps", new ImageIcon(Utilities.loadImage(IMAGE_PATH, true)).getImage(), 60, false);
 
         this.application = application;
-        
-        initComponent();
     }
 
     @Override
-    public DataViewComponent getView() {
-        // return tda view.
-        return(view);
-    }
-
-    /**
-     * init tda display component
-     */
-    private void initComponent() {
-        if(view == null) {
-            try {
-                JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
-                MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
-                TDA tdaPanel = new TDA(false, new MBeanDumper(mbsc));
-                tdaPanel.init(true, true);
-
-                view = new DataViewComponent(new DataViewComponent.MasterView("Thread Dumps", null, tdaPanel), new DataViewComponent.MasterViewConfiguration(true));
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
+    protected DataViewComponent createComponent() {
+        JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
+        MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
+        TDA tdaPanel = null;
+        try {
+            tdaPanel = new TDA(false, new MBeanDumper(mbsc));
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
+        tdaPanel.init(true, true);
+
+        return(new DataViewComponent(new DataViewComponent.MasterView("Thread Dumps", null, tdaPanel), 
+                new DataViewComponent.MasterViewConfiguration(true)));
     }
 }
