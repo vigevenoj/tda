@@ -17,11 +17,12 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PopupMenu.java,v 1.5 2007-11-09 16:09:31 irockel Exp $
+ * $Id: PopupMenu.java,v 1.6 2008-04-27 20:31:13 irockel Exp $
  */
 
 package com.pironet.tda.utils.jedit;
 
+import com.pironet.tda.TDA;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,14 +39,14 @@ import javax.swing.KeyStroke;
  */
 public class PopupMenu extends JPopupMenu implements ActionListener {
     private JEditTextArea ref;
-    private JPanel parent;
+    private TDA parent;
     private JMenuItem againMenuItem;
     private JMenuItem copyMenuItem;
     private JMenuItem selectNoneMenuItem;
     
     private String searchString;
     
-    public PopupMenu(JEditTextArea ref, JPanel parent) {
+    public PopupMenu(JEditTextArea ref, TDA parent, boolean showSave) {
         JMenuItem menuItem;
         
         menuItem = new JMenuItem("Goto Line...");
@@ -70,6 +71,12 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
         selectNoneMenuItem = new JMenuItem("Select None");
         selectNoneMenuItem.addActionListener(this);
         add(selectNoneMenuItem);
+        if(showSave) {
+            this.addSeparator();
+            menuItem = new JMenuItem("Save Logfile...");
+            menuItem.addActionListener(this);
+            add(menuItem);
+        }
         
         this.ref = ref;
         this.parent = parent;
@@ -90,6 +97,8 @@ public class PopupMenu extends JPopupMenu implements ActionListener {
                 ref.selectAll();
             } else if (source.getText().startsWith("Select None")) {
                 ref.selectNone();
+            } else if (source.getText().startsWith("Save Logfile...")) {
+                parent.saveLogFile();
             }
         } else if(e.getSource() instanceof JEditTextArea) {
             // only one key binding

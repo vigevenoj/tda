@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadsTableModel.java,v 1.5 2008-01-15 13:44:27 irockel Exp $
+ * $Id: ThreadsTableModel.java,v 1.6 2008-04-27 20:31:14 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -53,7 +53,7 @@ public class ThreadsTableModel extends AbstractTableModel {
                     if(ti.getTokens().length > 3) {
                         columnNames = new String[] {"Name", "Type", "Prio", "Thread-ID", "Native-ID", "State", "Address Range"};
                     } else {
-                        columnNames = new String[] {"Name", "Native-ID", "State"};
+                        columnNames = new String[] {"Name", "Thread-ID", "State"};
                     }
                 }
             }

@@ -17,9 +17,8 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.9 2008-01-20 12:00:40 irockel Exp $
+ * $Id: FilterDialog.java,v 1.10 2008-04-27 20:31:14 irockel Exp $
  */
-
 package com.pironet.tda;
 
 import com.pironet.tda.utils.PrefManager;
@@ -46,11 +45,12 @@ import javax.swing.event.ListSelectionListener;
  * @author irockel
  */
 public class FilterDialog extends JDialog {
+
     private FilterPanel filterPanel;
     private JPanel buttonPanel;
     private JButton closeButton;
     private JFrame frame;
-    
+
     /**
      * Creates a new instance of PreferencesDialog
      */
@@ -59,24 +59,25 @@ public class FilterDialog extends JDialog {
         try {
             setIconImage(TDA.createImageIcon("Filters.gif").getImage());
         } catch (NoSuchMethodError nsme) {
-        // ignore, for 1.4 backward compatibility
+            // ignore, for 1.4 backward compatibility
         }
 
         frame = owner;
         getContentPane().setLayout(new BorderLayout());
-        initPanel();  
+        initPanel();
     }
-    
+
     private void initPanel() {
         filterPanel = new FilterPanel((JFrame) this.getOwner());
-        getContentPane().add(filterPanel,BorderLayout.CENTER);
+        getContentPane().add(filterPanel, BorderLayout.CENTER);
         closeButton = new JButton("Close");
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(closeButton);
         //buttonPanel.add(cancelButton);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-        
-        closeButton.addActionListener( new ActionListener() {
+
+        closeButton.addActionListener(new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
                 PrefManager.get().setFilters((DefaultListModel) filterPanel.filterList.getModel());
@@ -85,102 +86,101 @@ public class FilterDialog extends JDialog {
         });
         reset();
     }
-    
+
     public void reset() {
         getRootPane().setDefaultButton(closeButton);
     }
-    
-    class FilterPanel extends JPanel implements ActionListener, ListSelectionListener  {
+
+    public static class FilterPanel extends JPanel implements ActionListener, ListSelectionListener {
+
         JButton addButton = null;
         JButton removeButton = null;
         JButton editButton = null;
-        
         JPanel buttonFlow = null;
-        
         JList filterList = null;
-        
         JScrollPane scrollPane = null;
-        
-        JFrame owner = null; 
-        
+        JFrame owner = null;
+
         public FilterPanel(JFrame owner) {
             this.owner = owner;
             setLayout(new BorderLayout());
-            
+
             buttonFlow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             add(Box.createVerticalStrut(5), BorderLayout.NORTH);
-            add(Box.createHorizontalStrut(5),BorderLayout.WEST);
+            add(Box.createHorizontalStrut(5), BorderLayout.WEST);
             JPanel innerButtonPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-            
+
             innerButtonPanel.add(addButton = new JButton("Add"));
             innerButtonPanel.add(removeButton = new JButton("Remove"));
             innerButtonPanel.add(editButton = new JButton("Edit"));
             removeButton.setEnabled(false);
             editButton.setEnabled(false);
-            
+
             addButton.addActionListener(this);
             removeButton.addActionListener(this);
             editButton.addActionListener(this);
-            
+
             buttonFlow.add(innerButtonPanel);
-            
-            add(buttonFlow,BorderLayout.EAST);
+
+            add(buttonFlow, BorderLayout.EAST);
             setPreferredSize(new Dimension(380, 290));
-            
+
             //createList();
-            filterList = new JList(PrefManager.get().getFilters());            
+            filterList = new JList(PrefManager.get().getFilters());
             scrollPane = new JScrollPane(filterList);
             filterList.addListSelectionListener(this);
-            
-            add(scrollPane,BorderLayout.CENTER);
-            
+
+            add(scrollPane, BorderLayout.CENTER);
+
         }
-        
+
         public void createList() {
             int selectedIndex = -1;
-            if(filterList != null) {
-               selectedIndex = filterList.getSelectedIndex();
+            if (filterList != null) {
+                selectedIndex = filterList.getSelectedIndex();
             }
-            
-            if(selectedIndex > -1) {
+
+            if (selectedIndex > -1) {
                 filterList.setSelectedIndex(selectedIndex);
             }
         }
-        
+
         public void actionPerformed(ActionEvent e) {
             String cmd = e.getActionCommand();
-            
+
             if ("Add".equals(cmd)) {
                 createFilterDialog("Add Filter", true, -1);
-            } else if("Edit".equals(cmd)) {
+            } else if ("Edit".equals(cmd)) {
                 createFilterDialog("Edit Filter", false, filterList.getSelectedIndex());
-            } else if("Remove".equals(cmd)) {
+            } else if ("Remove".equals(cmd)) {
                 removeFilter();
             }
         }
-        
+
         private void removeFilter() {
-            if(JOptionPane.showConfirmDialog(null, "Are you sure, you want to remove the selected filter?", "Confirm Remove",  
+            if (JOptionPane.showConfirmDialog(null, "Are you sure, you want to remove the selected filter?", "Confirm Remove",
                     JOptionPane.YES_NO_OPTION) == 0) {
                 ((DefaultListModel) filterList.getModel()).removeElementAt(filterList.getSelectedIndex());
             }
         }
-        
+
         private void createFilterDialog(String title, boolean isAdd, int selectedIndex) {
             EditFilterDialog fDiag = new EditFilterDialog(owner, title, filterList, isAdd);
             fDiag.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            
-            owner.setEnabled(false);
-            
+
+            if (owner != null) {
+                owner.setEnabled(false);
+            }
+
             //Display the window.
             fDiag.reset();
             fDiag.pack();
-            fDiag.setLocationRelativeTo(frame);
+            fDiag.setLocationRelativeTo(owner);
             fDiag.setVisible(true);
         }
-        
+
         public void valueChanged(ListSelectionEvent e) {
-            if(filterList.getSelectedIndex() >= 0) {
+            if (filterList.getSelectedIndex() >= 0) {
                 removeButton.setEnabled(true);
                 editButton.setEnabled(true);
             } else {
@@ -189,10 +189,8 @@ public class FilterDialog extends JDialog {
             }
         }
     }
-        
+
     //Must be called from the event-dispatching thread.
     public void resetFocus() {
-    }    
-
-
+    }
 }

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: StatusBar.java,v 1.4 2007-11-02 14:56:20 irockel Exp $
+ * $Id: StatusBar.java,v 1.5 2008-04-27 20:31:14 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -53,6 +53,8 @@ public class StatusBar extends JPanel {
             JPanel iconPanel = new JPanel(new BorderLayout());
             iconPanel.add(new JLabel(new AngledLinesWindowsCornerIcon()), BorderLayout.SOUTH);
             add(iconPanel, BorderLayout.EAST);
+        } else { // plugin mode
+            setBackground(Color.WHITE);
         }
     }
     
@@ -68,6 +70,7 @@ public class StatusBar extends JPanel {
         FlowLayout fl = new FlowLayout(FlowLayout.LEFT);
         fl.setHgap(5);
         JPanel infoPanel = new JPanel(fl);
+        infoPanel.setOpaque(false);
         infoPanel.add(infoLabel);
         
         return(infoPanel);
