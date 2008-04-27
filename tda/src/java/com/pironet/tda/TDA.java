@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.169 2008-03-12 09:50:53 irockel Exp $
+ * $Id: TDA.java,v 1.170 2008-04-27 20:31:14 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -33,9 +33,11 @@ import com.pironet.tda.utils.TableSorter;
 import com.pironet.tda.utils.ThreadsTableModel;
 import com.pironet.tda.utils.ThreadsTableSelectionModel;
 import com.pironet.tda.utils.TreeRenderer;
+import com.pironet.tda.utils.ViewScrollPane;
 import com.pironet.tda.utils.jedit.JEditTextArea;
 import com.pironet.tda.utils.jedit.PopupMenu;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTargetDropEvent;
@@ -82,7 +84,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -90,6 +91,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -144,9 +146,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     protected JSplitPane topSplitPane;
     private DumpStore dumpStore;
     private Vector topNodes;
-    private JScrollPane htmlView;
-    private JScrollPane tableView;
-    private JScrollPane dumpView;
+    private ViewScrollPane htmlView;
+    private ViewScrollPane tableView;
+    private ViewScrollPane dumpView;
     private JTextField filter;
     private JCheckBox checkCase;
     private PreferencesDialog prefsDialog;
@@ -200,6 +202,11 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         
         this.mBeanDumper = mBeanDumper;
     }
+    
+    public TDA(boolean setLF, String dumpFile) {
+        this(setLF);
+        TDA.dumpFile = dumpFile;
+    }
 
     /**
      * initializes tda panel
@@ -213,16 +220,19 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         runningAsVisualVMPlugin = asVisualVMPlugin;
         
         //Create the HTML viewing pane.
-        URL tutURL = TDA.class.getResource("doc/welcome.html");
-        try {
-            htmlPane = new JEditorPane(tutURL);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        if(!this.runningAsVisualVMPlugin) {
+            URL tutURL = TDA.class.getResource("doc/welcome.html");
+            try {
+                htmlPane = new JEditorPane(tutURL);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            htmlPane = new JEditorPane("text/html", "<html><body bgcolor=\"ffffff\"></body></html>");
         }
-        //htmlPane = new JEditorPane("text/html", getInfoText());
         htmlPane.setEditable(false);
         
-        if(!asJConsolePlugin) {
+        if(!asJConsolePlugin && !asVisualVMPlugin) {
             hdt = new DropTarget(htmlPane, new FileDropTargetListener());
         }
         
@@ -275,19 +285,36 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         });
 
         
-        htmlView = new JScrollPane(htmlPane);
-        JScrollPane emptyView = new JScrollPane(emptyPane);
+        htmlView = new ViewScrollPane(htmlPane, runningAsVisualVMPlugin);
+        ViewScrollPane emptyView = new ViewScrollPane(emptyPane, runningAsVisualVMPlugin);
         
         // create the top split pane
         topSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         topSplitPane.setLeftComponent(emptyView);
         topSplitPane.setDividerSize(DIVIDER_SIZE);
+        topSplitPane.setContinuousLayout(true);
         
         //Add the scroll panes to a split pane.
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setBottomComponent(htmlView);
         splitPane.setTopComponent(topSplitPane);
         splitPane.setDividerSize(DIVIDER_SIZE);
+        splitPane.setContinuousLayout(true);
+        
+        if(this.runningAsVisualVMPlugin) {
+            setOpaque(true);
+            setBackground(Color.WHITE);            
+            setBorder(BorderFactory.createEmptyBorder(6, 0, 3, 0));
+            topSplitPane.setBorder(BorderFactory.createEmptyBorder());
+            topSplitPane.setOpaque(false);
+            topSplitPane.setBackground(Color.WHITE);
+            htmlPane.setBorder(BorderFactory.createEmptyBorder());
+            htmlPane.setOpaque(false);
+            htmlPane.setBackground(Color.WHITE);
+            splitPane.setBorder(BorderFactory.createEmptyBorder());
+            splitPane.setOpaque(false);
+            splitPane.setBackground(Color.WHITE);
+        }
         
         Dimension minimumSize = new Dimension(200, 50);
         htmlView.setMinimumSize(minimumSize);
@@ -302,7 +329,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         firstFile = true;
         setFileOpen(false);
         
-        setShowToolbar(PrefManager.get().getShowToolbar());        
+        if(!runningAsVisualVMPlugin) {
+            setShowToolbar(PrefManager.get().getShowToolbar());        
+        }
         
         if(firstFile && runningAsVisualVMPlugin) {
             // init filechooser
@@ -312,7 +341,10 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
     }
 
-   private void addMXBeanDump() {
+    /**
+     * request jmx dump
+     */
+    public LogFileContent addMXBeanDump() {
         String dump = mBeanDumper.threadDump();
         String locks = mBeanDumper.findDeadlock();
         
@@ -326,19 +358,25 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
         addDumpStream(new ByteArrayInputStream(dump.getBytes()), "Logfile", false);
         dumpCounter++;
-        addToLogfile(dump);
+        LogFileContent lfc = addToLogfile(dump);
         
-        this.getRootPane().revalidate();
+        if(this.getRootPane() != null) {
+            this.getRootPane().revalidate();
+        }
         tree.setShowsRootHandles(false);
         displayContent(null);
-        getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
-        getMainMenu().getExpandButton().setEnabled(true);
-        getMainMenu().getCollapseButton().setEnabled(true);
-
+        
+        if(!this.runningAsVisualVMPlugin) {
+            getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
+            getMainMenu().getExpandButton().setEnabled(true);
+            getMainMenu().getCollapseButton().setEnabled(true);
+        }
+        return(lfc);
     }
 
-    private void addToLogfile(String dump) {
+    private LogFileContent addToLogfile(String dump) {
         ((LogFileContent) logFile.getUserObject()).appendToContentBuffer(dump);
+        return(((LogFileContent) logFile.getUserObject()));
     }
     
     /**
@@ -380,7 +418,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      * expand all dump nodes in the root tree
      * @param expand true=expand, false=collapse.
      */
-    private void expandAllDumpNodes(boolean expand) {
+    public void expandAllDumpNodes(boolean expand) {
         TreeNode root = (TreeNode)tree.getModel().getRoot();
         expandAll(tree, new TreePath(root), expand);
     }
@@ -634,6 +672,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             getMainMenu().getCloseAllMenuItem().setEnabled(true);
             getMainMenu().getExpandAllMenuItem().setEnabled(true);
             getMainMenu().getCollapseAllMenuItem().setEnabled(true);
+        }
+        if(!runningAsJConsolePlugin) {
             if(dumpFile != null) {
                 addDumpFile();
             }
@@ -706,7 +746,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         
         if ((!withLogfile && logFile == null) || isLogfileSizeOk(file)) {
             logFile = new DefaultMutableTreeNode(new LogFileContent(file));
-            top.add(logFile);
+            if(!runningAsVisualVMPlugin) {
+                top.add(logFile);
+            }
         }
         setFileOpen(true);
 
@@ -761,7 +803,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         tree.setCellRenderer(new TreeRenderer());
         
         //Create the scroll pane and add the tree to it.
-        JScrollPane treeView = new JScrollPane(tree);
+        ViewScrollPane treeView = new ViewScrollPane(tree, runningAsVisualVMPlugin);
         
         topSplitPane.setLeftComponent(treeView);
         
@@ -771,7 +813,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
         
-        if(!runningAsJConsolePlugin) {
+        if(!runningAsJConsolePlugin && !runningAsVisualVMPlugin) {
             dt = new DropTarget(tree, new FileDropTargetListener());
         }
         
@@ -785,7 +827,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      */
     private void addTreeListener(JTree tree) {
         tree.addTreeSelectionListener(new TreeSelectionListener() {
-            JScrollPane emptyView = null;
+            ViewScrollPane emptyView = null;
 
             public void valueChanged(TreeSelectionEvent e) {
                 getMainMenu().getCloseMenuItem().setEnabled(e.getPath() != null);
@@ -798,7 +840,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                     JEditorPane emptyPane = new JEditorPane("text/html", "<html><body bgcolor=\"ffffff\">   </body></html>");
                     emptyPane.setEditable(false);
 
-                    emptyView = new JScrollPane(emptyPane);
+                    emptyView = new ViewScrollPane(emptyPane, runningAsVisualVMPlugin);                    
                 }
 
                 if(e.getPath() == null || 
@@ -940,7 +982,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         jeditPane.setEditable(false);
         jeditPane.setCaretVisible(false);
         jeditPane.setCaretBlinkEnabled(false);
-        jeditPane.setRightClickPopup(new PopupMenu(jeditPane, this));
+        jeditPane.setRightClickPopup(new PopupMenu(jeditPane, this, runningAsVisualVMPlugin));
         jeditPane.getInputHandler().addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), (ActionListener) jeditPane.getRightClickPopup());
         jeditPane.getInputHandler().addKeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), (ActionListener) jeditPane.getRightClickPopup());
     }
@@ -967,7 +1009,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             } else {
                 catComp.addMouseListener(getCatPopupMenu());
             }
-            dumpView = new JScrollPane(catComp);
+            dumpView = new ViewScrollPane(catComp, runningAsVisualVMPlugin);
             if(size != null) {
                 dumpView.setPreferredSize(size);
             }
@@ -1021,8 +1063,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         histogramTable = new JTable(ts);
         ts.setTableHeader(histogramTable.getTableHeader());
         histogramTable.getColumnModel().getColumn(0).setPreferredWidth(700);
-        tableView = new JScrollPane(histogramTable);
-        
+        tableView = new ViewScrollPane(histogramTable, runningAsVisualVMPlugin);
+
         JPanel histogramView = new JPanel(new BorderLayout());
         JPanel histoStatView = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         Font font = new Font("SansSerif", Font.PLAIN, 10);
@@ -1111,7 +1153,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 dumpMap = new HashMap();
                 dumpStore.addFileToDumpFiles(fileName, dumpMap);
             }
-            dp = DumpParserFactory.get().getDumpParserForLogfile(dumpFileStream, dumpMap, runningAsJConsolePlugin || runningAsVisualVMPlugin, 
+            dp = DumpParserFactory.get().getDumpParserForLogfile(dumpFileStream, dumpMap, runningAsJConsolePlugin, 
                     dumpCounter);
             ((Logfile) top.getUserObject()).setUsedParser(dp);
             
@@ -1282,7 +1324,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         showDumpMenuItem = new JMenuItem("Show selected Dump in logfile");
         showDumpMenuItem.addActionListener(this);
         showDumpMenuItem.setEnabled(false);
-        if(!runningAsJConsolePlugin) {
+        if(!runningAsJConsolePlugin && !runningAsVisualVMPlugin) {
             popup.addSeparator();
             menuItem = new JMenuItem("Parse loggc-logfile...");
             menuItem.addActionListener(this);
@@ -1298,29 +1340,31 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             popup.add(showDumpMenuItem);
         } else {
             popup.addSeparator();
-            menuItem = new JMenuItem("Request Thread Dump...");
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            popup.addSeparator();
-            menuItem = new JMenuItem("Preferences");
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            menuItem = new JMenuItem("Filters");
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            popup.addSeparator();
-            menuItem = new JMenuItem("Save Logfile...");
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            popup.addSeparator();
-            menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            popup.addSeparator();
-            menuItem = new JMenuItem("Help");
-            menuItem.addActionListener(this);
-            popup.add(menuItem);
-            popup.addSeparator();
+            if(!runningAsVisualVMPlugin) {
+                menuItem = new JMenuItem("Request Thread Dump...");
+                menuItem.addActionListener(this);
+                popup.add(menuItem);
+                popup.addSeparator();
+                menuItem = new JMenuItem("Preferences");
+                menuItem.addActionListener(this);
+                popup.add(menuItem);
+                menuItem = new JMenuItem("Filters");
+                menuItem.addActionListener(this);
+                popup.add(menuItem);
+                popup.addSeparator();
+                menuItem = new JMenuItem("Save Logfile...");
+                menuItem.addActionListener(this);
+                popup.add(menuItem);
+                popup.addSeparator();
+                menuItem = new JCheckBoxMenuItem("Show Toolbar", PrefManager.get().getShowToolbar());
+                menuItem.addActionListener(this);
+                popup.add(menuItem);
+                popup.addSeparator();
+                menuItem = new JMenuItem("Help");
+                menuItem.addActionListener(this);
+                popup.add(menuItem);
+                popup.addSeparator();
+            }
             menuItem = new JMenuItem("About TDA");
             menuItem.addActionListener(this);
             popup.add(menuItem);
@@ -1608,7 +1652,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         prefsDialog.setVisible(true);
     }
     
-    private void showFilterDialog() {
+    public void showFilterDialog() {
         
         //Create and set up the window.
         if(filterDialog == null) {
@@ -1651,7 +1695,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     /**
      * save the current logfile (only used in plugin mode)
      */
-    private void saveLogFile() {
+    public void saveLogFile() {
         if(fc == null) {
             fc = new JFileChooser();
             fc.setMultiSelectionEnabled(true);

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditCustomCategoryDialog.java,v 1.1 2008-03-09 06:36:50 irockel Exp $
+ * $Id: EditCustomCategoryDialog.java,v 1.2 2008-04-27 20:31:13 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -87,7 +87,9 @@ public class EditCustomCategoryDialog extends JDialog {
         
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
+                if(frame != null) {
+                    frame.setEnabled(true);
+                }
                 if(!isAdd) {
                     CustomCategory cat = (CustomCategory) catList.getModel().getElementAt(catList.getSelectedIndex());
                     applyCat(cat);
@@ -105,7 +107,9 @@ public class EditCustomCategoryDialog extends JDialog {
         
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
+                if(frame != null) {
+                    frame.setEnabled(true);
+                }
                 dispose();
             }
         });

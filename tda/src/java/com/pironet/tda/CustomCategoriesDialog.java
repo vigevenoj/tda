@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: CustomCategoriesDialog.java,v 1.1 2008-03-09 06:36:50 irockel Exp $
+ * $Id: CustomCategoriesDialog.java,v 1.2 2008-04-27 20:31:13 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -44,7 +44,7 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author irockel
  */
-class CustomCategoriesDialog extends JDialog {
+public class CustomCategoriesDialog extends JDialog {
     private CategoriesPanel categoriesPanel;
     private JPanel buttonPanel;
     private JButton closeButton;
@@ -76,7 +76,9 @@ class CustomCategoriesDialog extends JDialog {
         
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
+                if(frame != null) {
+                    frame.setEnabled(true);
+                }
                 PrefManager.get().setCategories((DefaultListModel) categoriesPanel.categoriesList.getModel());
                 dispose();
             }
@@ -88,7 +90,7 @@ class CustomCategoriesDialog extends JDialog {
         getRootPane().setDefaultButton(closeButton);
     }
     
-    class CategoriesPanel extends JPanel implements ActionListener, ListSelectionListener  {
+    public static class CategoriesPanel extends JPanel implements ActionListener, ListSelectionListener  {
         JButton addButton = null;
         JButton removeButton = null;
         JButton editButton = null;
@@ -168,12 +170,14 @@ class CustomCategoriesDialog extends JDialog {
             EditCustomCategoryDialog fDiag = new EditCustomCategoryDialog(owner, title, categoriesList, isAdd);
             fDiag.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             
-            owner.setEnabled(false);
+            if(owner != null) {
+                owner.setEnabled(false);
+            }
             
             //Display the window.
             fDiag.reset();
             fDiag.pack();
-            fDiag.setLocationRelativeTo(frame);
+            fDiag.setLocationRelativeTo(owner);
             fDiag.setVisible(true);
         }
         

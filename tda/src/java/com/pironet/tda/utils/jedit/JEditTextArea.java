@@ -46,7 +46,7 @@ import java.util.Vector;
  *     + "}");</pre>
  *
  * @author Slava Pestov
- * @version $Id: JEditTextArea.java,v 1.3 2007-11-09 14:20:57 irockel Exp $
+ * @version $Id: JEditTextArea.java,v 1.4 2008-04-27 20:31:13 irockel Exp $
  */
 public class JEditTextArea extends JComponent {
     /**
@@ -1368,8 +1368,8 @@ public class JEditTextArea extends JComponent {
     protected static String CENTER = "center";
     protected static String RIGHT = "right";
     protected static String BOTTOM = "bottom";
-    protected static JEditTextArea focusedComponent;
-    protected static Timer caretTimer;
+    protected JEditTextArea focusedComponent;
+    protected Timer caretTimer;
     protected TextAreaPainter painter;
     protected JPopupMenu popup;
     protected EventListenerList listenerList;
@@ -1564,7 +1564,7 @@ public class JEditTextArea extends JComponent {
         private Vector leftOfScrollBar = new Vector();
     }
 
-    static class CaretBlinker implements ActionListener {
+    class CaretBlinker implements ActionListener {
 
         public void actionPerformed(ActionEvent evt) {
             if (focusedComponent != null && focusedComponent.hasFocus()) {
@@ -1882,7 +1882,8 @@ public class JEditTextArea extends JComponent {
             }
         }
     }
-    static {
+    
+    {
         caretTimer = new Timer(500, new CaretBlinker());
         caretTimer.setInitialDelay(500);
         caretTimer.start();

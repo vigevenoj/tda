@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.10 2008-03-09 06:36:51 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.11 2008-04-27 20:31:14 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -81,7 +81,9 @@ public class EditFilterDialog extends JDialog {
         
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
+                if(frame != null) {
+                    frame.setEnabled(true);
+                }
                 if(!isAdd) {
                     Filter filter = (Filter) filterList.getModel().getElementAt(filterList.getSelectedIndex());
                     applyFilter(filter);
@@ -99,7 +101,9 @@ public class EditFilterDialog extends JDialog {
         
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
+                if(frame != null) {
+                    frame.setEnabled(true);
+                }
                 dispose();
             }
         });

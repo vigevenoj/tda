@@ -16,7 +16,7 @@ public class ResourceManager {
     
     public static String translate(String key) {
         if(locale == null) {
-            locale = ResourceBundle.getBundle("locale");
+            locale = ResourceBundle.getBundle("com/pironet/tda/locale");
         }
         
         return(locale.getString(key));

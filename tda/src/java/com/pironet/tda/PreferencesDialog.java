@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PreferencesDialog.java,v 1.20 2008-01-20 12:00:40 irockel Exp $
+ * $Id: PreferencesDialog.java,v 1.21 2008-04-27 20:31:14 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -68,6 +68,10 @@ public class PreferencesDialog extends JDialog {
         initPanel();        
     }
     
+    public JTabbedPane getPane() {
+        return(prefsPane);
+    }
+    
     private void initPanel() {
         prefsPane = new JTabbedPane();
         generalPanel = new GeneralPanel();
@@ -75,26 +79,33 @@ public class PreferencesDialog extends JDialog {
         prefsPane.addTab("General", generalPanel);
         prefsPane.addTab("Date Parsing", regExPanel);
         getContentPane().add(prefsPane,BorderLayout.CENTER);
-        okButton = new JButton("Ok");
-        cancelButton = new JButton("Cancel");
-        buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         
-        okButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
-                saveSettings();
-            }
-        });
-        
-        cancelButton.addActionListener( new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.setEnabled(true);
-                dispose();
-            }
-        });
+        // only add buttons if there is an owner frame
+        // otherwise we are running in visualvm
+        if(frame != null) {
+            okButton = new JButton("Ok");
+            cancelButton = new JButton("Cancel");
+            buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            buttonPanel.add(okButton);
+            buttonPanel.add(cancelButton);
+            getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+            okButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    frame.setEnabled(true);
+                    saveSettings();
+                }
+            });
+
+            cancelButton.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    frame.setEnabled(true);
+                    dispose();
+                }
+            });
+        }
         reset();
     }
     
@@ -103,7 +114,7 @@ public class PreferencesDialog extends JDialog {
         loadSettings();
     }
     
-    private void loadSettings() {
+    public void loadSettings() {
         generalPanel.forceLoggcLoading.setSelected(PrefManager.get().getForceLoggcLoading());
         generalPanel.maxLinesField.setText(String.valueOf(PrefManager.get().getMaxRows()));
         generalPanel.bufferField.setText(String.valueOf(PrefManager.get().getStreamResetBuffer()));
@@ -123,7 +134,7 @@ public class PreferencesDialog extends JDialog {
         regExPanel.isMillisTimeStamp.setSelected(PrefManager.get().getMillisTimeStamp());
     }
     
-    private void saveSettings() {
+    public void saveSettings() {
         PrefManager.get().setForceLoggcLoading(generalPanel.forceLoggcLoading.isSelected());
         PrefManager.get().setMaxRows(Integer.parseInt(generalPanel.maxLinesField.getText()));
         PrefManager.get().setStreamResetBuffer(Integer.parseInt(generalPanel.bufferField.getText()));
@@ -146,47 +157,49 @@ public class PreferencesDialog extends JDialog {
         JCheckBox useGTKLF;
         
         public GeneralPanel() {
-            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            //setPreferredSize(new Dimension(580, 190));
-            
+            setLayout(new FlowLayout(FlowLayout.RIGHT));
+            JPanel innerPanel = new JPanel();
+            innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
+                        
             JPanel layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Maximum amount of lines to check for\n class histogram or possible deadlock informations"));
             maxLinesField = new JTextField(3);
             layoutPanel.add(maxLinesField);
-            add(layoutPanel);
+            innerPanel.add(layoutPanel);
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Stream Reset Buffer Size (in bytes)"));
             bufferField = new JTextField(10);
             layoutPanel.add(bufferField);
             bufferField.setHorizontalAlignment(JTextField.RIGHT);
-            add(layoutPanel);
+            innerPanel.add(layoutPanel);
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Force Open Loggc Option even if class histograms were found in general logfile"));
             forceLoggcLoading = new JCheckBox();
             layoutPanel.add(forceLoggcLoading);
-            add(layoutPanel);
+            innerPanel.add(layoutPanel);
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Maximum logfile size in kbytes to display\n full logfile (set to 0 for unlimited size)"));
             maxLogfileSizeField = new JTextField(10);
             maxLogfileSizeField.setHorizontalAlignment(JTextField.RIGHT);
             layoutPanel.add(maxLogfileSizeField);
-            add(layoutPanel);
+            innerPanel.add(layoutPanel);
             
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Show internal hotspot classes in class histograms"));
             showHotspotClasses = new JCheckBox();
             layoutPanel.add(showHotspotClasses);
-            add(layoutPanel);
+            innerPanel.add(layoutPanel);
             
             layoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             layoutPanel.add(new JLabel("Use GTK Look and Feel on Unix/Linux (only recommended with JDK 1.6)"));
             useGTKLF = new JCheckBox();
             layoutPanel.add(useGTKLF);
-            add(layoutPanel);
+            innerPanel.add(layoutPanel);
+            add(innerPanel);
         }
     }
     
