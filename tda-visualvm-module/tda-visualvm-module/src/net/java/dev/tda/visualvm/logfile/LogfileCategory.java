@@ -15,26 +15,26 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Install.java,v 1.2 2008-04-27 20:32:33 irockel Exp $
+ * $Id: LogfileCategory.java,v 1.1 2008-04-27 20:32:34 irockel Exp $
  */
-package net.java.dev.tda.visualvm;
+package net.java.dev.tda.visualvm.logfile;
 
-import net.java.dev.tda.visualvm.logfile.LogfileProvider;
-import org.openide.modules.ModuleInstall;
+import com.sun.tools.visualvm.core.snapshot.SnapshotCategory;
+import net.java.dev.tda.visualvm.TDAView;
+import org.openide.util.NbBundle;
 
 /**
  *
  * @author irockel
  */
-public class Install extends ModuleInstall {
+public class LogfileCategory extends SnapshotCategory<Logfile> {
     
-    @Override
-    public void restored() {
-        try {
-            TDAViewProvider.initialize();
-            LogfileProvider.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private static final String NAME = NbBundle.getMessage(TDAView.class, "LBL_Logfile");   // NOI18N
+    private static final String PREFIX = NbBundle.getMessage(TDAView.class, "LBL_Prefix");
+    private static final String SUFFIX = null;
+    
+    public LogfileCategory() {
+        super(NAME, Logfile.class, PREFIX, SUFFIX, POSITION_NONE);
     }
+
 }

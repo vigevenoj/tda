@@ -15,111 +15,93 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAView.java,v 1.4 2008-04-27 20:32:33 irockel Exp $
+ * $Id: LogfileDumpView.java,v 1.1 2008-04-27 20:32:34 irockel Exp $
  */
+package net.java.dev.tda.visualvm.logfile;
 
-package net.java.dev.tda.visualvm;
-
-import com.pironet.tda.LogFileContent;
 import com.pironet.tda.TDA;
-import com.pironet.tda.jconsole.MBeanDumper;
-import com.sun.tools.visualvm.application.Application;
+import com.pironet.tda.utils.PrefManager;
 import com.sun.tools.visualvm.core.ui.DataSourceView;
 import com.sun.tools.visualvm.core.ui.components.DataViewComponent;
-import com.sun.tools.visualvm.tools.jmx.JmxModel;
-import com.sun.tools.visualvm.tools.jmx.JmxModelFactory;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import javax.management.MBeanServerConnection;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import net.java.dev.tda.visualvm.TDAView;
+import net.java.dev.tda.visualvm.LogPanel;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
 /**
- * tda main display view for visualvm.
- * 
- * @author Ingo Rockel <mailto:irockel@dev.java.net>
+ *
+ * @author irockel
  */
-public class TDAView extends DataSourceView {
-    private static final String IMAGE_PATH = "net/java/dev/tda/visualvm/resources/tda.gif"; // NOI18N
-    private Application application;
-    
-    private JButton requestDumpButton = null;
-    private JButton collapseAllButton = null;
-    private JButton expandAllButton = null;
-    private TDA tdaPanel = null;
+public class LogfileDumpView extends DataSourceView {
+    private static final String IMAGE_PATH = "net/java/dev/tda/visualvm/resources/logfile.gif";  // NOI18N
+    private Logfile logfile;
+    private TDA tdaPanel;
+    private JButton collapseAllButton;
+    private JButton expandAllButton;
     private LogPanel logPanel = null;
     
-    public TDAView(Application application) {
-        super(application, "Thread Dump Analyzer", new ImageIcon(Utilities.loadImage(IMAGE_PATH, true)).getImage(), 60, false);
-
-        this.application = application;
+    public LogfileDumpView(Logfile logfile) {
+        super(logfile, NbBundle.getMessage(TDAView.class, "LBL_DumpView"), new ImageIcon(Utilities.loadImage(IMAGE_PATH, true)).getImage(), 0, false);    // NOI18N
+        this.logfile = logfile;
     }
 
     @Override
     protected DataViewComponent createComponent() {
-        JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
-        MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
-        try {
-            tdaPanel = new TDA(false, new MBeanDumper(mbsc));
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        tdaPanel.init(true, true);
+        tdaPanel = new TDA(false, logfile.getFile().getAbsolutePath());
+        
+        // init panel and set border
+        tdaPanel.init(false, true);
         tdaPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        
+        // display the logfile
+        tdaPanel.initDumpDisplay();
+        
+        tdaPanel.revalidate();
         
         logPanel = new LogPanel(tdaPanel);
         
         JPanel viewPanel = createView();
-        
         DataViewComponent dvc = new DataViewComponent(new DataViewComponent.MasterView(NbBundle.getMessage(TDAView.class, 
-                "MSG_Dump"), null, viewPanel), 
+                "MSG_DumpView"), null, viewPanel), 
                 new DataViewComponent.MasterViewConfiguration(false));
         
         dvc.configureDetailsArea(new DataViewComponent.DetailsAreaConfiguration(NbBundle.getMessage(TDAView.class, 
                 "LBL_Dump_results"), false), DataViewComponent.TOP_LEFT);   // NOI18N
         
-        //dvc.hideDetailsArea(DataViewComponent.TOP_RIGHT);
-        
         dvc.addDetailsView(new DataViewComponent.DetailsView(NbBundle.getMessage(TDAView.class, 
                 "MSG_Dump_results"), null, 10, tdaPanel, null), DataViewComponent.TOP_LEFT);
         
-        dvc.addDetailsView(new DataViewComponent.DetailsView(NbBundle.getMessage(TDAView.class, 
-                "MSG_Logfile"), null, 10, logPanel, null), DataViewComponent.TOP_LEFT);
-
+        if(PrefManager.get().getMaxLogfileSize() * 1024 >= logfile.getFile().length()) {
+            logPanel.setText(readText());
+            dvc.addDetailsView(new DataViewComponent.DetailsView(NbBundle.getMessage(TDAView.class,
+                    "MSG_Logfile"), null, 10, logPanel, null), DataViewComponent.TOP_LEFT);
+        }
+        
         return(dvc);
     }
-    
+
     private JPanel createView() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.setOpaque(false);
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(6, 0, 3, 0));
         
-        requestDumpButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_RequestDump"));  // NOI18N
-        requestDumpButton.setIcon(TDA.createImageIcon("FileOpen.gif"));   // NOI18N
-
-        requestDumpButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                LogFileContent lfc = tdaPanel.addMXBeanDump();
-                logPanel.setText(lfc.getContent());
-                logPanel.setCaretPosition(0);
-                collapseAllButton.setEnabled(true);
-                expandAllButton.setEnabled(true);
-            }
-        });
-
         collapseAllButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_CollapseTree"), TDA.createImageIcon("Collapsed.gif"));
-        collapseAllButton.setEnabled(false);
         collapseAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 tdaPanel.expandAllDumpNodes(false);
@@ -127,7 +109,6 @@ public class TDAView extends DataSourceView {
         });
 
         expandAllButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_ExpandTree"), TDA.createImageIcon("Expanded.gif"));
-        expandAllButton.setEnabled(false);        
         expandAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 tdaPanel.expandAllDumpNodes(true);
@@ -135,11 +116,38 @@ public class TDAView extends DataSourceView {
         });
         
         buttonPanel.add(new JLabel("<html><body><b>Dump Actions:"));
-        buttonPanel.add(requestDumpButton);
         buttonPanel.add(collapseAllButton);
         buttonPanel.add(expandAllButton);
                 
         return(buttonPanel);
     }
-    
+
+    /**
+     * read log file
+     * 
+     * @return
+     */
+    private String readText() {
+        BufferedReader br = null;
+        try {
+            StringBuffer text = new StringBuffer();
+            br = new BufferedReader(new FileReader(logfile.getFile()));
+            while(br.ready()) {
+                text.append(br.readLine());
+                text.append("\n");
+            }
+            return(text.toString());
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        } finally {
+            try {
+                if(br != null) {
+                    br.close();
+                }
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return("");
+    }
 }

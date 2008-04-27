@@ -15,26 +15,32 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Install.java,v 1.2 2008-04-27 20:32:33 irockel Exp $
+ * $Id: LogfileDumpViewProvider.java,v 1.1 2008-04-27 20:32:33 irockel Exp $
  */
-package net.java.dev.tda.visualvm;
+package net.java.dev.tda.visualvm.logfile;
 
-import net.java.dev.tda.visualvm.logfile.LogfileProvider;
-import org.openide.modules.ModuleInstall;
+import com.sun.tools.visualvm.core.ui.DataSourceView;
+import com.sun.tools.visualvm.core.ui.PluggableDataSourceViewProvider;
+import java.util.Set;
 
 /**
- *
+ * datasource view provider for logfile view.
+ * 
  * @author irockel
  */
-public class Install extends ModuleInstall {
+public class LogfileDumpViewProvider extends PluggableDataSourceViewProvider<Logfile>{
     
-    @Override
-    public void restored() {
-        try {
-            TDAViewProvider.initialize();
-            LogfileProvider.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    protected boolean supportsViewFor(Logfile coreDump) {
+        return true;
     }
+
+    protected DataSourceView createView(Logfile logfile) {
+        return new LogfileDumpView(logfile);
+    }
+    
+    public Set<Integer> getPluggableLocations(DataSourceView view) {
+        return ALL_LOCATIONS;
+    }
+
 }
+
