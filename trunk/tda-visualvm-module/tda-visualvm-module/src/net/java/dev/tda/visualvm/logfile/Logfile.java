@@ -15,26 +15,35 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Install.java,v 1.2 2008-04-27 20:32:33 irockel Exp $
+ * $Id: Logfile.java,v 1.1 2008-04-27 20:32:34 irockel Exp $
  */
-package net.java.dev.tda.visualvm;
+package net.java.dev.tda.visualvm.logfile;
 
-import net.java.dev.tda.visualvm.logfile.LogfileProvider;
-import org.openide.modules.ModuleInstall;
+import com.sun.tools.visualvm.core.datasource.DataSource;
+import com.sun.tools.visualvm.core.snapshot.Snapshot;
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
  * @author irockel
  */
-public class Install extends ModuleInstall {
+public class Logfile extends Snapshot {
     
+    public Logfile(File file) throws IOException {
+        this(file, null);
+    }
+    
+    public Logfile(File file, DataSource master) throws IOException {
+        super(file, LogfileSupport.getCategory(), master);
+        
+        if (!file.exists() || !file.isFile())
+            throw new IOException("File " + file.getAbsolutePath() + " does not exist");    // NOI18N        
+    }
+        
     @Override
-    public void restored() {
-        try {
-            TDAViewProvider.initialize();
-            LogfileProvider.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public boolean supportsSaveAs() {
+        return false;
     }
 }
+

@@ -15,26 +15,25 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Install.java,v 1.2 2008-04-27 20:32:33 irockel Exp $
+ * $Id: LogfileDescriptorProvider.java,v 1.1 2008-04-27 20:32:34 irockel Exp $
  */
-package net.java.dev.tda.visualvm;
+package net.java.dev.tda.visualvm.logfile;
 
-import net.java.dev.tda.visualvm.logfile.LogfileProvider;
-import org.openide.modules.ModuleInstall;
+import com.sun.tools.visualvm.core.datasource.DataSource;
+import com.sun.tools.visualvm.core.model.AbstractModelProvider;
+import com.sun.tools.visualvm.core.datasource.descriptor.DataSourceDescriptor;
 
 /**
- *
+ * provider for logfile descriptors
+ * 
  * @author irockel
  */
-public class Install extends ModuleInstall {
+public class LogfileDescriptorProvider extends AbstractModelProvider<DataSourceDescriptor,DataSource> {
     
-    @Override
-    public void restored() {
-        try {
-            TDAViewProvider.initialize();
-            LogfileProvider.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public DataSourceDescriptor createModelFor(DataSource ds) {
+        if (ds instanceof Logfile) {
+            return new LogfileDescriptor((Logfile) ds);
         }
+        return null;
     }
 }

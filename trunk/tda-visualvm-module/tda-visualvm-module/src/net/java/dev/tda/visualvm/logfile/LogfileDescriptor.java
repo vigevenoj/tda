@@ -15,26 +15,23 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Install.java,v 1.2 2008-04-27 20:32:33 irockel Exp $
+ * $Id: LogfileDescriptor.java,v 1.1 2008-04-27 20:32:34 irockel Exp $
  */
-package net.java.dev.tda.visualvm;
+package net.java.dev.tda.visualvm.logfile;
 
-import net.java.dev.tda.visualvm.logfile.LogfileProvider;
-import org.openide.modules.ModuleInstall;
+import com.sun.tools.visualvm.core.snapshot.SnapshotDescriptor;
+import java.awt.Image;
+import org.openide.util.Utilities;
 
 /**
- *
+ * logfile descriptor for specified logfile
  * @author irockel
  */
-public class Install extends ModuleInstall {
-    
-    @Override
-    public void restored() {
-        try {
-            TDAViewProvider.initialize();
-            LogfileProvider.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+public class LogfileDescriptor extends SnapshotDescriptor<Logfile> {
+
+    private static final Image ICON = Utilities.loadImage("net/java/dev/tda/visualvm/resources/logfile.gif", true);  // NOI18N
+
+    public LogfileDescriptor(Logfile logFile) {
+        super(logFile, ICON);
     }
 }
