@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: FilterDialog.java,v 1.10 2008-04-27 20:31:14 irockel Exp $
+ * $Id: FilterDialog.java,v 1.11 2008-04-30 08:33:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -80,7 +80,7 @@ public class FilterDialog extends JDialog {
 
             public void actionPerformed(ActionEvent e) {
                 frame.setEnabled(true);
-                PrefManager.get().setFilters((DefaultListModel) filterPanel.filterList.getModel());
+                filterPanel.saveSettings();
                 dispose();
             }
         });
@@ -187,6 +187,10 @@ public class FilterDialog extends JDialog {
                 removeButton.setEnabled(false);
                 editButton.setEnabled(false);
             }
+        }
+        
+        public void saveSettings() {
+            PrefManager.get().setFilters((DefaultListModel) filterList.getModel());
         }
     }
 
