@@ -15,12 +15,14 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: VisualvmOptionsPanelController.java,v 1.1 2008-04-27 20:32:33 irockel Exp $
+ * $Id: VisualvmOptionsPanelController.java,v 1.2 2008-04-30 08:34:37 irockel Exp $
  */
 package net.java.dev.tda.visualvm;
 
 import com.pironet.tda.CustomCategoriesDialog;
+import com.pironet.tda.CustomCategoriesDialog.CategoriesPanel;
 import com.pironet.tda.FilterDialog;
+import com.pironet.tda.FilterDialog.FilterPanel;
 import com.pironet.tda.PreferencesDialog;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -37,6 +39,8 @@ final class VisualvmOptionsPanelController extends OptionsPanelController {
     private PreferencesDialog prefDialog;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean changed;
+    private FilterPanel filterPanel;
+    private CategoriesPanel catPanel;
 
     public void update() {
         prefDialog.loadSettings();
@@ -45,6 +49,8 @@ final class VisualvmOptionsPanelController extends OptionsPanelController {
 
     public void applyChanges() {
         prefDialog.saveSettings();
+        filterPanel.saveSettings();
+        catPanel.saveSettings();
         changed = false;
     }
 
@@ -80,9 +86,12 @@ final class VisualvmOptionsPanelController extends OptionsPanelController {
     private JTabbedPane getPanel() {
         if (panel == null) {
             prefDialog = new PreferencesDialog(null);
+            filterPanel = new FilterDialog.FilterPanel(null);
+            catPanel = new CustomCategoriesDialog.CategoriesPanel(null);
+            
             panel = prefDialog.getPane();
-            panel.addTab(NbBundle.getMessage(TDAView.class, "LBL_Filters"), new FilterDialog.FilterPanel(null));
-            panel.addTab(NbBundle.getMessage(TDAView.class, "LBL_Categories"), new CustomCategoriesDialog.CategoriesPanel(null));
+            panel.addTab(NbBundle.getMessage(TDAView.class, "LBL_Filters"), filterPanel);
+            panel.addTab(NbBundle.getMessage(TDAView.class, "LBL_Categories"), catPanel);
         }
         return panel;
     }
