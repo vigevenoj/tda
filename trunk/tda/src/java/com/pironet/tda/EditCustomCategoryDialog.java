@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditCustomCategoryDialog.java,v 1.2 2008-04-27 20:31:13 irockel Exp $
+ * $Id: EditCustomCategoryDialog.java,v 1.3 2008-04-30 09:03:33 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -26,6 +26,7 @@ import com.pironet.tda.utils.PrefManager;
 import com.pironet.tda.utils.ResourceManager;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -35,7 +36,6 @@ import java.awt.event.ActionListener;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -53,14 +53,14 @@ public class EditCustomCategoryDialog extends JDialog {
     private JPanel buttonPanel;
     private JButton okButton;
     private JButton cancelButton;
-    private JFrame frame;
+    private Frame frame;
     private JList catList;
     private boolean isAdd = false;
     
     /**
      * Creates a new instance of PreferencesDialog
      */
-    public EditCustomCategoryDialog(JFrame owner, String frameTitle, JList catList, boolean isAdd) {
+    public EditCustomCategoryDialog(Frame owner, String frameTitle, JList catList, boolean isAdd) {
         super(owner, frameTitle);
         try {
             setIconImage(TDA.createImageIcon("Filters.gif").getImage());

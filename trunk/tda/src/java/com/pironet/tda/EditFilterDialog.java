@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: EditFilterDialog.java,v 1.11 2008-04-27 20:31:14 irockel Exp $
+ * $Id: EditFilterDialog.java,v 1.12 2008-04-30 09:03:33 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -25,6 +25,7 @@ package com.pironet.tda;
 import com.pironet.tda.filter.Filter;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.DefaultListModel;
@@ -32,7 +33,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -47,14 +47,14 @@ public class EditFilterDialog extends JDialog {
     private JPanel buttonPanel;
     private JButton okButton;
     private JButton cancelButton;
-    private JFrame frame;
+    private Frame frame;
     private JList filterList;
     private boolean isAdd = false;
     
     /**
      * Creates a new instance of PreferencesDialog
      */
-    public EditFilterDialog(JFrame owner, String frameTitle, JList filterList, boolean isAdd) {
+    public EditFilterDialog(Frame owner, String frameTitle, JList filterList, boolean isAdd) {
         super(owner, frameTitle);
         try {
             setIconImage(TDA.createImageIcon("Filters.gif").getImage());

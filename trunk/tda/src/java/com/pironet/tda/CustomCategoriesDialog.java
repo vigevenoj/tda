@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: CustomCategoriesDialog.java,v 1.3 2008-04-30 08:33:50 irockel Exp $
+ * $Id: CustomCategoriesDialog.java,v 1.4 2008-04-30 09:03:33 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -25,6 +25,7 @@ import com.pironet.tda.utils.PrefManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,12 +49,12 @@ public class CustomCategoriesDialog extends JDialog {
     private CategoriesPanel categoriesPanel;
     private JPanel buttonPanel;
     private JButton closeButton;
-    private JFrame frame;
+    private Frame frame;
     
     /**
      * Creates a new instance of PreferencesDialog
      */
-    public CustomCategoriesDialog(JFrame owner) {
+    public CustomCategoriesDialog(Frame owner) {
         super(owner, "Custom Categories");
         try {
             setIconImage(TDA.createImageIcon("Filters.gif").getImage());
@@ -99,9 +100,9 @@ public class CustomCategoriesDialog extends JDialog {
         
         JScrollPane scrollPane = null;
         
-        JFrame owner = null; 
+        Frame owner = null; 
         
-        public CategoriesPanel(JFrame owner) {
+        public CategoriesPanel(Frame owner) {
             this.owner = owner;
             setLayout(new BorderLayout());
             
