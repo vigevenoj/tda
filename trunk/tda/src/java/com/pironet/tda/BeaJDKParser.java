@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.10 2008-04-15 02:49:09 rmoutinho Exp $
+ * $Id: BeaJDKParser.java,v 1.11 2008-04-30 08:45:48 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -167,7 +167,7 @@ public class BeaJDKParser extends AbstractDumpParser {
                             content = new StringBuffer("<body bgcolor=\"ffffff\"><pre><font size=" + TDA.getFontSizeModifier(-1) + ">");
                             content.append(line);
                             content.append("\n");
-                        } else if (line.indexOf("at ") >= 0) { // é enganado por [fat lock] 
+                        } else if (line.indexOf("at ") >= 0) { // enganado por [fat lock] 
                             content.append(line);
                             content.append("\n");
                         } else if (line.indexOf("-- Waiting for notification") >= 0) {
