@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: VisualvmOptionsPanelController.java,v 1.2 2008-04-30 08:34:37 irockel Exp $
+ * $Id: VisualvmOptionsPanelController.java,v 1.3 2008-04-30 09:02:49 irockel Exp $
  */
 package net.java.dev.tda.visualvm;
 
@@ -32,6 +32,7 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.windows.WindowManager;
 
 final class VisualvmOptionsPanelController extends OptionsPanelController {
 
@@ -84,10 +85,11 @@ final class VisualvmOptionsPanelController extends OptionsPanelController {
     }
 
     private JTabbedPane getPanel() {
+        WindowManager wm = WindowManager.getDefault();
         if (panel == null) {
-            prefDialog = new PreferencesDialog(null);
-            filterPanel = new FilterDialog.FilterPanel(null);
-            catPanel = new CustomCategoriesDialog.CategoriesPanel(null);
+            prefDialog = new PreferencesDialog(wm.getMainWindow());
+            filterPanel = new FilterDialog.FilterPanel(wm.getMainWindow());
+            catPanel = new CustomCategoriesDialog.CategoriesPanel(wm.getMainWindow());
             
             panel = prefDialog.getPane();
             panel.addTab(NbBundle.getMessage(TDAView.class, "LBL_Filters"), filterPanel);

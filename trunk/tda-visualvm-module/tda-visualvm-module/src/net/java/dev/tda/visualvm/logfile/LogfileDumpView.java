@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogfileDumpView.java,v 1.1 2008-04-27 20:32:34 irockel Exp $
+ * $Id: LogfileDumpView.java,v 1.2 2008-04-30 09:02:49 irockel Exp $
  */
 package net.java.dev.tda.visualvm.logfile;
 
@@ -28,8 +28,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.BorderFactory;
