@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: CustomCategoriesDialog.java,v 1.2 2008-04-27 20:31:13 irockel Exp $
+ * $Id: CustomCategoriesDialog.java,v 1.3 2008-04-30 08:33:50 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -76,10 +76,8 @@ public class CustomCategoriesDialog extends JDialog {
         
         closeButton.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(frame != null) {
-                    frame.setEnabled(true);
-                }
-                PrefManager.get().setCategories((DefaultListModel) categoriesPanel.categoriesList.getModel());
+                frame.setEnabled(true);
+                categoriesPanel.saveSettings();
                 dispose();
             }
         });
@@ -189,6 +187,10 @@ public class CustomCategoriesDialog extends JDialog {
                 removeButton.setEnabled(false);
                 editButton.setEnabled(false);
             }
+        }
+        
+        public void saveSettings() {
+            PrefManager.get().setCategories((DefaultListModel) categoriesList.getModel());
         }
     }
         
