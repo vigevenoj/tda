@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.170 2008-04-27 20:31:14 irockel Exp $
+ * $Id: TDA.java,v 1.171 2008-05-03 06:11:23 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -918,22 +918,29 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         ThreadsTableSelectionModel ttsm = (ThreadsTableSelectionModel) e.getSource();
         TableSorter ts = (TableSorter) ttsm.getTable().getModel();
         
-        if(ttsm.getTable().getSelectedRow() >= 0) {
-            displayThreadInfo(((ThreadsTableModel) ts.getTableModel()).
-                    getInfoObjectAtRow(ts.modelIndex(ttsm.getTable().getSelectedRow())));
-            setThreadDisplay(true);
+        int[] rows = ttsm.getTable().getSelectedRows();
+        StringBuffer sb = new StringBuffer();
+        for(int i = 0; i < rows.length; i++) {
+            appendThreadInfo(sb, ((ThreadsTableModel) ts.getTableModel()).
+                    getInfoObjectAtRow(ts.modelIndex(rows[i])));
         }
+        displayContent(sb.toString());
+        setThreadDisplay(true);
     }
-
     
     private void displayThreadInfo(Object nodeInfo) {
+        StringBuffer sb = new StringBuffer("");
+        appendThreadInfo(sb, nodeInfo);
+        displayContent(sb.toString());
+    }
+
+    private void appendThreadInfo(StringBuffer sb, Object nodeInfo) {
         ThreadInfo ti = (ThreadInfo)nodeInfo;
         if(ti.getInfo() != null) {
-            StringBuffer sb = new StringBuffer(ti.getInfo());
+            sb.append(ti.getInfo());
             sb.append(ti.getContent());
-            displayContent(sb.toString());
         } else {
-            displayContent(ti.getContent());
+            sb.append(ti.getContent());
         }
     }
     
