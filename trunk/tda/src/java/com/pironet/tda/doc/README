@@ -14,6 +14,7 @@ Changes from 1.6 are:
 * Small Adjustments to support HP JVM DUmps (slightly modified from SUN Dumps).
 * Icons of monitors with high contention now have a red background (issue 13).
 * Multiple Selection of Threads (issue 11)
+* Stack line count is now also set in long running thread result (issue 19)
 * Visual VM Plugin.
 * Bugfixing.
 
