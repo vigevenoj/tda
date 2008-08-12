@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.16 2008-03-12 09:50:53 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.17 2008-08-12 20:23:26 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -139,6 +139,8 @@ public abstract class AbstractDumpParser implements DumpParser {
                                 append(">").append((String) keys.get(0)).append("</b></font><hr/><pre><font size=").
                                 append(TDA.getFontSizeModifier(-1)).append(">").
                                 append(fixMonitorLinks((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey), (String) keys.get(0)));
+
+                        int maxLines = 0;
                         for(int i = 1; i < dumps.length; i++) {
                             if(((Map)dumpStore.get(keys.get(i))).containsKey(threadKey)) {
                                 content.append("\n\n</pre><b><font size=");
@@ -149,9 +151,11 @@ public abstract class AbstractDumpParser implements DumpParser {
                                 content.append(TDA.getFontSizeModifier(-1));
                                 content.append(">");
                                 content.append(fixMonitorLinks((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey), (String) keys.get(i)));
+                                int countLines = countLines(((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey)));
+                                maxLines = maxLines > countLines ? maxLines : countLines;
                             }
                         }
-                        addToCategory(catMerge, threadKey, null, content, 0, true);
+                        addToCategory(catMerge, threadKey, null, content, maxLines, true);
                     }
                 }
             }
@@ -159,6 +163,22 @@ public abstract class AbstractDumpParser implements DumpParser {
         
         ((Category) catMerge.getUserObject()).setInfo(getStatInfo(keys, prefix, minOccurence, threadCount));
         
+    }
+
+    /**
+     * count lines of input string.
+     * @param input
+     * @return line count
+     */
+    private int countLines(String input) {
+        int pos = 0;
+        int count = 0;
+        while(input.indexOf('\n', pos) > 0) {
+            count++;
+            pos = input.indexOf('\n', pos) +1;
+        }
+
+        return(count);
     }
     
     /**
