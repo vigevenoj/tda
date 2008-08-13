@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.40 2008-03-25 07:30:45 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.41 2008-08-13 15:52:19 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -276,6 +276,11 @@ public class SunJDKParser extends AbstractDumpParser {
                                 // no deadlocks found, set back original position.
                                 getBis().reset();
                             }
+                            
+                            if (!checkThreadDumpStatData(overallTDI)) {
+                                // no statistical data found, set back original position.
+                                getBis().reset();
+                            }
 
                             getBis().mark(getMarkSize());
                             if (!(foundClassHistograms = checkForClassHistogram(threadDump))) {
@@ -383,7 +388,7 @@ public class SunJDKParser extends AbstractDumpParser {
         
         return(null);
     }
-    
+
     /**
      * add a monitor link for monitor navigation
      * @param line containing monitor
@@ -493,6 +498,55 @@ public class SunJDKParser extends AbstractDumpParser {
         }
         
         return(classHistogram);
+    }
+
+    /**
+     * Heap
+ PSYoungGen      total 6656K, used 3855K [0xb0850000, 0xb0f50000, 0xb4130000)
+  eden space 6144K, 54% used [0xb0850000,0xb0b97740,0xb0e50000)
+  from space 512K, 97% used [0xb0ed0000,0xb0f4c5c0,0xb0f50000)
+  to   space 512K, 0% used [0xb0e50000,0xb0e50000,0xb0ed0000)
+ PSOldGen        total 15552K, used 13536K [0x94130000, 0x95060000, 0xb0850000)
+  object space 15552K, 87% used [0x94130000,0x94e68168,0x95060000)
+ PSPermGen       total 16384K, used 13145K [0x90130000, 0x91130000, 0x94130000)
+  object space 16384K, 80% used [0x90130000,0x90e06610,0x91130000)
+
+     * @param threadDump
+     * @return
+     * @throws java.io.IOException
+     */
+    private boolean checkThreadDumpStatData(ThreadDumpInfo tdi) throws IOException {
+        boolean finished = false;
+        boolean found = false;
+        StringBuffer hContent = new StringBuffer();
+        int heapLineCounter = 0;
+        int lines = 0;
+
+        while(getBis().ready() && !finished) {
+            String line = getBis().readLine();
+            if(!found && !line.equals("")) {
+                if(line.trim().startsWith("Heap")) {
+                    found = true;
+                } else if(lines >= getMaxCheckLines()) {
+                    finished = true;
+                } else {
+                    lines++;
+                }
+            } else if(found) {
+                if(heapLineCounter < 8) {
+                    hContent.append(line).append("\n");
+                } else {
+                    finished = true;
+                }
+                heapLineCounter++;
+            }
+        }
+        if (hContent.length() > 0) {
+            tdi.setHeapInfo(new HeapInfo(hContent.toString()));
+        }
+
+
+        return(found);
     }
     
     /**

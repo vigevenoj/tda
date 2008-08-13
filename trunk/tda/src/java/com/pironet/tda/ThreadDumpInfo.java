@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: ThreadDumpInfo.java,v 1.10 2008-03-13 21:16:08 irockel Exp $
+ * $Id: ThreadDumpInfo.java,v 1.11 2008-08-13 15:52:19 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -43,6 +43,7 @@ public class ThreadDumpInfo extends AbstractInfo {
     private Category monitorsWithoutLocks;
     private Category threads;
     private Category deadlocks;
+    private HeapInfo heapInfo;
     
     
     ThreadDumpInfo(String name, int lineCount) {
@@ -127,8 +128,12 @@ public class ThreadDumpInfo extends AbstractInfo {
         // add hints concerning possible hot spots found in this thread dump.
         statData.append(getDumpAnalyzer().analyzeDump());
         
+        if(getHeapInfo() != null) {
+            statData.append(getHeapInfo());
+        }
+
         statData.append("</table>");
-        
+
         setOverview(statData.toString());
 
     }
@@ -269,6 +274,23 @@ public class ThreadDumpInfo extends AbstractInfo {
      */
     public void addToCustomCategories(Category cat) {
         
+    }
+
+    /**
+     * get the set heap info
+     * @return the set heap info object (only available if the thread
+     *         dump is from Sun JDK 1.6 so far.
+     */
+    public HeapInfo getHeapInfo() {
+        return(heapInfo);
+    }
+
+    /**
+     * set the heap information for this thread dump.
+     * @param value the heap information as string.
+     */
+    public void setHeapInfo(HeapInfo value) {
+        heapInfo = value;
     }
 
     /**
