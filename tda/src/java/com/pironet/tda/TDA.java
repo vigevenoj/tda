@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.171 2008-05-03 06:11:23 irockel Exp $
+ * $Id: TDA.java,v 1.172 2008-09-16 15:28:48 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -222,6 +222,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         //Create the HTML viewing pane.
         if(!this.runningAsVisualVMPlugin) {
             URL tutURL = TDA.class.getResource("doc/welcome.html");
+            // add here:                   <tr><td width="20px"></td></td><a href="openlogfile://">/home/irockel/test.log</a></td></tr>
+
             try {
                 htmlPane = new JEditorPane(tutURL);
             } catch (IOException ex) {
