@@ -10,11 +10,11 @@ body,h1,h2,h3,i,p,td,th,tt,ol,ul,div { font-family: Verdana, Arial, Helvetica;  
 
 
 h1,h2,h3,h4,h5   			{ font-weight: bold; }
-h1               			{ font-size: 20px; color: #C8541A; }
-h2               			{ font-size: 18px; color: #C8541A; }
-h3               			{ font-size: 16px; color: #565A5B; }
-h4               			{ font-size: 14px; color: #565A5B; }
-h5               			{ font-size: 12px; color: #565A5B; }
+h1               			{ font-size: 20px; color: #2c2b27; }
+h2               			{ font-size: 18px; color: #2c2b27; }
+h3               			{ font-size: 16px; color: #969494; }
+h4               			{ font-size: 14px; color: #969494; }
+h5               			{ font-size: 12px; color: #969494; }
 
 BODY,P,TD { font-family: Verdana, Arial, Helvetica; font-size: 10px; }  /*letter-spacing:0.2mm; word-spacing:0.8mm; */
 TD			 { vertical-align:top; }
