@@ -13,8 +13,9 @@ Changes from 1.6 are:
 * Small Adjustments to support SAP JVM Dumps (slightly modified from SUN Dumps).
 * Small Adjustments to support HP JVM DUmps (slightly modified from SUN Dumps).
 * Icons of monitors with high contention now have a red background (issue 13).
-* Multiple Selection of Threads (issue 11)
-* Stack line count is now also set in long running thread result (issue 19)
+* Multiple Selection of Threads (issue 11).
+* Stack line count is now also set in long running thread result (issue 19).
+* Read heap information from Sun JDK 1.6 Dumps and display them.
 * Visual VM Plugin.
 * Bugfixing.
 
