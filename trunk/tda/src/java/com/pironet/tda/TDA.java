@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.173 2008-09-16 15:31:17 irockel Exp $
+ * $Id: TDA.java,v 1.174 2008-09-16 20:46:27 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -32,6 +32,7 @@ import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
 import com.pironet.tda.utils.ThreadsTableModel;
 import com.pironet.tda.utils.ThreadsTableSelectionModel;
+import com.pironet.tda.utils.TipOfDay;
 import com.pironet.tda.utils.TreeRenderer;
 import com.pironet.tda.utils.ViewScrollPane;
 import com.pironet.tda.utils.jedit.JEditTextArea;
@@ -42,6 +43,7 @@ import java.awt.Container;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -77,11 +79,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
@@ -114,6 +119,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -221,15 +227,12 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         
         //Create the HTML viewing pane.
         if(!this.runningAsVisualVMPlugin) {
-            URL tutURL = TDA.class.getResource("doc/welcome.html");
-            // add here:                   <tr><td width="20px"></td></td><a href="openlogfile://">/home/irockel/test.log</a></td></tr>
-            // also add: TIP of the day.
+            InputStream is = TDA.class.getResourceAsStream("doc/welcome.html");
 
-            try {
-                htmlPane = new JEditorPane(tutURL);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            htmlPane = new JEditorPane();
+            String welcomeText = parseWelcomeURL(is);
+            htmlPane.setContentType("text/html");
+            htmlPane.setText(welcomeText);
         } else {
             htmlPane = new JEditorPane("text/html", "<html><body bgcolor=\"ffffff\"></body></html>");
         }
@@ -260,6 +263,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                     } else if(evt.getDescription().startsWith("threaddump")) {
                         addMXBeanDump();
                     } else if(evt.getDescription().startsWith("openlogfile")) {
+                        System.out.println(evt.getSourceElement());
                         chooseFile();
                     } else if(evt.getDescription().startsWith("opensession")) {
                         openSession();
@@ -342,6 +346,51 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             fc.setMultiSelectionEnabled(true);
             fc.setCurrentDirectory(PrefManager.get().getSelectedPath());
         }
+    }
+    
+    private String parseWelcomeURL(InputStream is) {
+        BufferedReader br = null;
+        String resultString = null;
+        
+        StringBuffer result = new StringBuffer();
+        
+        try {
+            br = new BufferedReader(new InputStreamReader(is));
+            while(br.ready()) {
+                result.append(br.readLine());
+                result.append("\n");
+            }
+            resultString = result.toString();
+            resultString = resultString.replaceFirst("./important.png", TDA.class.getResource("doc/important.png").toString());
+            resultString = resultString.replaceFirst("./logo.png", TDA.class.getResource("doc/logo.png").toString());
+            resultString = resultString.replaceFirst("<!-- ##tipofday## -->", TipOfDay.getTipOfDay());
+            resultString = resultString.replaceFirst("<!-- ##recentlogfiles## -->", getOpenFilesAsTable());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if(br != null) {
+                    br.close();
+                    is.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return(resultString);
+    }
+    
+    private String getOpenFilesAsTable() {
+        String[] recentFiles = PrefManager.get().getRecentFiles();
+        StringBuffer result = new StringBuffer();
+        
+        for(int i = 1; i < recentFiles.length; i++) {
+            result.append("<tr><td width=\"20px\"></td></td><a href=\"openlogfile://\">");
+            result.append(recentFiles[i]);
+            result.append("</a></td></tr>");
+        }
+
+        return(result.toString());
     }
 
     /**
