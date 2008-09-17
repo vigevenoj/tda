@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.35 2008-09-17 09:10:38 irockel Exp $
+ * $Id: MainMenu.java,v 1.36 2008-09-17 18:21:14 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -207,16 +207,6 @@ public class MainMenu extends JMenuBar {
         
         menu.addSeparator();
 
-        menuItem = new JMenuItem(ResourceManager.translate("file.preferences"),
-                KeyStroke.getKeyStroke(ResourceManager.translate("file.preferences.mnem")).getKeyCode());
-        menuItem.setIcon(TDA.createImageIcon("Preferences.gif"));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-                ResourceManager.translate("file.preferences.description"));
-        menuItem.addActionListener(listener);
-        menu.add(menuItem);
-        
-        menu.addSeparator();
-
         menuItem = new JMenuItem(ResourceManager.translate("file.exit"),
                 KeyStroke.getKeyStroke(ResourceManager.translate("file.exit.mnem")).getKeyCode());
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
@@ -315,6 +305,17 @@ public class MainMenu extends JMenuBar {
                 "Setup Categories");
         menuItem.addActionListener(listener);
         menu.add(menuItem);
+        
+        menu.addSeparator();
+
+        menuItem = new JMenuItem(ResourceManager.translate("file.preferences"),
+                KeyStroke.getKeyStroke(ResourceManager.translate("file.preferences.mnem")).getKeyCode());
+        menuItem.setIcon(TDA.createImageIcon("Preferences.gif"));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                ResourceManager.translate("file.preferences.description"));
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+        
         /*menu.addSeparator();
         
         menuItem = new JMenuItem("Load Configuration Set...",
