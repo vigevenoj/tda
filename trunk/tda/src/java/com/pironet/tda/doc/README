@@ -10,7 +10,6 @@ Changes from 1.6 are:
 * Skip broken thread dumps.
 * Custom Thread Categories.
 * New Welcome Screen.
-* Internationalisation (only english available so far).
 * Small Adjustments to support SAP JVM Dumps (slightly modified from SUN Dumps).
 * Small Adjustments to support HP JVM DUmps (slightly modified from SUN Dumps).
 * Icons of monitors with high contention now have a red background (issue 13).
@@ -18,6 +17,7 @@ Changes from 1.6 are:
 * Stack line count is now also set in long running thread result (issue 19).
 * Read heap information from Sun JDK 1.6 Dumps and display them.
 * Thread Dumps or logfiles can be pasted from clipboard (issue 20).
+* Internationalisation (only english available so far, not finished yet).
 * Bugfixing.
 
 Changes from 1.5 are:
