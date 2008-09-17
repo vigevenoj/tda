@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.175 2008-09-17 08:11:54 irockel Exp $
+ * $Id: TDA.java,v 1.176 2008-09-17 09:39:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -364,6 +364,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             resultString = result.toString();
             resultString = resultString.replaceFirst("./important.png", TDA.class.getResource("doc/important.png").toString());
             resultString = resultString.replaceFirst("./logo.png", TDA.class.getResource("doc/logo.png").toString());
+            resultString = resultString.replaceFirst("./fileopen.png", TDA.class.getResource("doc/fileopen.png").toString());
+            resultString = resultString.replaceFirst("./settings.png", TDA.class.getResource("doc/settings.png").toString());
+            resultString = resultString.replaceFirst("./help.png", TDA.class.getResource("doc/help.png").toString());
             resultString = resultString.replaceFirst("<!-- ##tipofday## -->", TipOfDay.getTipOfDay());
             resultString = resultString.replaceFirst("<!-- ##recentlogfiles## -->", getAsTable("openlogfile://", PrefManager.get().getRecentFiles()));
             resultString = resultString.replaceFirst("<!-- ##recentsessions## -->", getAsTable("opensession://", PrefManager.get().getRecentSessions()));
