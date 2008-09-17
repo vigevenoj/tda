@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.177 2008-09-17 10:36:35 irockel Exp $
+ * $Id: TDA.java,v 1.178 2008-09-17 16:27:33 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -417,10 +417,13 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      * @return cut link or original link if link.length() <= len
      */
     private String cutLink(String link, int len) {
-        String cut = link.substring(0, len /2) +
-                "..." + link.substring(link.length() - (len/2));
+        if(link.length() > len) {
+            String cut = link.substring(0, len / 2) +
+                    "..." + link.substring(link.length() - (len / 2));
+            return(cut);
+        }
         
-        return(link.length() > len ? cut : link);
+        return(link);
     }
     
     /**
