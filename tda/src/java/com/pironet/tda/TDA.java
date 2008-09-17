@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.174 2008-09-16 20:46:27 irockel Exp $
+ * $Id: TDA.java,v 1.175 2008-09-17 08:11:54 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -43,7 +43,6 @@ import java.awt.Container;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.util.Enumeration;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -84,12 +83,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -119,7 +116,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -262,9 +258,14 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                         navigateToChild("Deadlocks");
                     } else if(evt.getDescription().startsWith("threaddump")) {
                         addMXBeanDump();
+                    } else if(evt.getDescription().startsWith("openlogfile") && !evt.getDescription().endsWith("//")) {
+                        File[] files = { new File(evt.getDescription().substring(14)) };
+                        openFiles(files, false);
                     } else if(evt.getDescription().startsWith("openlogfile")) {
-                        System.out.println(evt.getSourceElement());
                         chooseFile();
+                    } else if(evt.getDescription().startsWith("opensession") && !evt.getDescription().endsWith("//")) {
+                        File file = new File(evt.getDescription().substring(14));
+                        openSession(file, true);
                     } else if(evt.getDescription().startsWith("opensession")) {
                         openSession();
                     } else if(evt.getDescription().startsWith("preferences")) {
@@ -364,7 +365,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             resultString = resultString.replaceFirst("./important.png", TDA.class.getResource("doc/important.png").toString());
             resultString = resultString.replaceFirst("./logo.png", TDA.class.getResource("doc/logo.png").toString());
             resultString = resultString.replaceFirst("<!-- ##tipofday## -->", TipOfDay.getTipOfDay());
-            resultString = resultString.replaceFirst("<!-- ##recentlogfiles## -->", getOpenFilesAsTable());
+            resultString = resultString.replaceFirst("<!-- ##recentlogfiles## -->", getAsTable("openlogfile://", PrefManager.get().getRecentFiles()));
+            resultString = resultString.replaceFirst("<!-- ##recentsessions## -->", getAsTable("opensession://", PrefManager.get().getRecentSessions()));
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -379,20 +381,32 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
         return(resultString);
     }
-    
-    private String getOpenFilesAsTable() {
-        String[] recentFiles = PrefManager.get().getRecentFiles();
-        StringBuffer result = new StringBuffer();
-        
-        for(int i = 1; i < recentFiles.length; i++) {
-            result.append("<tr><td width=\"20px\"></td></td><a href=\"openlogfile://\">");
-            result.append(recentFiles[i]);
-            result.append("</a></td></tr>");
-        }
 
+    /**
+     * convert the given elements into a href-table to be included into the
+     * welcome page. Only last four elements are taken.
+     * @param prefix link prefix to use
+     * @param elements list of elements.
+     * @return given elements as table.
+     */
+    private String getAsTable(String prefix, String[] elements) {
+        StringBuffer result = new StringBuffer();
+        int from = elements.length > 4 ? elements.length - 4 : 0;
+        
+        for(int i = from; i < elements.length; i++) {
+            if(elements[i].trim().length() > 0) {
+                result.append("<tr><td width=\"20px\"></td><td><a href=\"");
+                result.append(prefix);
+                result.append(elements[i]);
+                result.append("\">");
+                result.append(elements[i]);
+                result.append("</a></td></tr>\n");
+            }
+        }
+        
         return(result.toString());
     }
-
+    
     /**
      * request jmx dump
      */
@@ -584,22 +598,38 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             File file = sessionFc.getSelectedFile();
             int selectValue = 0;
             if ((selectValue == 0) && (file.exists())) {
-                try {
-                    resetMainPanel();
-                    loadSession(file, false);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                openSession(file, false);
             }
         }
     }
     
+    /**
+     * open the specified session
+     * @param file
+     */
+    private void openSession(File file, boolean isRecent) {
+        try {
+            loadSession(file, isRecent);
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this.getRootPane(),
+                    "Error opening " + ex.getMessage() + ".",
+                    "Error opening session", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this.getRootPane(),
+                    "Error opening " + ex.getMessage() + ".",
+                    "Error opening session", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     private void loadSession(File file, boolean isRecent) throws IOException {
-        setFileOpen(true);
-        firstFile = false;
-        initDumpDisplay();
         final ObjectInputStream ois = new ObjectInputStream(new ProgressMonitorInputStream(this, "Opening session " + file,
                 new GZIPInputStream(new FileInputStream(file))));
+        
+        setFileOpen(true);
+        firstFile = false;
+        resetMainPanel();
+        initDumpDisplay();
+        
         final SwingWorker worker = new SwingWorker() {
 
                     public Object construct() {
@@ -1843,8 +1873,10 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             }
         }
 
-        this.getRootPane().revalidate();
-        displayContent(null);
+        if(isFileOpen()) {
+            this.getRootPane().revalidate();
+            displayContent(null);
+        }
     }
     
     /**

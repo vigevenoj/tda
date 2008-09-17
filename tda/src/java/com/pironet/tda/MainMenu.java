@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.33 2008-03-12 09:50:53 irockel Exp $
+ * $Id: MainMenu.java,v 1.34 2008-09-17 08:11:54 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -307,7 +307,7 @@ public class MainMenu extends JMenuBar {
                 "Setup Categories");
         menuItem.addActionListener(listener);
         menu.add(menuItem);
-        menu.addSeparator();
+        /*menu.addSeparator();
         
         menuItem = new JMenuItem("Load Configuration Set...",
                 KeyEvent.VK_F);
@@ -315,7 +315,7 @@ public class MainMenu extends JMenuBar {
         menuItem.getAccessibleContext().setAccessibleDescription(
                 "Load Configuration Set");
         menuItem.addActionListener(listener);
-        menu.add(menuItem);
+        menu.add(menuItem);*/
         return(menu);
     }
     
