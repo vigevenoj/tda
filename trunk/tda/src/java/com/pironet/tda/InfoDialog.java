@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: InfoDialog.java,v 1.5 2008-09-17 09:39:51 irockel Exp $
+ * $Id: InfoDialog.java,v 1.6 2008-09-17 11:22:25 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -51,7 +51,8 @@ public class InfoDialog extends JDialog {
     
     private void initPanel() {
         BorderLayout upperLayout = new BorderLayout();
-        upperLayout.setVgap(15);
+        upperLayout.setVgap(10);
+        upperLayout.setHgap(10);
         JPanel upperPane = new JPanel(upperLayout);
         upperPane.add(new JLabel(TDA.createImageIcon("tda-logo.png")), BorderLayout.CENTER);
         upperPane.add(new JLabel(" "), BorderLayout.EAST);
