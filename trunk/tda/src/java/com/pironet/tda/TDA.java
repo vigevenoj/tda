@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.178 2008-09-17 16:27:33 irockel Exp $
+ * $Id: TDA.java,v 1.179 2008-09-17 19:36:18 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -67,7 +67,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.event.ActionEvent;
@@ -87,7 +90,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -349,6 +354,40 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
     }
     
+    private void getLogfileFromClipboard() {
+        Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+        String text = null;
+    
+        try {
+            if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                text = (String)t.getTransferData(DataFlavor.stringFlavor);
+            }
+        } catch (UnsupportedFlavorException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+        if(text != null) {
+            if(topNodes == null) {
+                initDumpDisplay(text);
+            } else {
+                addDumpStream(new ByteArrayInputStream(text.getBytes()), "Clipboard at " + new Date(System.currentTimeMillis()), false);
+                addToLogfile(text);
+                if (this.getRootPane() != null) {
+                    this.getRootPane().revalidate();
+                }
+                displayContent(null);
+            }            
+
+            if (!this.runningAsVisualVMPlugin) {
+                getMainMenu().getFindLRThreadsToolBarButton().setEnabled(true);
+                getMainMenu().getExpandButton().setEnabled(true);
+                getMainMenu().getCollapseButton().setEnabled(true);
+            }
+        }
+    }
+    
     private String parseWelcomeURL(InputStream is) {
         BufferedReader br = null;
         String resultString = null;
@@ -439,7 +478,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
         //System.out.println(dump);
         if(topNodes == null) {
-            initDumpDisplay();
+            initDumpDisplay(null);
         }
         addDumpStream(new ByteArrayInputStream(dump.getBytes()), "Logfile", false);
         dumpCounter++;
@@ -647,7 +686,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         setFileOpen(true);
         firstFile = false;
         resetMainPanel();
-        initDumpDisplay();
+        initDumpDisplay(null);
         
         final SwingWorker worker = new SwingWorker() {
 
@@ -758,8 +797,11 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     
     /**
      * init the basic display for showing dumps
+     * 
+     * @param content initial logfile content may also be parsed, can also be null.
+     *        only used for clipboard operations.
      */
-    public void initDumpDisplay() {
+    public void initDumpDisplay(String content) {
         // clear tree
         dumpStore = new DumpStore();
 
@@ -777,6 +819,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         if(!runningAsJConsolePlugin) {
             if(dumpFile != null) {
                 addDumpFile();
+            } else if (content != null) {
+                addDumpStream(new ByteArrayInputStream(content.getBytes()), "Clipboard at " + new Date(System.currentTimeMillis()), false);
+                addToLogfile(content);
             }
         }
         if(runningAsJConsolePlugin || runningAsVisualVMPlugin || isFileOpen()) {
@@ -1599,6 +1644,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 showFilterDialog();
             } else if ("Categories".equals(source.getText())) {
                 showCategoriesDialog();
+            } else if ("Get Logfile from clipboard".equals(source.getText())) {
+                getLogfileFromClipboard();
             } else if ("Exit TDA".equals(source.getText())) {
                 saveState();
                 frame.dispose();
@@ -1880,7 +1927,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                     // do direct add without re-init.
                     addDumpFile();
                 } else {
-                    initDumpDisplay();
+                    initDumpDisplay(null);
                     if(isFileOpen()) {
                        firstFile = false;
                     }
@@ -2220,7 +2267,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         
         //Create and set up the content pane.
         if(dumpFile != null) {
-            TDA.get(true).initDumpDisplay();
+            TDA.get(true).initDumpDisplay(null);
         }
         
         TDA.get(true).setOpaque(true); //content panes must be opaque

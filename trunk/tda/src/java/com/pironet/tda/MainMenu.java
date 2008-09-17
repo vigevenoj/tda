@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MainMenu.java,v 1.36 2008-09-17 18:21:14 irockel Exp $
+ * $Id: MainMenu.java,v 1.37 2008-09-17 19:36:18 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -184,6 +184,8 @@ public class MainMenu extends JMenuBar {
         menuItem.setIcon(TDA.createImageIcon("Empty.gif"));
         menuItem.getAccessibleContext().setAccessibleDescription(
                 ResourceManager.translate("file.getfromclipboard.description"));
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                ResourceManager.translate("file.getfromclipboard.accel")));        
         menuItem.addActionListener(listener);
         menu.add(menuItem);
         menu.addSeparator();
