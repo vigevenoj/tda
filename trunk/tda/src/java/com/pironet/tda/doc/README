@@ -6,6 +6,7 @@ TDA - Thread Dump Analyzer -- Version 2.0
 Note: This is the 2.0 release of the software, for an usage overview see Help/Overview.
 
 Changes from 1.6 are:
+* Tool now is available as VisualVM plugin.
 * Skip broken thread dumps.
 * Custom Thread Categories.
 * New Welcome Screen.
@@ -16,7 +17,7 @@ Changes from 1.6 are:
 * Multiple Selection of Threads (issue 11).
 * Stack line count is now also set in long running thread result (issue 19).
 * Read heap information from Sun JDK 1.6 Dumps and display them.
-* Visual VM Plugin.
+* Thread Dumps or logfiles can be pasted from clipboard (issue 20).
 * Bugfixing.
 
 Changes from 1.5 are:
