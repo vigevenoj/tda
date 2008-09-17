@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: InfoDialog.java,v 1.4 2007-11-04 08:43:53 irockel Exp $
+ * $Id: InfoDialog.java,v 1.5 2008-09-17 09:39:51 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -54,6 +54,8 @@ public class InfoDialog extends JDialog {
         upperLayout.setVgap(15);
         JPanel upperPane = new JPanel(upperLayout);
         upperPane.add(new JLabel(TDA.createImageIcon("tda-logo.png")), BorderLayout.CENTER);
+        upperPane.add(new JLabel(" "), BorderLayout.EAST);
+        upperPane.add(new JLabel(" "), BorderLayout.WEST);
         upperPane.add(new JLabel(""), BorderLayout.NORTH);
         upperPane.add(new JLabel(""), BorderLayout.SOUTH);
         getContentPane().add(upperPane, BorderLayout.NORTH);
@@ -61,6 +63,7 @@ public class InfoDialog extends JDialog {
         String info = "<html><body>" +
                 "<p><i>Java Version: " + System.getProperty("java.version") + "<br>" +
                 "Icons used are based on Benno System Icons by Benno Meyer.<br>" +
+                "Welcome screen uses icons from NuoveXT2 icon set by Alexandre Moore.<br>" +
                 "Contains classes from JEdit for logfile display.</i></p><br>" +
                 "<p>TDA is free software; you can redistribute it and/or modify it under<br>" +
                 "the terms of the Lesser GNU General Public License as published by<br>" +
