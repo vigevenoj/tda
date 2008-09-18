@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.179 2008-09-17 19:36:18 irockel Exp $
+ * $Id: TDA.java,v 1.180 2008-09-18 11:05:26 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -68,7 +68,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -90,7 +89,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Reader;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
