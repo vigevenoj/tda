@@ -18,6 +18,7 @@ Changes from 1.6 are:
 * Read heap information from Sun JDK 1.6 Dumps and display them.
 * Thread Dumps or logfiles can be pasted from clipboard (issue 20).
 * Internationalisation (only english available so far, not finished yet).
+* Extended Help, now uses javahelp.
 * Bugfixing.
 
 Changes from 1.5 are:

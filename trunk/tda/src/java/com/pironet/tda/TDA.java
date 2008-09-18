@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.180 2008-09-18 11:05:26 irockel Exp $
+ * $Id: TDA.java,v 1.181 2008-09-18 14:44:10 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -27,6 +27,7 @@ import com.pironet.tda.utils.Browser;
 import com.pironet.tda.utils.HistogramTableModel;
 import com.pironet.tda.utils.MonitorComparator;
 import com.pironet.tda.utils.PrefManager;
+import com.pironet.tda.utils.ResourceManager;
 import com.pironet.tda.utils.StatusBar;
 import com.pironet.tda.utils.SwingWorker;
 import com.pironet.tda.utils.TableSorter;
@@ -89,6 +90,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -96,12 +98,18 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import javax.help.HelpSet;
+import javax.help.JHelp;
+import javax.help.JHelpIndexNavigator;
+import javax.help.JHelpNavigator;
+import javax.help.plaf.HelpUI;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -560,6 +568,43 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 catTree.collapseRow(i);
             }
         }
+    }
+
+    /**
+     * show help dialog.
+     */
+    private void showHelp() {
+        JHelp helpViewer = null;
+        try {
+            ClassLoader cl = TDA.class.getClassLoader();
+            URL url = HelpSet.findHelpSet(cl, "javahelp/jhelpset.hs");
+            helpViewer = new JHelp(new HelpSet(cl, url));
+            
+            helpViewer.setToolbarDisplayed(false);
+            helpViewer.setCurrentID("Overview");
+        } catch (Exception e) {
+            System.err.println("API Help Set not found");
+        }                
+        Enumeration eNavigators = helpViewer.getHelpNavigators();
+        while (eNavigators.hasMoreElements()) {
+            JHelpNavigator nav = (JHelpNavigator) eNavigators.nextElement();
+            if (nav instanceof JHelpIndexNavigator) {
+                helpViewer.removeHelpNavigator(nav);
+            }
+        }
+
+        JDialog helpFrame = new JDialog(getFrame(), ResourceManager.translate("help.contents"));
+        try {
+            helpFrame.setIconImage(TDA.createImageIcon("Help.gif").getImage());
+        } catch (NoSuchMethodError nsme) {
+            // ignore, for 1.4 backward compatibility
+        }
+        
+        helpFrame.getContentPane().add(helpViewer);
+        helpFrame.setSize(helpViewer.getPreferredSize());
+        helpFrame.setLocationRelativeTo(getFrame());
+        helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        helpFrame.setVisible(true);
     }
     
     /**
@@ -1647,8 +1692,8 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             } else if ("Exit TDA".equals(source.getText())) {
                 saveState();
                 frame.dispose();
-            } else if ("Overview".equals(source.getText())) {
-                showInfoFile("Overview", "doc/overview.html", "Help.gif");
+            } else if (ResourceManager.translate("help.contents").equals(source.getText())) {
+                showHelp();
             } else if ("Help".equals(source.getText())) {
                 showInfoFile("Overview", "doc/overview.html", "Document.gif");
             } else if ("Release Notes".equals(source.getText())) {
