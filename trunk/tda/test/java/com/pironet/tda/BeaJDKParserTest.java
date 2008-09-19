@@ -15,13 +15,12 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParserTest.java,v 1.2 2008-01-09 09:40:06 irockel Exp $
+ * $Id: BeaJDKParserTest.java,v 1.3 2008-09-19 12:34:44 irockel Exp $
  */
 
 package com.pironet.tda;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
