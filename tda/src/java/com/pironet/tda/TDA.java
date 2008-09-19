@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.182 2008-09-19 05:38:12 irockel Exp $
+ * $Id: TDA.java,v 1.183 2008-09-19 12:52:09 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -286,7 +286,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                     } else if(evt.getDescription().startsWith("categories")) {
                         showCategoriesDialog();
                     } else if(evt.getDescription().startsWith("overview")) {
-                        showInfoFile("Overview", "doc/overview.html", "Help.gif");
+                        showHelp();
                     } else if(evt.getURL() != null) {
                         try {
                             // launch a browser with the appropriate URL
@@ -583,7 +583,6 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             helpViewer.setToolbarDisplayed(false);
             helpViewer.setCurrentID("general");
         } catch (Exception e) {
-            System.err.println("API Help Set not found");
         }                
         Enumeration eNavigators = helpViewer.getHelpNavigators();
         while (eNavigators.hasMoreElements()) {
@@ -601,7 +600,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         }
         
         helpFrame.getContentPane().add(helpViewer);
-        helpFrame.setSize(helpViewer.getPreferredSize());
+        helpFrame.setSize(new Dimension(900, 600));
         helpFrame.setLocationRelativeTo(getFrame());
         helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         helpFrame.setVisible(true);
@@ -1695,7 +1694,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             } else if (ResourceManager.translate("help.contents").equals(source.getText())) {
                 showHelp();
             } else if ("Help".equals(source.getText())) {
-                showInfoFile("Overview", "doc/overview.html", "Document.gif");
+                showHelp();
             } else if ("Release Notes".equals(source.getText())) {
                 showInfoFile("Release Notes", "doc/README", "Document.gif");
             } else if ("License".equals(source.getText())) {
@@ -1775,7 +1774,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             } else if("Request a Thread Dump".equals(source.getToolTipText())) {
                 addMXBeanDump();
             } else if("Help".equals(source.getToolTipText())) {
-                showInfoFile("Overview", "doc/overview.html", "Help.gif");
+                showHelp();
             }
             source.setSelected(false);
         }
