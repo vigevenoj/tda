@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.181 2008-09-18 14:44:10 irockel Exp $
+ * $Id: TDA.java,v 1.182 2008-09-19 05:38:12 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -581,7 +581,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             helpViewer = new JHelp(new HelpSet(cl, url));
             
             helpViewer.setToolbarDisplayed(false);
-            helpViewer.setCurrentID("Overview");
+            helpViewer.setCurrentID("general");
         } catch (Exception e) {
             System.err.println("API Help Set not found");
         }                
