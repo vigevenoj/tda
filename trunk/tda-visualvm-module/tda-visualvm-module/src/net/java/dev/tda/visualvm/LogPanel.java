@@ -15,23 +15,18 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogPanel.java,v 1.1 2008-04-27 20:32:33 irockel Exp $
+ * $Id: LogPanel.java,v 1.2 2008-09-29 19:49:16 irockel Exp $
  */
 package net.java.dev.tda.visualvm;
 
 import com.pironet.tda.TDA;
-import com.pironet.tda.utils.jedit.JEditTextArea;
-import com.pironet.tda.utils.jedit.PopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 
 /**
  *

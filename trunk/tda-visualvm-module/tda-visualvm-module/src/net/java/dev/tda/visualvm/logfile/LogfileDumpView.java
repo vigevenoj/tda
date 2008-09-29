@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: LogfileDumpView.java,v 1.2 2008-04-30 09:02:49 irockel Exp $
+ * $Id: LogfileDumpView.java,v 1.3 2008-09-29 19:49:16 irockel Exp $
  */
 package net.java.dev.tda.visualvm.logfile;
 
@@ -67,7 +67,7 @@ public class LogfileDumpView extends DataSourceView {
         tdaPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         
         // display the logfile
-        tdaPanel.initDumpDisplay();
+        tdaPanel.initDumpDisplay(null);
         
         tdaPanel.revalidate();
         
