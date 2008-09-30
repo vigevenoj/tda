@@ -15,31 +15,23 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAView.java,v 1.4 2008-04-27 20:32:33 irockel Exp $
+ * $Id: TDAView.java,v 1.5 2008-09-30 19:22:54 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
 
-import com.pironet.tda.LogFileContent;
 import com.pironet.tda.TDA;
-import com.pironet.tda.jconsole.MBeanDumper;
-import com.sun.tools.visualvm.application.Application;
+import com.sun.tools.visualvm.core.datasource.DataSource;
+import com.sun.tools.visualvm.core.snapshot.Snapshot;
 import com.sun.tools.visualvm.core.ui.DataSourceView;
 import com.sun.tools.visualvm.core.ui.components.DataViewComponent;
-import com.sun.tools.visualvm.tools.jmx.JmxModel;
-import com.sun.tools.visualvm.tools.jmx.JmxModelFactory;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import javax.management.MBeanServerConnection;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
@@ -50,33 +42,25 @@ import org.openide.util.Utilities;
  */
 public class TDAView extends DataSourceView {
     private static final String IMAGE_PATH = "net/java/dev/tda/visualvm/resources/tda.gif"; // NOI18N
-    private Application application;
+    private Snapshot logContent;
     
-    private JButton requestDumpButton = null;
     private JButton collapseAllButton = null;
     private JButton expandAllButton = null;
     private TDA tdaPanel = null;
-    private LogPanel logPanel = null;
     
-    public TDAView(Application application) {
-        super(application, "Thread Dump Analyzer", new ImageIcon(Utilities.loadImage(IMAGE_PATH, true)).getImage(), 60, false);
+    public TDAView(DataSource logContent) {
+        super(logContent, "Thread Dump Analyzer", new ImageIcon(Utilities.loadImage(IMAGE_PATH, true)).getImage(), 60, false);
 
-        this.application = application;
+        this.logContent = (Snapshot) logContent;
     }
 
     @Override
     protected DataViewComponent createComponent() {
-        JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
-        MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
-        try {
-            tdaPanel = new TDA(false, new MBeanDumper(mbsc));
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        tdaPanel = new TDA(false, logContent.getFile().getAbsolutePath());
         tdaPanel.init(true, true);
+        tdaPanel.initDumpDisplay(null);
+            
         tdaPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        
-        logPanel = new LogPanel(tdaPanel);
         
         JPanel viewPanel = createView();
         
@@ -87,14 +71,8 @@ public class TDAView extends DataSourceView {
         dvc.configureDetailsArea(new DataViewComponent.DetailsAreaConfiguration(NbBundle.getMessage(TDAView.class, 
                 "LBL_Dump_results"), false), DataViewComponent.TOP_LEFT);   // NOI18N
         
-        //dvc.hideDetailsArea(DataViewComponent.TOP_RIGHT);
-        
         dvc.addDetailsView(new DataViewComponent.DetailsView(NbBundle.getMessage(TDAView.class, 
                 "MSG_Dump_results"), null, 10, tdaPanel, null), DataViewComponent.TOP_LEFT);
-        
-        dvc.addDetailsView(new DataViewComponent.DetailsView(NbBundle.getMessage(TDAView.class, 
-                "MSG_Logfile"), null, 10, logPanel, null), DataViewComponent.TOP_LEFT);
-
         return(dvc);
     }
     
@@ -104,38 +82,21 @@ public class TDAView extends DataSourceView {
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(6, 0, 3, 0));
         
-        requestDumpButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_RequestDump"));  // NOI18N
-        requestDumpButton.setIcon(TDA.createImageIcon("FileOpen.gif"));   // NOI18N
-
-        requestDumpButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                LogFileContent lfc = tdaPanel.addMXBeanDump();
-                logPanel.setText(lfc.getContent());
-                logPanel.setCaretPosition(0);
-                collapseAllButton.setEnabled(true);
-                expandAllButton.setEnabled(true);
-            }
-        });
-
         collapseAllButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_CollapseTree"), TDA.createImageIcon("Collapsed.gif"));
-        collapseAllButton.setEnabled(false);
-        collapseAllButton.addActionListener(new ActionListener() {
+        /*collapseAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                tdaPanel.expandAllDumpNodes(false);
+                //tdaPanel.expandAllDumpNodes(false);
             }
-        });
+        });*/
 
         expandAllButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_ExpandTree"), TDA.createImageIcon("Expanded.gif"));
-        expandAllButton.setEnabled(false);        
-        expandAllButton.addActionListener(new ActionListener() {
+        /*expandAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                tdaPanel.expandAllDumpNodes(true);
+                //tdaPanel.expandAllDumpNodes(true);
             }
-        });
+        });*/
         
         buttonPanel.add(new JLabel("<html><body><b>Dump Actions:"));
-        buttonPanel.add(requestDumpButton);
         buttonPanel.add(collapseAllButton);
         buttonPanel.add(expandAllButton);
                 

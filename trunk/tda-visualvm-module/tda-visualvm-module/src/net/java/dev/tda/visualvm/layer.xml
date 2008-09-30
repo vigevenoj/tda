@@ -5,11 +5,6 @@
         <folder name="Help">
             <file name="net-java-dev-tda-visualvm-HelpOverviewAction.instance"/>
         </folder>
-        <folder name="Other">
-            <file name="net-java-dev-tda-visualvm-logfile-AddLogfileAction-alwaysEnabled.instance">
-                <attr name="instanceCreate" methodvalue="net.java.dev.tda.visualvm.logfile.AddLogfileAction.alwaysEnabled"/>
-            </file>
-        </folder>        
     </folder>
     <folder name="Menu">
         <folder name="Help">
@@ -22,37 +17,8 @@
                 <attr name="position" intvalue="1100"/>
             </file>
         </folder>
-        <folder name="File">
-            <file name="net-java-dev-tda-visualvm-logfile-AddLogfileAction-alwaysEnabled.shadow">
-                <attr name="originalFile" stringvalue="Actions/Other/net-java-dev-tda-visualvm-logfile-AddLogfileAction-alwaysEnabled.instance"/>
-                <attr name="position" intvalue="450"/>
-            </file>
-        </folder>        
     </folder>
-    <folder name="Toolbars">
-        <folder name="File">
-            <file name="net-java-dev-tda-visualvm-logfile-AddLogfileAction-alwaysEnabled.shadow">
-                <attr name="originalFile" stringvalue="Actions/Other/net-java-dev-tda-visualvm-logfile-AddLogfileAction-alwaysEnabled.instance"/>
-                <attr name="position" intvalue="450"/>
-            </file>
-        </folder>
-    </folder>    
     <folder name="OptionsDialog">
         <file name="net-java-dev-tda-visualvm-VisualvmOptionsCategory.instance"/>
     </folder>
-    <folder name="VisualVM">
-        <folder name="ExplorerPopupSelection">
-            <file name="net-java-dev-tda-visualvm-logfile-AddLogfileAction-selectionAware.instance">
-                <attr name="instanceCreate" methodvalue="net.java.dev.tda.visualvm.logfile.AddLogfileAction.selectionAware"/>
-                <attr name="position" intvalue="0"/>
-                <attr name="default" boolvalue="true"/>
-            </file>
-        </folder>
-        <folder name="ExplorerPopupNoSelection">
-            <file name="net-java-dev-tda-visualvm-logfile-AddLogfileAction-alwaysEnabled.shadow">
-                <attr name="originalFile" stringvalue="Actions/Other/net-java-dev-tda-visualvm-logfile-AddLogfileAction-alwaysEnabled.instance"/>
-                <attr name="position" intvalue="1000"/>
-            </file>
-        </folder>
-    </folder>
-</filesystem>
+s</filesystem>
