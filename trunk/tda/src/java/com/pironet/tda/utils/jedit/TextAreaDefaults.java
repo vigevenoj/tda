@@ -1,5 +1,5 @@
 /*
- * $Id: TextAreaDefaults.java,v 1.2 2007-12-14 13:20:19 irockel Exp $
+ * $Id: TextAreaDefaults.java,v 1.3 2008-09-30 19:20:56 irockel Exp $
  *
  * TextAreaDefaults.java - Encapsulates default values for various settings
  * Copyright (C) 1999 Slava Pestov
@@ -53,32 +53,29 @@ public class TextAreaDefaults
 	 */
 	public static TextAreaDefaults getDefaults()
 	{
-		if(DEFAULTS == null)
-		{
-			DEFAULTS = new TextAreaDefaults();
+        DEFAULTS = new TextAreaDefaults();
 
-			DEFAULTS.inputHandler = new DefaultInputHandler();
-			DEFAULTS.inputHandler.addDefaultKeyBindings();
-			DEFAULTS.document = new SyntaxDocument();
-			DEFAULTS.editable = true;
+        DEFAULTS.inputHandler = new DefaultInputHandler();
+        DEFAULTS.inputHandler.addDefaultKeyBindings();
+        DEFAULTS.document = new SyntaxDocument();
+        DEFAULTS.editable = true;
 
-			DEFAULTS.caretVisible = true;
-			DEFAULTS.caretBlinks = true;
-			DEFAULTS.electricScroll = 3;
+        DEFAULTS.caretVisible = true;
+        DEFAULTS.caretBlinks = true;
+        DEFAULTS.electricScroll = 3;
 
-			DEFAULTS.cols = 80;
-			DEFAULTS.rows = 5;
-			DEFAULTS.styles = SyntaxUtilities.getDefaultSyntaxStyles();
-			DEFAULTS.caretColor = Color.red;
-			DEFAULTS.selectionColor = new Color(0xccccff);
-			DEFAULTS.lineHighlightColor = new Color(0xe0e0e0);
-			DEFAULTS.lineHighlight = true;
-			DEFAULTS.bracketHighlightColor = Color.black;
-			DEFAULTS.bracketHighlight = true;
-			DEFAULTS.eolMarkerColor = new Color(0x009999);
-			DEFAULTS.eolMarkers = true;
-			DEFAULTS.paintInvalid = true;
-		}
+        DEFAULTS.cols = 80;
+        DEFAULTS.rows = 5;
+        DEFAULTS.styles = SyntaxUtilities.getDefaultSyntaxStyles();
+        DEFAULTS.caretColor = Color.red;
+        DEFAULTS.selectionColor = new Color(0xccccff);
+        DEFAULTS.lineHighlightColor = new Color(0xe0e0e0);
+        DEFAULTS.lineHighlight = true;
+        DEFAULTS.bracketHighlightColor = Color.black;
+        DEFAULTS.bracketHighlight = true;
+        DEFAULTS.eolMarkerColor = new Color(0x009999);
+        DEFAULTS.eolMarkers = true;
+        DEFAULTS.paintInvalid = true;
 
 		return DEFAULTS;
 	}
