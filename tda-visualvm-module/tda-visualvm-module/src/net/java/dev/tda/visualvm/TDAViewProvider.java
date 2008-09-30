@@ -15,38 +15,35 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAViewProvider.java,v 1.3 2008-04-18 10:57:10 irockel Exp $
+ * $Id: TDAViewProvider.java,v 1.4 2008-09-30 19:22:54 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
 
-import com.sun.tools.visualvm.application.Application;
+import com.sun.tools.visualvm.core.datasource.DataSource;
 import com.sun.tools.visualvm.core.ui.DataSourceView;
 import com.sun.tools.visualvm.core.ui.DataSourceViewProvider;
 import com.sun.tools.visualvm.core.ui.DataSourceViewsManager;
-import com.sun.tools.visualvm.tools.jmx.JmxModel;
-import com.sun.tools.visualvm.tools.jmx.JmxModelFactory;
-import javax.management.MBeanServerConnection;
+import com.sun.tools.visualvm.threaddump.ThreadDump;
+import net.java.dev.tda.visualvm.logfile.Logfile;
 
 /**
  * provides a tda view.
  * 
  * @author irockel
  */
-public class TDAViewProvider extends DataSourceViewProvider<Application> {
+public class TDAViewProvider extends DataSourceViewProvider<DataSource> {
     static void initialize() {
-        DataSourceViewsManager.sharedInstance().addViewProvider(new TDAViewProvider(), Application.class);
+        DataSourceViewsManager.sharedInstance().addViewProvider(new TDAViewProvider(), DataSource.class);
     }
 
     @Override
-    protected boolean supportsViewFor(Application application) {
-        JmxModel jmx = JmxModelFactory.getJmxModelFor(application);
-        MBeanServerConnection mbsc = jmx.getMBeanServerConnection();
-        return mbsc != null;
+    protected boolean supportsViewFor(DataSource logContent) {
+        return ((logContent instanceof ThreadDump) || (logContent instanceof Logfile));
     }
 
     @Override
-    protected DataSourceView createView(Application application) {
-        return(new TDAView(application));
+    protected DataSourceView createView(DataSource logContent) {
+        return(new TDAView(logContent));
     }
 }

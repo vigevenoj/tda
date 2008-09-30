@@ -15,11 +15,10 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: Install.java,v 1.2 2008-04-27 20:32:33 irockel Exp $
+ * $Id: Install.java,v 1.3 2008-09-30 19:22:54 irockel Exp $
  */
 package net.java.dev.tda.visualvm;
 
-import net.java.dev.tda.visualvm.logfile.LogfileProvider;
 import org.openide.modules.ModuleInstall;
 
 /**
@@ -32,7 +31,6 @@ public class Install extends ModuleInstall {
     public void restored() {
         try {
             TDAViewProvider.initialize();
-            LogfileProvider.initialize();
         } catch (Exception e) {
             e.printStackTrace();
         }
