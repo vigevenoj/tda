@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAView.java,v 1.6 2008-10-05 08:26:37 irockel Exp $
+ * $Id: TDAView.java,v 1.7 2008-10-05 18:47:04 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
@@ -27,6 +27,8 @@ import com.sun.tools.visualvm.core.ui.DataSourceView;
 import com.sun.tools.visualvm.core.ui.components.DataViewComponent;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -91,18 +93,18 @@ public class TDAView extends DataSourceView {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(6, 0, 3, 0));
         
         collapseAllButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_CollapseTree"), TDA.createImageIcon("Collapsed.gif"));
-        /*collapseAllButton.addActionListener(new ActionListener() {
+        collapseAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tdaPanel.expandAllDumpNodes(false);
+                tdaPanel.expandAllDumpNodes(false);
             }
-        });*/
+        });
 
         expandAllButton = new JButton(NbBundle.getMessage(TDAView.class, "LBL_ExpandTree"), TDA.createImageIcon("Expanded.gif"));
-        /*expandAllButton.addActionListener(new ActionListener() {
+        expandAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //tdaPanel.expandAllDumpNodes(true);
+                tdaPanel.expandAllDumpNodes(true);
             }
-        });*/
+        });
         
         buttonPanel.add(new JLabel("<html><body><b>Dump Actions:"));
         buttonPanel.add(collapseAllButton);
