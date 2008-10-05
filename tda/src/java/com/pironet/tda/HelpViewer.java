@@ -15,14 +15,18 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpViewer.java,v 1.1 2008-10-05 07:52:03 irockel Exp $
+ * $Id: HelpViewer.java,v 1.2 2008-10-05 10:07:09 irockel Exp $
  */
 package com.pironet.tda;
 
 import com.pironet.tda.utils.Browser;
 import com.pironet.tda.utils.ResourceManager;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.Enumeration;
 import javax.help.HelpSet;
@@ -32,9 +36,11 @@ import javax.help.JHelpIndexNavigator;
 import javax.help.JHelpNavigator;
 import javax.help.SwingHelpUtilities;
 import javax.help.plaf.basic.BasicContentViewerUI;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.event.HyperlinkEvent;
 
 /**
@@ -43,6 +49,7 @@ import javax.swing.event.HyperlinkEvent;
  * @author irockel
  */
 public class HelpViewer extends BasicContentViewerUI {
+    
     public HelpViewer(JHelpContentViewer x) {
         super(x);
     }
@@ -72,15 +79,27 @@ public class HelpViewer extends BasicContentViewerUI {
             }
         }
 
-        JDialog helpFrame = new JDialog(owner, ResourceManager.translate("help.contents"));
+        final JDialog helpFrame = new JDialog(owner, ResourceManager.translate("help.contents"));
         try {
             helpFrame.setIconImage(TDA.createImageIcon("Help.gif").getImage());
         } catch (NoSuchMethodError nsme) {
             // ignore, for 1.4 backward compatibility
         }
         
-        helpFrame.getContentPane().add(helpViewer);
-        helpFrame.setSize(new Dimension(900, 600));
+        helpFrame.setLayout(new BorderLayout());
+        helpFrame.getContentPane().add(helpViewer, BorderLayout.CENTER);
+        JButton closeButton = new JButton("Close");
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(closeButton);
+        helpFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        
+        closeButton.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                helpFrame.dispose();
+            }
+        });
+        helpFrame.getRootPane().setDefaultButton(closeButton);
+        helpFrame.setSize(new Dimension(900, 700));
         helpFrame.setLocationRelativeTo(owner);
         helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         helpFrame.setVisible(true);
