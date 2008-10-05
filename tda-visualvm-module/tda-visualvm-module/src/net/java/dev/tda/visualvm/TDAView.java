@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAView.java,v 1.5 2008-09-30 19:22:54 irockel Exp $
+ * $Id: TDAView.java,v 1.6 2008-10-05 08:26:37 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
@@ -74,6 +74,14 @@ public class TDAView extends DataSourceView {
         dvc.addDetailsView(new DataViewComponent.DetailsView(NbBundle.getMessage(TDAView.class, 
                 "MSG_Dump_results"), null, 10, tdaPanel, null), DataViewComponent.TOP_LEFT);
         return(dvc);
+    }
+    
+    /**
+     * add given file to existing tda panel.
+     * @param file the file string path to add.
+     */
+    public void addToTDA(String file) {
+        tdaPanel.addDumpFile(file);
     }
     
     private JPanel createView() {
