@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewAction.java,v 1.1 2008-04-27 20:32:33 irockel Exp $
+ * $Id: HelpOverviewAction.java,v 1.2 2008-10-05 08:26:37 irockel Exp $
  */
 package net.java.dev.tda.visualvm;
 
@@ -29,7 +29,7 @@ import org.openide.util.actions.CallableSystemAction;
 public final class HelpOverviewAction extends CallableSystemAction {
 
     public void performAction() {
-        showInfoFile("Overview", "doc/overview.html", "Document.gif");
+        showInfoFile("VisualVM TDA Usage Overview", "/javahelp/visualvm.html", "Document.gif");
     }
     
     /**

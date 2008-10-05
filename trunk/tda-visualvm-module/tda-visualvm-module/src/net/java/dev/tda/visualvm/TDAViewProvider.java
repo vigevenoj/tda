@@ -15,16 +15,19 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDAViewProvider.java,v 1.4 2008-09-30 19:22:54 irockel Exp $
+ * $Id: TDAViewProvider.java,v 1.5 2008-10-05 08:26:37 irockel Exp $
  */
 
 package net.java.dev.tda.visualvm;
 
 import com.sun.tools.visualvm.core.datasource.DataSource;
+import com.sun.tools.visualvm.core.snapshot.Snapshot;
 import com.sun.tools.visualvm.core.ui.DataSourceView;
 import com.sun.tools.visualvm.core.ui.DataSourceViewProvider;
 import com.sun.tools.visualvm.core.ui.DataSourceViewsManager;
 import com.sun.tools.visualvm.threaddump.ThreadDump;
+import java.util.HashMap;
+import java.util.Map;
 import net.java.dev.tda.visualvm.logfile.Logfile;
 
 /**
@@ -33,6 +36,11 @@ import net.java.dev.tda.visualvm.logfile.Logfile;
  * @author irockel
  */
 public class TDAViewProvider extends DataSourceViewProvider<DataSource> {
+    /*
+     * FIXME: this is just a hack to add newly added thread dumps to an existing thread dump view.
+     */
+    private Map views = new HashMap();
+    
     static void initialize() {
         DataSourceViewsManager.sharedInstance().addViewProvider(new TDAViewProvider(), DataSource.class);
     }
@@ -44,6 +52,15 @@ public class TDAViewProvider extends DataSourceViewProvider<DataSource> {
 
     @Override
     protected DataSourceView createView(DataSource logContent) {
-        return(new TDAView(logContent));
+        TDAView tdaView;
+        if(views.containsKey(logContent.getMaster())) {
+            tdaView = (TDAView) views.get(logContent.getMaster());
+            tdaView.addToTDA(((Snapshot) logContent).getFile().getAbsolutePath());
+            return(tdaView);
+        } else {
+            tdaView = new TDAView(logContent);
+            views.put(logContent.getMaster(), tdaView);
+        }
+        return(tdaView);
     }
 }
