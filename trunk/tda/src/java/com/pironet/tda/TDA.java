@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.183 2008-09-19 12:52:09 irockel Exp $
+ * $Id: TDA.java,v 1.184 2008-10-05 07:52:02 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -90,7 +90,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -98,18 +97,12 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import javax.help.HelpSet;
-import javax.help.JHelp;
-import javax.help.JHelpIndexNavigator;
-import javax.help.JHelpNavigator;
-import javax.help.plaf.HelpUI;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -574,36 +567,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      * show help dialog.
      */
     private void showHelp() {
-        JHelp helpViewer = null;
-        try {
-            ClassLoader cl = TDA.class.getClassLoader();
-            URL url = HelpSet.findHelpSet(cl, "javahelp/jhelpset.hs");
-            helpViewer = new JHelp(new HelpSet(cl, url));
-            
-            helpViewer.setToolbarDisplayed(false);
-            helpViewer.setCurrentID("general");
-        } catch (Exception e) {
-        }                
-        Enumeration eNavigators = helpViewer.getHelpNavigators();
-        while (eNavigators.hasMoreElements()) {
-            JHelpNavigator nav = (JHelpNavigator) eNavigators.nextElement();
-            if (nav instanceof JHelpIndexNavigator) {
-                helpViewer.removeHelpNavigator(nav);
-            }
-        }
-
-        JDialog helpFrame = new JDialog(getFrame(), ResourceManager.translate("help.contents"));
-        try {
-            helpFrame.setIconImage(TDA.createImageIcon("Help.gif").getImage());
-        } catch (NoSuchMethodError nsme) {
-            // ignore, for 1.4 backward compatibility
-        }
-        
-        helpFrame.getContentPane().add(helpViewer);
-        helpFrame.setSize(new Dimension(900, 600));
-        helpFrame.setLocationRelativeTo(getFrame());
-        helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        helpFrame.setVisible(true);
+        HelpViewer.show(getFrame());
     }
     
     /**
@@ -858,7 +822,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             getMainMenu().getExpandAllMenuItem().setEnabled(true);
             getMainMenu().getCollapseAllMenuItem().setEnabled(true);
         }
-        if(!runningAsJConsolePlugin) {
+        if(!runningAsJConsolePlugin || (dumpFile != null)) {
             if(dumpFile != null) {
                 addDumpFile();
             } else if (content != null) {
