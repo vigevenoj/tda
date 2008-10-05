@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.184 2008-10-05 07:52:02 irockel Exp $
+ * $Id: TDA.java,v 1.185 2008-10-05 08:27:18 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -855,11 +855,18 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      * add the set dumpFileStream to the tree
      */
     private void addDumpFile() {
-        String[] file = new String[1];
-        file[0] = dumpFile;
-        addDumpFiles(file);
+        addDumpFile(dumpFile);
     }
 
+    /**
+     * add the set dumpFileStream to the tree
+     */
+    public void addDumpFile(String filePath) {
+        String[] file = new String[1];
+        file[0] = filePath;
+        addDumpFiles(file);
+    }
+    
     private boolean isLogfileSizeOk(String fileName) {
         File file = new File(fileName);
         return(file.isFile() && ((PrefManager.get().getMaxLogfileSize() == 0) || 
