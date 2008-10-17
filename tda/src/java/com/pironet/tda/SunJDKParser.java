@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.41 2008-08-13 15:52:19 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.42 2008-10-17 08:58:12 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -533,7 +533,7 @@ public class SunJDKParser extends AbstractDumpParser {
                     lines++;
                 }
             } else if(found) {
-                if(heapLineCounter < 8) {
+                if(heapLineCounter < 7) {
                     hContent.append(line).append("\n");
                 } else {
                     finished = true;
