@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.42 2008-10-17 08:58:12 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.43 2008-10-31 08:10:00 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -93,6 +93,7 @@ public class SunJDKParser extends AbstractDumpParser {
             return(tmpDump);
         }
         boolean retry = false;
+        String line = null;
         
         do {
             DefaultMutableTreeNode threadDump = null;
@@ -144,7 +145,7 @@ public class SunJDKParser extends AbstractDumpParser {
                 Matcher matched = getDm().getLastMatch();
 
                 while (getBis().ready() && !finished) {
-                    String line = getBis().readLine();
+                    line = getBis().readLine();
                     lineCounter++;
                     singleLineCounter++;
                     if (locked) {
@@ -377,7 +378,8 @@ public class SunJDKParser extends AbstractDumpParser {
                 JOptionPane.showMessageDialog(null,
                         "Error during parsing of a found thread dump, skipping to next one!\n" +
                         "Check for possible broken dumps, sometimes, stream flushing mixes the logged data.\n" +
-                        "Error Message is \"" + e.getLocalizedMessage() + "\" \n",
+                        "Error Message is \"" + e.getLocalizedMessage() + "\". \n" +
+                        (line != null ? "Last line read was \"" + line + "\". \n": ""),
                         "Error during Parsing Thread Dump", JOptionPane.ERROR_MESSAGE);
                 retry = true;
             } catch (IOException e) {
