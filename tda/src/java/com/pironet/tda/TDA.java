@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.185 2008-10-05 08:27:18 irockel Exp $
+ * $Id: TDA.java,v 1.186 2008-11-20 16:31:04 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -1692,7 +1692,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 closeAllDumps();
             } else if ("Diff Selection".equals(source.getText())) {
                 TreePath[] paths = tree.getSelectionPaths();
-                if (paths.length < 2) {
+                if ((paths != null) && (paths.length < 2)) {
                     JOptionPane.showMessageDialog(this.getRootPane(),
                             "You must select at least two dumps for getting a diff!\n",
                             "Error", JOptionPane.ERROR_MESSAGE);
