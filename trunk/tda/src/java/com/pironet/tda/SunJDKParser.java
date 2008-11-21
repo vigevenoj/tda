@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.44 2008-11-21 09:20:17 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.45 2008-11-21 21:17:51 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -261,7 +261,7 @@ public class SunJDKParser extends AbstractDumpParser {
                             monitorStack.push(line);
                             wContent.append("\n");
                             content.append("\n");
-                        } else if (line.indexOf("- locked <") >= 0) {
+                        } else if (line.indexOf("- locked") >= 0) {
                             String newLine = linkifyMonitor(line);
                             content.append(newLine);
                             if (lContent == null) {
@@ -410,6 +410,12 @@ public class SunJDKParser extends AbstractDumpParser {
             monitor = monitor.replaceAll("<", "<a href=\"monitor://" + monitor + "\">&lt;");
             monitor = monitor.substring(0, monitor.length() - 1) + "&gt;</a>";
             return(begin + monitor + end);
+        } else if (line != null && line.indexOf('@') >= 0) {
+            String begin = line.substring(0, line.indexOf('@')+1);
+            String monitor = line.substring(line.indexOf('@'));
+            monitor = monitor.replaceAll("@", "@<a href=\"monitor://<" + monitor.substring(1) + ">\">");
+            monitor = monitor.substring(0, monitor.length() - 1) + "</a>";
+            return(begin + monitor);
         } else {
             return(line);
         }
