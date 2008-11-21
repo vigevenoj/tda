@@ -15,13 +15,11 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: HelpOverviewAction.java,v 1.2 2008-10-05 08:26:37 irockel Exp $
+ * $Id: HelpOverviewAction.java,v 1.3 2008-11-21 09:34:11 irockel Exp $
  */
 package net.java.dev.tda.visualvm;
 
-import com.pironet.tda.HelpOverviewDialog;
-import com.pironet.tda.TDA;
-import javax.swing.JFrame;
+import com.pironet.tda.HelpViewer;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.util.actions.CallableSystemAction;
@@ -29,24 +27,9 @@ import org.openide.util.actions.CallableSystemAction;
 public final class HelpOverviewAction extends CallableSystemAction {
 
     public void performAction() {
-        showInfoFile("VisualVM TDA Usage Overview", "/javahelp/visualvm.html", "Document.gif");
+        HelpViewer.show(null);
     }
     
-    /**
-     * display the specified file in a info window.
-     * @param title title of the info window.
-     * @param file the file to display.
-     */
-    private void showInfoFile(String title, String file, String icon) {
-        HelpOverviewDialog infoDialog = new HelpOverviewDialog(null, title, file, TDA.createImageIcon(icon).getImage());
-        infoDialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
-        //Display the window.
-        infoDialog.pack();
-        //infoDialog.setLocationRelativeTo(getFrame());
-        infoDialog.setVisible(true);
-    }
-
     public String getName() {
         return NbBundle.getMessage(HelpOverviewAction.class, "CTL_HelpOverviewAction");
     }
