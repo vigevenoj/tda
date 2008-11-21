@@ -9,6 +9,7 @@ Changes from 2.0 are:
 * Added last line parsed to the error message if an error occurs during parsing.
 * Fixed Issue 22, check for null if diffing dumps.
 * Fixed Issue 23, fixed parsing of remote VisualVM Dumps.
+* Fixes Issue 24, fixed parsing of monitors in VisualVM Dumps.
 * Bugfixing
 
 Changes from 1.6 are:
