@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.17 2008-08-12 20:23:26 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.18 2008-11-21 08:13:44 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -252,7 +252,6 @@ public abstract class AbstractDumpParser implements DumpParser {
     /**
      * create a category entry for a category (categories are "Monitors", "Threads waiting", e.g.). A ThreadInfo
      * instance will be created with the passed information.
-     * FIXME: this method needs rework for creating a JXTable for the categories, except monitors
      * @param category the category the node should be added to.
      * @param title the title of the new node
      * @param info the info part of the new node
