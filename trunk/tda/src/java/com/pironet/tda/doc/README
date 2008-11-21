@@ -8,6 +8,7 @@ Note: This is the 2.1 release of the software, for an usage overview see Help/Ov
 Changes from 2.0 are:
 * Added last line parsed to the error message if an error occurs during parsing.
 * Fixed Issue 22, check for null if diffing dumps.
+* Fixed Issue 23, fixed parsing of remote VisualVM Dumps.
 * Bugfixing
 
 Changes from 1.6 are:

@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.43 2008-10-31 08:10:00 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.44 2008-11-21 09:20:17 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -229,6 +229,15 @@ public class SunJDKParser extends AbstractDumpParser {
                         } else if (line.indexOf("java.lang.Thread.State") >= 0) {
                             content.append(line);
                             content.append("\n");
+                            if(title.indexOf("t@") > 0) {
+                                // in this case the title line is missing state informations
+                                String state = line.substring(line.indexOf(':')+1).trim();
+                                if(state.indexOf(' ') > 0) {
+                                    title += " state=" + state.substring(0, state.indexOf(' '));
+                                } else {
+                                    title += " state=" + state;
+                                }
+                            }
                         } else if (line.indexOf("Locked ownable synchronizers:") >= 0) {
                             content.append(line);
                             content.append("\n");
@@ -371,7 +380,6 @@ public class SunJDKParser extends AbstractDumpParser {
                 return (threadCount > 0 ? threadDump : null);
 
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (StringIndexOutOfBoundsException e) {
                 e.printStackTrace();
@@ -383,7 +391,6 @@ public class SunJDKParser extends AbstractDumpParser {
                         "Error during Parsing Thread Dump", JOptionPane.ERROR_MESSAGE);
                 retry = true;
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } while (retry);
@@ -804,6 +811,9 @@ public class SunJDKParser extends AbstractDumpParser {
             tokens[0] = name.substring(1, name.lastIndexOf('"'));
             if(name.indexOf("nid=") > 0) {
                 tokens[1] = name.substring(name.indexOf("nid=") + 4, name.indexOf("state=") - 1);
+                tokens[2] = name.substring(name.indexOf("state=") +6);
+            } else if(name.indexOf("t@") > 0) {
+                tokens[1] = name.substring(name.indexOf("t@") + 2, name.indexOf("state=") -1);
                 tokens[2] = name.substring(name.indexOf("state=") +6);
             } else {
                 tokens[1] = name.substring(name.indexOf("id=") + 3, name.indexOf(" in"));
