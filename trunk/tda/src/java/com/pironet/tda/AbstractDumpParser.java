@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: AbstractDumpParser.java,v 1.18 2008-11-21 08:13:44 irockel Exp $
+ * $Id: AbstractDumpParser.java,v 1.19 2009-09-04 07:04:44 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -136,7 +136,7 @@ public abstract class AbstractDumpParser implements DumpParser {
                     if(occurence >= (minOccurence-1)) {
                         threadCount++;
                         StringBuffer content = new StringBuffer("<body bgcolor=\"ffffff\"><b><font size=").append(TDA.getFontSizeModifier(-1)).
-                                append(">").append((String) keys.get(0)).append("</b></font><hr/><pre><font size=").
+                                append(">").append((String) keys.get(0)).append("</b></font><hr><pre><font size=").
                                 append(TDA.getFontSizeModifier(-1)).append(">").
                                 append(fixMonitorLinks((String) ((Map) dumpStore.get(keys.get(0))).get(threadKey), (String) keys.get(0)));
 
@@ -147,7 +147,7 @@ public abstract class AbstractDumpParser implements DumpParser {
                                 content.append(TDA.getFontSizeModifier(-1));
                                 content.append(">");
                                 content.append(keys.get(i));
-                                content.append("</font></b><hr/><pre><font size=");
+                                content.append("</font></b><hr><pre><font size=");
                                 content.append(TDA.getFontSizeModifier(-1));
                                 content.append(">");
                                 content.append(fixMonitorLinks((String) ((Map)dumpStore.get(keys.get(i))).get(threadKey), (String) keys.get(i)));
@@ -192,14 +192,14 @@ public abstract class AbstractDumpParser implements DumpParser {
     private String getStatInfo(Vector keys, String prefix, int minOccurence, int threadCount) {
         StringBuffer statData = new StringBuffer("<body bgcolor=\"#ffffff\"><font face=System><b><font face=System> "); 
         
-        statData.append("<b>" + prefix + "</b><hr/><p><i>");
+        statData.append("<b>" + prefix + "</b><hr><p><i>");
         for(int i = 0; i < keys.size(); i++) {
             statData.append(keys.get(i));
             if(i < keys.size() -1) {
                 statData.append(", ");
             }
         }
-        statData.append("</i></p><br/>" +
+        statData.append("</i></p><br>" +
                 "<table border=0><tr bgcolor=\"#dddddd\"><td><font face=System " +
                 ">Overall Thread Count</td><td width=\"150\"></td><td><b><font face=System>");
         statData.append(threadCount);
