@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.26 2008-03-09 06:36:52 irockel Exp $
+ * $Id: PrefManager.java,v 1.27 2009-11-10 19:24:21 maestoso Exp $
  */
 package com.pironet.tda.utils;
 
@@ -29,6 +29,7 @@ import com.pironet.tda.filter.FilterChecker;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -48,9 +49,9 @@ public class PrefManager {
     public static final String FILTER_SEP = "\u00ac\u00ac\u00ac\u00ac";
 
     
-    private static PrefManager prefManager = null;
+    private final static PrefManager prefManager = new PrefManager();
     
-    private Preferences toolPrefs = null;
+    private final Preferences toolPrefs;
     
     /** Creates a new instance of PrefManager */
     private PrefManager() {
@@ -58,9 +59,6 @@ public class PrefManager {
     }
     
     public static PrefManager get() {
-        if(prefManager == null) {
-            prefManager = new PrefManager();
-        }
         return(prefManager);
     }
 
@@ -284,11 +282,11 @@ public class PrefManager {
     /**
      * temporary storage for filters to not to have them be parsed again
      */
-    private DefaultListModel cachedFilters = null;
+    private final java.util.List cachedFilters = new ArrayList();
     
     public ListModel getFilters() {
         DefaultListModel filters = null;
-        if(cachedFilters == null) {
+        if(this.cachedFilters.isEmpty()) {
             String filterString = toolPrefs.get("filters", "");
             if(filterString.length() > 0) {
                 filters = new DefaultListModel();
@@ -306,19 +304,49 @@ public class PrefManager {
                     // fall back to default filters
                     filters = getPredefinedFilters();
                 }
+		// initialize cached filters
+		setFilterCache(filters);
             } else {
                 filters = getPredefinedFilters();
             }
         } else {
-            filters = cachedFilters;
+	    // populate filters from cache
+            filters = getCachedFilters();
         }
         return(filters);
     }
     
     /**
+     * Populates a new DefaultModelList object with the current list of filters.
+     * 
+     * @return populated DefaultModelList object
+     */
+    private DefaultListModel getCachedFilters() {
+        DefaultListModel modelFilters = new DefaultListModel();
+        Iterator it = this.cachedFilters.iterator();
+        while (it.hasNext()) {
+            modelFilters.addElement(it.next());
+        }
+        return modelFilters;
+    }
+
+    /**
+     * Populates the cached filters using a new list of filters.
+     * 
+     * @param filters updated list of filters
+     */
+    private void setFilterCache(DefaultListModel filters) {
+        // remove existing filters
+        this.cachedFilters.clear();
+        for (int f = 0; f < filters.size(); f++) {
+            this.cachedFilters.add(filters.get(f));
+        }
+    }
+
+    /**
      * temporary storage for categories to not to have them be parsed again
      */
-    private DefaultListModel cachedCategories = null;
+    private final java.util.List cachedCategories = new ArrayList();
     
     /**
      * get custom categories.
@@ -326,7 +354,7 @@ public class PrefManager {
      */
     public ListModel getCategories() {
         DefaultListModel categories = null;
-        if (cachedCategories == null) {
+        if (this.cachedCategories.isEmpty()) {
             String categoryString = toolPrefs.get("categories", "");
             if (categoryString.length() > 0) {
                 categories = new DefaultListModel();
@@ -350,15 +378,47 @@ public class PrefManager {
                     // fall back to default categories
                     categories = getPredefinedFilters();
                 }
+		// initialize cache
+		setCategoryCache(categories);
             } else {
                 categories = new DefaultListModel();
             }
         } else {
-            categories = cachedCategories;
+	    // populate categories from cache
+            categories = getCachedCategories();
         }
         return (categories);
     }
     
+    /**
+     * Populates a new DefaultModelList object with the current list of
+     * categories.
+     * 
+     * @return populated DefaultModelList object
+     */
+    private DefaultListModel getCachedCategories() {
+        DefaultListModel modelFilters = new DefaultListModel();
+        Iterator it = this.cachedCategories.iterator();
+        while (it.hasNext()) {
+            modelFilters.addElement(it.next());
+        }
+        return modelFilters;
+    }
+
+    /**
+     * Populates the cached categories using a new list of categories.
+     * 
+     * @param categories
+     *            populated object of {@link CustomCategory} objects
+     */
+    private void setCategoryCache(DefaultListModel categories) {
+        // remove existing categories
+        this.cachedCategories.clear();
+        for (int f = 0; f < categories.size(); f++) {
+            this.cachedCategories.add(categories.get(f));
+        }
+    }
+
     /**
      * get filter for given key from filters
      * @param key filter key to look up
@@ -391,7 +451,6 @@ public class PrefManager {
     
     public void setFilters(DefaultListModel filters) {
         // store into cache
-        cachedFilters = filters;
         StringBuffer filterString = new StringBuffer();
         for(int i = 0; i < filters.getSize(); i++) {
             if(i > 0) {
@@ -410,6 +469,7 @@ public class PrefManager {
             filterString.append(((Filter)filters.getElementAt(i)).isEnabled());
         }
         toolPrefs.put("filters", filterString.toString());
+	setFilterCache(filters);
         setFilterLastChanged();
     }
     
@@ -419,7 +479,6 @@ public class PrefManager {
      */
     public void setCategories(DefaultListModel categories) {
         // store into cache
-        cachedCategories = categories;
         StringBuffer catString = new StringBuffer();
         for (int i = 0; i < categories.getSize(); i++) {
             if (i > 0) {
@@ -437,6 +496,7 @@ public class PrefManager {
             }
         }
         toolPrefs.put("categories", catString.toString());
+	setCategoryCache(categories);
     }
 
     
