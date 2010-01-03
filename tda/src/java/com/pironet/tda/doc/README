@@ -8,6 +8,8 @@ Note: This is the 2.2 release of the software, for an usage overview see Help/Ov
 Changes from 2.1 are:
 * Implemented Issue 9: now parked threads using java.lang.concurrent are recognized.
 * Fixed Issue 26: no more lost filters in categories. Thanks to Robert Whitehurst.
+* Fixed Issue 27: Improved memory footprint, now parsed thread dump use about
+  20% less memory.
 * Fixed HTML if JDK 5.x is used.
 * Small Adjustments.
 

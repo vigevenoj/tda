@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.46 2010-01-03 11:47:51 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.47 2010-01-03 14:23:09 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -129,9 +129,9 @@ public class SunJDKParser extends AbstractDumpParser {
                 String title = null;
                 String dumpKey = null;
                 StringBuffer content = null;
-                StringBuffer lContent = null;
-                StringBuffer sContent = null;
-                StringBuffer wContent = null;
+                boolean inLocking = false;
+                boolean inSleeping = false;
+                boolean inWaiting = false;
                 int threadCount = 0;
                 int waiting = 0;
                 int locking = 0;
@@ -190,28 +190,26 @@ public class SunJDKParser extends AbstractDumpParser {
                         }
                     } else {
                         if (line.startsWith("\"")) {
+                            String stringContent = content != null ? content.toString() : null;
                             if (title != null) {
                                 threads.put(title, content.toString());
                                 content.append("</pre></pre>");
-                                addToCategory(catThreads, title, null, content, singleLineCounter, true);
+                                addToCategory(catThreads, title, null, stringContent, singleLineCounter, true);
                                 threadCount++;
                             }
-                            if (wContent != null) {
-                                wContent.append("</b><hr>");
-                                addToCategory(catWaiting, title, wContent, content, singleLineCounter, true);
-                                wContent = null;
+                            if (inWaiting) {
+                                addToCategory(catWaiting, title, null, stringContent, singleLineCounter, true);
+                                inWaiting = false;
                                 waiting++;
                             }
-                            if (sContent != null) {
-                                sContent.append("</b><hr>");
-                                addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
-                                sContent = null;
+                            if (inSleeping) {
+                                addToCategory(catSleeping, title, null, stringContent, singleLineCounter, true);
+                                inSleeping = false;
                                 sleeping++;
                             }
-                            if (lContent != null) {
-                                lContent.append("</b><hr>");
-                                addToCategory(catLocking, title, lContent, content, singleLineCounter, true);
-                                lContent = null;
+                            if (inLocking) {
+                                addToCategory(catLocking, title, null, stringContent, singleLineCounter, true);
+                                inLocking = false;
                                 locking++;
                             }
                             singleLineCounter = 0;
@@ -244,42 +242,26 @@ public class SunJDKParser extends AbstractDumpParser {
                         } else if (line.indexOf("- waiting on") >= 0) {
                             String newLine = linkifyMonitor(line);
                             content.append(newLine);
-                            if (sContent == null) {
-                                sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
-                            }
-                            sContent.append(newLine);
                             monitorStack.push(line);
-                            sContent.append("\n");
+                            inSleeping = true;
                             content.append("\n");
                         } else if (line.indexOf("- parking to wait") >= 0) {
                             String newLine = linkifyMonitor(line);
                             content.append(newLine);
-                            if (sContent == null) {
-                                sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
-                            }
-                            sContent.append(newLine);
                             monitorStack.push(line);
-                            sContent.append("\n");
+                            inSleeping = true;
                             content.append("\n");
                         } else if (line.indexOf("- waiting to") >= 0) {
                             String newLine = linkifyMonitor(line);
                             content.append(newLine);
-                            if (wContent == null) {
-                                wContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
-                            }
-                            wContent.append(newLine);
                             monitorStack.push(line);
-                            wContent.append("\n");
+                            inWaiting = true;
                             content.append("\n");
                         } else if (line.indexOf("- locked") >= 0) {
                             String newLine = linkifyMonitor(line);
                             content.append(newLine);
-                            if (lContent == null) {
-                                lContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
-                            }
-                            lContent.append(newLine);
+                            inLocking = true;
                             monitorStack.push(line);
-                            lContent.append("\n");
                             content.append("\n");
                         } else if (line.indexOf("- ") >= 0) {
                             content.append(line);
@@ -310,28 +292,26 @@ public class SunJDKParser extends AbstractDumpParser {
                     }
                 }
                 // last thread
+                String stringContent = content != null ? content.toString() : null;
                 if (title != null) {
                     threads.put(title, content.toString());
                     content.append("</pre></pre>");
-                    addToCategory(catThreads, title, null, content, singleLineCounter, true);
+                    addToCategory(catThreads, title, null, stringContent, singleLineCounter, true);
                     threadCount++;
                 }
-                if (wContent != null) {
-                    wContent.append("</b><hr>");
-                    addToCategory(catWaiting, title, null, wContent, singleLineCounter, true);
-                    wContent = null;
+                if (inWaiting) {
+                    addToCategory(catWaiting, title, null, stringContent, singleLineCounter, true);
+                    inWaiting = false;
                     waiting++;
                 }
-                if (sContent != null) {
-                    sContent.append("</b><hr>");
-                    addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
-                    sContent = null;
+                if (inSleeping) {
+                    addToCategory(catSleeping, title, null, stringContent, singleLineCounter, true);
+                    inSleeping = false;
                     sleeping++;
                 }
-                if (lContent != null) {
-                    lContent.append("</b><hr>");
-                    addToCategory(catLocking, title, null, lContent, singleLineCounter, true);
-                    lContent = null;
+                if (inLocking) {
+                    addToCategory(catLocking, title, null, stringContent, singleLineCounter, true);
+                    inLocking = false;
                     locking++;
                 }
 
@@ -606,7 +586,7 @@ public class SunJDKParser extends AbstractDumpParser {
                 if(line.startsWith("Found one Java-level deadlock")) {
                     if(dContent.length() > 0) {
                         deadlocks++;
-                        addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0, false);
+                        addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent.toString(), 0, false);
                     }
                     dContent = new StringBuffer();
                     dContent.append("</pre><b><font size=" + TDA.getFontSizeModifier(-1) + ">");
@@ -650,7 +630,7 @@ public class SunJDKParser extends AbstractDumpParser {
         }
         if(dContent.length() > 0) {
             deadlocks++;
-            addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent, 0, false);
+            addToCategory(catDeadlocks, "Deadlock No. " + (deadlocks), null, dContent.toString(), 0, false);
         }
         
         if(deadlocks > 0) {
