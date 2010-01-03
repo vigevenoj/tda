@@ -15,7 +15,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: BeaJDKParser.java,v 1.11 2008-04-30 08:45:48 irockel Exp $
+ * $Id: BeaJDKParser.java,v 1.12 2010-01-03 14:23:09 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -104,7 +104,6 @@ public class BeaJDKParser extends AbstractDumpParser {
                 catMonitorsLocks = new DefaultMutableTreeNode(new TreeCategory("Monitors without locking thread", IconFactory.MONITORS_NOLOCKS, false));
 
                 String title = null;
-                String dumpKey = null;
                 StringBuffer content = null;
                 StringBuffer lContent = null;
                 StringBuffer sContent = null;
@@ -134,27 +133,28 @@ public class BeaJDKParser extends AbstractDumpParser {
                             System.out.print("x");
                         }
                         if (line.startsWith("\"")) { // Did we hit a new thread ?
+                            String stringContent = content != null ? content.toString() : null;
                             if (title != null) { // Let's store the previous thread
                                 threads.put(title, content.toString());
                                 content.append("</pre></pre>");
-                                addToCategory(catThreads, title, null, content, singleLineCounter, true);
+                                addToCategory(catThreads, title, null, stringContent, singleLineCounter, true);
                                 threadCount++;
                             }
                             if (wContent != null) {
                                 wContent.append("</b><hr>");
-                                addToCategory(catWaiting, title, wContent, content, singleLineCounter, true);
+                                addToCategory(catWaiting, title, null, stringContent, singleLineCounter, true);
                                 wContent = null;
                                 waiting++;
                             }
                             if (sContent != null) {
                                 sContent.append("</b><hr>");
-                                addToCategory(catSleeping, title, sContent, content, singleLineCounter, true);
+                                addToCategory(catSleeping, title, null, stringContent, singleLineCounter, true);
                                 sContent = null;
                                 sleeping++;
                             }
                             if (lContent != null) {
                                 lContent.append("</b><hr>");
-                                addToCategory(catLocking, title, lContent, content, singleLineCounter, true);
+                                addToCategory(catLocking, title, null, stringContent, singleLineCounter, true);
                                 lContent = null;
                                 locking++;
                             }
