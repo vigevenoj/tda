@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: SunJDKParser.java,v 1.45 2008-11-21 21:17:51 irockel Exp $
+ * $Id: SunJDKParser.java,v 1.46 2010-01-03 11:47:51 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -242,6 +242,16 @@ public class SunJDKParser extends AbstractDumpParser {
                             content.append(line);
                             content.append("\n");
                         } else if (line.indexOf("- waiting on") >= 0) {
+                            String newLine = linkifyMonitor(line);
+                            content.append(newLine);
+                            if (sContent == null) {
+                                sContent = new StringBuffer("<body bgcolor=\"ffffff\"><font size=" + TDA.getFontSizeModifier(-1) + "><b>");
+                            }
+                            sContent.append(newLine);
+                            monitorStack.push(line);
+                            sContent.append("\n");
+                            content.append("\n");
+                        } else if (line.indexOf("- parking to wait") >= 0) {
                             String newLine = linkifyMonitor(line);
                             content.append(newLine);
                             if (sContent == null) {
