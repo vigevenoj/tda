@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.186 2008-11-20 16:31:04 irockel Exp $
+ * $Id: TDA.java,v 1.187 2010-01-03 12:20:51 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -408,6 +408,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             resultString = resultString.replaceFirst("<!-- ##tipofday## -->", TipOfDay.getTipOfDay());
             resultString = resultString.replaceFirst("<!-- ##recentlogfiles## -->", getAsTable("openlogfile://", PrefManager.get().getRecentFiles()));
             resultString = resultString.replaceFirst("<!-- ##recentsessions## -->", getAsTable("opensession://", PrefManager.get().getRecentSessions()));
+        } catch (IllegalArgumentException ex) {
+            // hack to prevent crashing of the app because off unparsed replacer.
+            ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -420,6 +423,10 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
                 ex.printStackTrace();
             }
         }
+        // remove unparsed replacers.
+        resultString = resultString.replaceFirst("<!-- ##tipofday## -->", "");
+        resultString = resultString.replaceFirst("<!-- ##recentlogfiles## -->", "");
+        resultString = resultString.replaceFirst("<!-- ##recentsessions## -->", "");
         return(resultString);
     }
 
