@@ -23,9 +23,9 @@
     <bookinfo>
         
         <title>TDA - Thread Dump Analyzer</title>
-        <pubdate>September, 2008</pubdate>
+        <pubdate>January, 2010</pubdate>
         <copyright>
-            <year>2006-2008</year>
+            <year>2006-2010</year>
             <holder>Ingo Rockel &lt;irockel@dev.java.net&gt;</holder>
         </copyright>
         
@@ -236,7 +236,7 @@
                 <programlisting>
                     jconsole -pluginpath ./tda.jar
                 </programlisting>
-                The javahelp jar <emphasis>jhall.jar</emphasis> needs to be in the same directory as the tda.jar, otherwise clicking the help button would lead to an exception. The Plugin offers requesting thread dumps from a remote Virtual Machine through JMX. The Dumps areparsed and can be analyzed just like running as standalone-application. The upper-right-frame showing the dump tree has a popup menu offering the plugin features. 
+                The javahelp jar <emphasis>jhall.jar</emphasis> needs to be in the same directory as the tda.jar or in the subdirectory <emphasis>lib</emphasis>, otherwise clicking the help button would lead to an exception. The Plugin offers requesting thread dumps from a remote Virtual Machine through JMX. The Dumps areparsed and can be analyzed just like running as standalone-application. The upper-right-frame showing the dump tree has a popup menu offering the plugin features. 
                 <figure>
                     <title>TDA JConsole Plugin</title>
                     <imageobject>
