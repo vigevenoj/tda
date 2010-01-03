@@ -17,7 +17,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: InfoDialog.java,v 1.7 2008-09-17 15:43:06 irockel Exp $
+ * $Id: InfoDialog.java,v 1.8 2010-01-03 12:16:22 irockel Exp $
  */
 
 package com.pironet.tda;
@@ -62,8 +62,9 @@ public class InfoDialog extends JDialog {
         getContentPane().add(upperPane, BorderLayout.NORTH);
         
         String info = "<html><body>" +
-                "<p><i>Java Version: " + System.getProperty("java.version") + "<br/><br/>" +
-                "(C) 2006-2008 by Ingo Rockel &lt;irockel@dev.java.net&gt;.<br/><br/>" +
+                "<p><i>Java Version: " + System.getProperty("java.version") + "<br><br>" +
+                "(C) 2006-2010 by Ingo Rockel &lt;irockel@dev.java.net&gt;,<br>" +
+                "with contributions from Robert Whitehurst &lt;maestoso@dev.java.net&gt;.<br><br>" +
                 "Icons used are based on Benno System Icons by Benno Meyer.<br>" +
                 "Welcome screen uses icons from NuoveXT2 icon set by Alexandre Moore.<br>" +
                 "Contains classes from JEdit for logfile display.</i></p><br>" +
