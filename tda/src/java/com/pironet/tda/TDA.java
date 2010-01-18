@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.188 2010-01-18 17:20:41 irockel Exp $
+ * $Id: TDA.java,v 1.189 2010-01-18 17:40:18 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -443,11 +443,13 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         
         for(int i = from; i < elements.length; i++) {
             if(elements[i].trim().length() > 0) {
+                // remove backslashes as they confuse the html display.
+                String elem = elements[i].replaceAll("\\\\", "/");
                 result.append("<tr><td width=\"20px\"></td><td><a href=\"");
                 result.append(prefix);
-                result.append(elements[i]);
+                result.append(elem);
                 result.append("\">");
-                result.append(cutLink(elements[i], 80));
+                result.append(cutLink(elem, 80));
                 result.append("</a></td></tr>\n");
             }
         }

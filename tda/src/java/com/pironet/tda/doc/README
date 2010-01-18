@@ -10,6 +10,8 @@ Changes from 2.1 are:
 * Fixed Issue 26: no more lost filters in categories. Thanks to Robert Whitehurst.
 * Fixed Issue 27: Improved memory footprint, now parsed thread dump use about
   20% less memory.
+* Fixed Issue 29: Closing of log files now works on windows.
+* Fixed Issue 30: Opening from welcome page now works on windows.
 * Fixed HTML if JDK 5.x is used.
 * Small Adjustments.
 
