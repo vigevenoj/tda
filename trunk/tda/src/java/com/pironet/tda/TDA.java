@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: TDA.java,v 1.187 2010-01-03 12:20:51 irockel Exp $
+ * $Id: TDA.java,v 1.188 2010-01-18 17:20:41 irockel Exp $
  */
 package com.pironet.tda;
 
@@ -2040,15 +2040,15 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private void closeCurrentDump() {
         TreePath selPath = tree.getSelectionPath();
         
-        while(selPath != null && !checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), File.separator)) {
-            
+        while(selPath != null && !(checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), File.separator) ||
+                checkNameFromNode((DefaultMutableTreeNode) selPath.getLastPathComponent(), 2, File.separator))) {
             selPath = selPath.getParentPath();
         }
         
         Object[] options = { "Close File", "Cancel close" };
         
         String fileName = ((DefaultMutableTreeNode) selPath.getLastPathComponent()).getUserObject().toString();
-        fileName = fileName.substring(fileName.indexOf('/'));
+        fileName = fileName.substring(fileName.indexOf(File.separator));
         
         int selectValue = JOptionPane.showOptionDialog(null, "<html><body>Are you sure, you want to close the currently selected dump file<br><b>" + fileName +
                 "</b></body></html>", "Confirm closing...",
@@ -2061,7 +2061,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
             topNodes.remove(selPath.getLastPathComponent());
             
             if(topNodes.size() == 0) {
-                // simply do a reinit, as there is anything to display
+                // simply do a reinit, as there isn't anything to display
                 removeAll();
                 revalidate();
                 
@@ -2130,17 +2130,36 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         getMainMenu().getCollapseAllMenuItem().setEnabled(false);
 
     }
-    
+
     /**
      * check if name of node starts with passed string
+     * @param node the node name to check
+     * @param startsWith the string to compare.
+     * @return true if startsWith and beginning of node name matches.
      */
     private boolean checkNameFromNode(DefaultMutableTreeNode node, String startsWith) {
+        return(checkNameFromNode(node, 0, startsWith));
+    }
+
+    /**
+     * check if name of node starts with passed string
+     * @param node the node name to check
+     * @param startIndex the index to start with comparing, 0 if comparing should happen
+     *                   from the beginning.
+     * @param startsWith the string to compare.
+     * @return true if startsWith and beginning of node name matches.
+     */
+    private boolean checkNameFromNode(DefaultMutableTreeNode node, int startIndex, String startsWith) {
         Object info = node.getUserObject();
         String result = null;
         if((info != null) && (info instanceof AbstractInfo)) {
             result = ((AbstractInfo) info).getName();
         } else if ((info != null) && (info instanceof String)) {
             result = (String) info;
+        }
+        
+        if(startIndex > 0) {
+            result = result.substring(startIndex);
         }
         
         return(result != null && result.startsWith(startsWith));
