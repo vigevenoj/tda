@@ -13,7 +13,7 @@ Changes from 2.1 are:
 * Fixed Issue 29: Closing of log files now works on windows.
 * Fixed Issue 30: Opening from welcome page now works on windows.
 * Fixed HTML if JDK 5.x is used.
-* Small Adjustments.
+* Small Adjustments and Fixes.
 
 Changes from 2.0 are:
 * Added last line parsed to the error message if an error occurs during parsing.
