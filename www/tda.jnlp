@@ -2,7 +2,7 @@
 
 <jnlp spec="1.0" codebase="https://tda.dev.java.net/">
    <information>
-      <title>TDA - Thread Dump Analyzer 2.1</title>
+      <title>TDA - Thread Dump Analyzer 2.2</title>
       <vendor>Ingo Rockel</vendor>
       <homepage href="http://tda.dev.java.net/"/>
       <icon href="splash.png" kind="splash"/>
@@ -16,7 +16,7 @@
    </information>
    <resources>
       <j2se version="1.4.2+" href="http://java.sun.com/products/autodl/j2se" max-heap-size="256m"/>
-      <jar href="tda-2.1.jar"/>
+      <jar href="tda-2.2.jar"/>
       <jar href="jhall.jar"/>
    </resources>
    <application-desc main-class="com.pironet.tda.TDA"/>
