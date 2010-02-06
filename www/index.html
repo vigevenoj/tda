@@ -16,6 +16,17 @@
 
 <h2><a name="news">News</a></h2>
 <p>More News in my <a href="http://www.jroller.com/page/dumpster">weblog</a>.</p>
+<p><b>[2010/02/06]</b> 2.2 release of TDA available. This release includes:
+<ul>
+    <li>Implemented Issue 9: now parked threads using java.lang.concurrent are recognized.</li>
+    <li>Fixed Issue 26: no more lost filters in categories. Thanks to Robert Whitehurst.</li>
+    <li>Fixed Issue 27: Improved memory footprint, now parsed thread dump use about 20% less memory.</li>
+    <li>Fixed Issue 29: Closing of log files now works on windows.</li>
+    <li>Fixed Issue 30: Opening from welcome page now works on windows.</li>
+    <li>Fixed HTML if JDK 5.x is used.</li>
+    <li>Small Adjustments and Fixes.</li>
+</ul>
+</p>
 <p><b>[2009/01/07]</b> 2.1 release of TDA available. This release includes:
 <ul>
     <li>Added last line parsed to the error message if an error occurs during parsing.</li>
@@ -174,12 +185,6 @@ Features are in detail:
 <li>A <a href="http://visualvm.dev.java.net">VisualVM</a> plugin.</li>
 </ul>
 </p>
-<p>Features planned:
-<ul>
-    <li>BEA JDK Parser Support (JRockit).</li>
-    <li>java-Concurrent-Packge support (parsing of locks of this package).</li>
-    <li>Provide netbeans or eclipse integration if possible.</li>
-</ul></p>
 <p>
 The emphasis of the TDA is to provide analysis support of offline information gathered from production environments.</p>
 
@@ -214,12 +219,12 @@ The emphasis of the TDA is to provide analysis support of offline information ga
 
 <h2><a name="download">Download</a></h2>
 <p>
-You can either download the 2.1 Final release in the <a href="/servlets/ProjectDocumentList">files</a> section or install it through Java Webstart, which is prefered (see <a href="tda.jnlp">link</a> above). Look at the usage overview in the help menu for further information. Start scripts in zip distribution are quite basic, look inside them, you might need to adjust the memory settings if you want to parse very huge log files (>250MB).</p>
+You can either download the 2.2 Final release in the <a href="/servlets/ProjectDocumentList">files</a> section or install it through Java Webstart, which is prefered (see <a href="tda.jnlp">link</a> above). Look at the usage overview in the help menu for further information. Start scripts in zip distribution are quite basic, look inside them, you might need to adjust the memory settings if you want to parse very huge log files (>250MB).</p>
 
 <h2>Participation</h2>
 <p>Please reports problems, make suggestions and ask questions in the <a href="/servlets/ForumMessageList?forumID=1967">discussion forum</a>.</p>
 
-<p><i>Last Change: $Id: index.html,v 1.77 2009-01-07 09:24:42 irockel Exp $</i></p>
+<p><i>Last Change: $Id: index.html,v 1.78 2010-02-06 17:13:31 irockel Exp $</i></p>
 <!-- Start of StatCounter Code -->
 <script type="text/javascript">
 var sc_project=2795907; 
