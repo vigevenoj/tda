@@ -1,9 +1,12 @@
 <html>
 <link rel="stylesheet" type="text/css" href="stylesheet.css" title="Style">
 <body bgcolor="ffffff"><pre>
-TDA - Thread Dump Analyzer -- Version 2.2
+TDA - Thread Dump Analyzer -- Version 2.3
 
-Note: This is the 2.2 release of the software, for an usage overview see Help/Overview.
+Note: This is the 2.3 release of the software, for an usage overview see Help/Overview.
+
+Changes from 2.2 are:
+* fixed dumping of blocked threads in jconsole plugin.
 
 Changes from 2.1 are:
 * Implemented Issue 9: now parked threads using java.lang.concurrent are recognized.
