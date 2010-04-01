@@ -17,7 +17,7 @@
  * along with Foobar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: MBeanDumper.java,v 1.15 2008-01-05 08:55:19 irockel Exp $
+ * $Id: MBeanDumper.java,v 1.16 2010-04-01 08:58:24 irockel Exp $
  */
 package com.pironet.tda.jconsole;
 
@@ -205,10 +205,13 @@ public class MBeanDumper {
        StringBuilder sb = new StringBuilder("\"" + ti.getThreadName() + "\"" +
                                             " nid=" + ti.getThreadId() + " state=" +
                                             ti.getThreadState());
-       if (ti.getLockName() != null) {
+       if (ti.getLockName() != null && ti.getThreadState() != Thread.State.BLOCKED) {
            String[] lockInfo = ti.getLockName().split("@");
            sb.append("\n" + INDENT +"- waiting on <0x" + lockInfo[1] + "> (a " + lockInfo[0] + ")");
            sb.append("\n" + INDENT +"- locked <0x" + lockInfo[1] + "> (a " + lockInfo[0] + ")");
+       } else if (ti.getLockName() != null && ti.getThreadState() == Thread.State.BLOCKED) {
+           String[] lockInfo = ti.getLockName().split("@");
+           sb.append("\n" + INDENT +"- waiting to lock <0x" + lockInfo[1] + "> (a " + lockInfo[0] + ")");
        }
        if (ti.isSuspended()) {
            sb.append(" (suspended)");
