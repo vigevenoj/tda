@@ -19,7 +19,7 @@
  * along with TDA; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * $Id: PrefManager.java,v 1.27 2009-11-10 19:24:21 maestoso Exp $
+ * $Id: PrefManager.java,v 1.28 2010-04-01 09:20:28 irockel Exp $
  */
 package com.pironet.tda.utils;
 
@@ -375,16 +375,18 @@ public class PrefManager {
                         categories.add(i, newCat);
                     }
                 } catch (ArrayIndexOutOfBoundsException aioob) {
+                    System.out.println("couldn't parse categories, " + aioob.getMessage());
+                    aioob.printStackTrace();
                     // fall back to default categories
-                    categories = getPredefinedFilters();
+                    categories = new DefaultListModel();
                 }
-		// initialize cache
-		setCategoryCache(categories);
+                // initialize cache
+                setCategoryCache(categories);
             } else {
                 categories = new DefaultListModel();
             }
         } else {
-	    // populate categories from cache
+            // populate categories from cache
             categories = getCachedCategories();
         }
         return (categories);
