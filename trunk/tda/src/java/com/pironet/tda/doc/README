@@ -7,6 +7,7 @@ Note: This is the 2.3 release of the software, for an usage overview see Help/Ov
 
 Changes from 2.2 are:
 * fixed dumping of blocked threads in jconsole plugin.
+* fixed issue 31: class cast exception in predefined categories fallback.
 
 Changes from 2.1 are:
 * Implemented Issue 9: now parked threads using java.lang.concurrent are recognized.
