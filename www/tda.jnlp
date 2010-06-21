@@ -15,7 +15,7 @@
       <update check="background" policy="prompt-update" />
    </information>
    <resources>
-      <j2se version="1.4.2+" href="http://java.sun.com/products/autodl/j2se" max-heap-size="256m"/>
+      <j2se version="1.4.2+" href="http://java.sun.com/products/autodl/j2se" max-heap-size="512m"/>
       <jar href="tda-2.2.jar"/>
       <jar href="jhall.jar"/>
    </resources>
