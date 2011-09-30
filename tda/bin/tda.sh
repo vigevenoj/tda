@@ -1,5 +1,5 @@
 #!/bin/sh
 # Unix shell script for starting tda. If you have big log files
-# you might need to adjzst Xmx setting.
-
-cd ..; java -Xmx256m -jar ./tda.jar 
+# you might need to adjust Xmx setting.
+cd $(dirname $0)/..
+java -Xmx512m -jar ./tda.jar 
