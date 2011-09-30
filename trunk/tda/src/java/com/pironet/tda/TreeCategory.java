@@ -67,7 +67,7 @@ public class TreeCategory extends AbstractCategory implements Serializable {
             
             // apply new filter settings.
             filteredCatTree = new JTree(filterNodes(getRootNode()));
-            if(getName().startsWith("Monitors")) {
+            if(getName().startsWith("Monitors") || getName().startsWith("Threads blocked by Monitors")) {
                 filteredCatTree.setShowsRootHandles(true);
             }
             filteredCatTree.setCellRenderer(new TreeRenderer());
@@ -76,7 +76,7 @@ public class TreeCategory extends AbstractCategory implements Serializable {
             setLastUpdated();
         } else if (!isFilterEnabled() && (filteredCatTree == null) || (getLastUpdated() < PrefManager.get().getFiltersLastChanged())) {
             filteredCatTree = new JTree(getRootNode());
-            if(getName().startsWith("Monitors")) {
+            if(getName().startsWith("Monitors") || getName().startsWith("Threads blocked by Monitors")) {
                 filteredCatTree.setShowsRootHandles(true);
             }
             filteredCatTree.setCellRenderer(new TreeRenderer());

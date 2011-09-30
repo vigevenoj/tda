@@ -34,9 +34,21 @@ import java.util.HashMap;
  */
 public class MonitorMap implements Serializable {
     
-    public final int LOCK_THREAD_POS = 0;
-    public final int WAIT_THREAD_POS = 1;
-    public final int SLEEP_THREAD_POS = 2;
+    /**
+     * A "LOCK_THREAD" is one that has locked the monitor and that has not
+     * released the lock (by calling "Object.wait()").
+     */
+    public static final int LOCK_THREAD_POS = 0;
+    /**
+     * A "WAIT_THREAD" is one that is blocked waiting for a monitor to be
+     * available.
+     */
+    public static final int WAIT_THREAD_POS = 1;
+    /**
+     * A "SLEEP_THREAD" is one that holds the monitor but has released it and is
+     * asleep in Object.wait(), waiting to be notified.
+     */
+    public static final int SLEEP_THREAD_POS = 2;
     
     private Map monitorMap = null;    
     
@@ -84,26 +96,29 @@ public class MonitorMap implements Serializable {
             objectSet[0] = new HashMap();
             objectSet[1] = new HashMap();
             objectSet[2] = new HashMap();
+            addToMonitorMap(key, objectSet);
         }
         
         objectSet[pos].put(threadTitle, thread);
-        addToMonitorMap(key, objectSet);
     }
     
     public void parseAndAddThread(String line, String threadTitle, String currentThread) {
-        if(line != null && (line.indexOf('<') > 0)) {
+        if (line == null) {
+            return;
+        }
+        if((line.indexOf('<') > 0)) {
             String monitor = line.substring(line.indexOf('<'));
-            if (line.trim().startsWith("- waiting to lock")) {
+            if (line.trim().startsWith("- waiting to lock") || line.trim().startsWith("- parking to wait")) {
                 addWaitToMonitor(monitor, threadTitle, currentThread);
             } else if (line.trim().startsWith("- waiting on")) {
                 addSleepToMonitor(monitor, threadTitle, currentThread);
             } else {
                 addLockToMonitor(monitor, threadTitle, currentThread);
             }
-        } else if(line != null && line.indexOf('@') > 0) {
+        } else if(line.indexOf('@') > 0) {
             String monitor = "<" + line.substring(line.indexOf('@')+1) + "> (a " +
                     line.substring(line.lastIndexOf(' '),line.indexOf('@')) + ")";
-            if (line.trim().startsWith("- waiting to lock")) {
+            if (line.trim().startsWith("- waiting to lock") || line.trim().startsWith("- parking to wait")) {
                 addWaitToMonitor(monitor, threadTitle, currentThread);
             } else if (line.trim().startsWith("- waiting on")) {
                 addSleepToMonitor(monitor, threadTitle, currentThread);

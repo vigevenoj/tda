@@ -229,7 +229,7 @@ public class BeaJDKParser extends AbstractDumpParser {
 
     protected String[] getThreadTokens(String name) {
         String patternMask = "^.*\"([^\"]+)\".*id=([^ ]+).*tid=([^ ]+).*"+
-            "prio=([^ ]+) ([^,]+, [^,]+, [^,]+)(, daemon)?$";
+            "prio=([^ ]+) ([^,]+,? ?[^,]+?,? ?[^,]+?,? ?[^,]+?)(, daemon)?$";
         Pattern p = Pattern.compile(patternMask);
         Matcher m = p.matcher(name);
         System.out.println(m.matches());

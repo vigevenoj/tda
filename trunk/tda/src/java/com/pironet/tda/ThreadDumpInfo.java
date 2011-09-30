@@ -22,7 +22,7 @@
 package com.pironet.tda;
 
 /**
- * Thread Dump Information Node. It stores struturial data about the thread dump
+ * Thread Dump Information Node. It stores structural data about the thread dump
  * and provides methods for generating html information for displaying infos about
  * the thread dump.
  * 
@@ -41,6 +41,7 @@ public class ThreadDumpInfo extends AbstractInfo {
     private Category lockingThreads;
     private Category monitors;
     private Category monitorsWithoutLocks;
+    private Category blockingMonitors;
     private Category threads;
     private Category deadlocks;
     private HeapInfo heapInfo;
@@ -139,7 +140,7 @@ public class ThreadDumpInfo extends AbstractInfo {
     }
     
     /**
-     * ghenerate a monitor info node from the given information.
+     * generate a monitor info node from the given information.
      * @param locks how many locks are on this monitor?
      * @param waits how many threads are waiting for this monitor?
      * @param sleeps how many threads have a lock on this monitor and are sleeping?
@@ -158,9 +159,16 @@ public class ThreadDumpInfo extends AbstractInfo {
         statData.append("</b></td></tr>\n\n");
         if (locks == 0) {
             statData.append("<tr bgcolor=\"#ffffff\"<td></td></tr>");
-            statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System " +
-                    "<p>This monitor doesn't have a thread locking it. This means a VM Thread is holding it.</p><br>");
-            statData.append("If you see many monitors having no locking thread, this usually means, the garbage collector is running.<br>");
+            // See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5086475
+            statData.append("<tr bgcolor=\"#cccccc\"><td><font face=System> " +
+                    "<p>This monitor doesn't have a thread locking it. This means one of the following is true:</p>" +
+                    "<ul><li>a VM Thread is holding it." +
+                    "<li>This lock is a <tt>java.util.concurrent</tt> lock and the thread holding it is not reported in the stack trace" +
+                    "because the JVM option -XX:+PrintConcurrentLocks is not present." +
+                    "<li>This lock is a custom java.util.concurrent lock either not based off of" +
+                    " <tt>AbstractOwnableSynchronizer</tt> or not setting the exclusive owner when a lock is granted.</ul>");
+            statData.append("If you see many monitors having no locking thread (and the latter two conditions above do" +
+                    "not apply), this usually means the garbage collector is running.<br>");
             statData.append("In this case you should consider analyzing the Garbage Collector output. If the dump has many monitors with no locking thread<br>");
             statData.append("a click on the <a href=\"dump://\">dump node</a> will give you additional information.<br></td></tr>");
         }
@@ -223,6 +231,14 @@ public class ThreadDumpInfo extends AbstractInfo {
 
     public void setMonitors(Category monitors) {
         this.monitors = monitors;
+    }
+
+    public Category getBlockingMonitors() {
+      return blockingMonitors;
+    }
+
+    public void setBlockingMonitors(Category blockingMonitors) {
+      this.blockingMonitors = blockingMonitors;
     }
 
     public Category getMonitorsWithoutLocks() {
