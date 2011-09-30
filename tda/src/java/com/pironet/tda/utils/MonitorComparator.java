@@ -24,6 +24,8 @@ package com.pironet.tda.utils;
 import java.util.Comparator;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.pironet.tda.ThreadInfo;
+
 /**
  * compares monitor nodes based on the amount of threads refering to the monitors. 
  * It return 0 for two monitors having the same amount of threads refering to them. 
@@ -41,12 +43,16 @@ public class MonitorComparator implements Comparator {
      * @return difference between amount of refering threads.
      */
     public int compare(Object arg0, Object arg1) {
-        if(arg0 instanceof DefaultMutableTreeNode && arg1 instanceof DefaultMutableTreeNode) {
+        if (arg0 instanceof DefaultMutableTreeNode && arg1 instanceof DefaultMutableTreeNode) {
             DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode) arg0;
             DefaultMutableTreeNode secondNode = (DefaultMutableTreeNode) arg1;
-            return(secondNode.getChildCount() - firstNode.getChildCount());
+            Object o1 = firstNode.getUserObject();
+            Object o2 = secondNode.getUserObject();
+            if (o1 instanceof ThreadInfo && o2 instanceof ThreadInfo) {
+                return ((ThreadInfo) o2).getChildCount() - ((ThreadInfo) o1).getChildCount();
+            }
+            return (secondNode.getChildCount() - firstNode.getChildCount());
         }
-        return(0);
+        return (0);
     }
-
 }

@@ -33,6 +33,7 @@ public class ThreadInfo extends AbstractInfo {
     private int stackLines;
     private String[] tokens;
     private boolean aLotOfWaiting;
+    private int childCount;
     
     public ThreadInfo(String name, String info, String content, int stackLines, String[] tableTokens) {
         setName(name);
@@ -70,7 +71,6 @@ public class ThreadInfo extends AbstractInfo {
         this.stackLines = stackLines;
     }
     
-    
     public String[] getTokens() {
         return(tokens);
     }
@@ -81,5 +81,13 @@ public class ThreadInfo extends AbstractInfo {
     
     public boolean areALotOfWaiting() {
         return(aLotOfWaiting);
+    }
+
+    public void setChildCount(int childCount) {
+      this.childCount = childCount;
+    }
+
+    public int getChildCount() {
+      return childCount;
     }
 }

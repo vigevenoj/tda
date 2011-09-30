@@ -80,7 +80,9 @@ public class DumpParserFactory {
                 bis.mark(readAheadLimit);
                 String line = bis.readLine();
                 dm.checkForDateMatch(line);
-                if(SunJDKParser.checkForSupportedThreadDump(line)) {
+                if (WrappedSunJDKParser.checkForSupportedThreadDump(line)) {
+                  currentDumpParser = new WrappedSunJDKParser(bis, threadStore, lineCounter, withCurrentTimeStamp, startCounter, dm);
+                } else if(SunJDKParser.checkForSupportedThreadDump(line)) {
                     currentDumpParser = new SunJDKParser(bis, threadStore, lineCounter, withCurrentTimeStamp, startCounter, dm);
                 } else if(BeaJDKParser.checkForSupportedThreadDump(line)) {
                     currentDumpParser = new BeaJDKParser(bis, threadStore, lineCounter, dm);

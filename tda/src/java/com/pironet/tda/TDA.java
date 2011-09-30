@@ -563,12 +563,12 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
     private void expandAllCatNodes(boolean expand) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
         JTree catTree = (JTree) ((TreeCategory) node.getUserObject()).getCatComponent(this);
-        TreeNode root = (TreeNode)catTree.getModel().getRoot();
-        
-        for (int i = 0; i < root.getChildCount(); i++) {
             if(expand) {
+          for (int i = 0; i < catTree.getRowCount(); i++) {
                 catTree.expandRow(i);
+          }
             } else {
+          for (int i = 0; i < catTree.getRowCount(); i++) {
                 catTree.collapseRow(i);
             }
         }
@@ -1181,7 +1181,7 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
         setThreadDisplay(true);
         if(cat.getLastView() == null) {
             JComponent catComp = cat.getCatComponent(this);
-            if(cat.getName().startsWith("Monitors")) {
+            if(cat.getName().startsWith("Monitors") || cat.getName().startsWith("Threads blocked by Monitors")) {
                 catComp.addMouseListener(getMonitorsPopupMenu());
             } else {
                 catComp.addMouseListener(getCatPopupMenu());
@@ -2030,6 +2030,9 @@ public class TDA extends JPanel implements ListSelectionListener, TreeSelectionL
      */
     private void parseLoggcLogfile() {
         DefaultMutableTreeNode node = getDumpRootNode((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
+        if (node == null) {
+          return;
+        }
         
         // get pos of this node in the thread dump hierarchy.
         int pos = node.getParent().getIndex(node);
