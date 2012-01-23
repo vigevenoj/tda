@@ -39,7 +39,7 @@ public class TDAViewProvider extends DataSourceViewProvider<DataSource> {
     /*
      * FIXME: this is just a hack to add newly added thread dumps to an existing thread dump view.
      */
-    private Map views = new HashMap();
+    private Map<DataSource, TDAView> views = new HashMap<DataSource, TDAView>();
     
     static void initialize() {
         DataSourceViewsManager.sharedInstance().addViewProvider(new TDAViewProvider(), DataSource.class);
@@ -54,7 +54,7 @@ public class TDAViewProvider extends DataSourceViewProvider<DataSource> {
     protected DataSourceView createView(DataSource logContent) {
         TDAView tdaView;
         if(views.containsKey(logContent.getMaster())) {
-            tdaView = (TDAView) views.get(logContent.getMaster());
+            tdaView = views.get(logContent.getMaster());
             tdaView.addToTDA(((Snapshot) logContent).getFile().getAbsolutePath());
             return(tdaView);
         } else {
